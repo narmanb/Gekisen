@@ -1,0 +1,51 @@
+// DM Environment file for Desktop.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+
+// BEGIN_INCLUDE
+#include "Anti-ICON CRASHER.dm"
+#include "Antihack.dm"
+#include "battle_system.dm"
+#include "Character_Handeling.dm"
+#include "Content1.dm"
+#include "CSay.dm"
+#include "danban.dm"
+#include "Debug.dm"
+#include "Destruct.dm"
+#include "dm.dm"
+#include "Gekisen.dm"
+#include "Give Verb System.dm"
+#include "Guild.dm"
+#include "Guildhouse.dm"
+#include "Initialization.dm"
+#include "Main.dm"
+#include "mobs.dm"
+#include "New Systems.dm"
+#include "newdragonballs.dm"
+#include "NewTurfDefine.dm"
+#include "objects.dm"
+#include "online.dm"
+#include "PR Morphers System.dm"
+#include "races.dm"
+#include "rc5.dm"
+#include "RevengeDeathBall.dm"
+#include "s_missle.dm"
+#include "Shinra Inc Keycard System.dm"
+#include "skills.dm"
+#include "Spy.dm"
+#include "trans.dm"
+#include "TSturfs.dm"
+#include "turfs.dm"
+#include "Turfsv2.dm"
+#include "map.dmp"
+// END_INCLUDE
+
+// BEGIN_PREFERENCES
+#define DEBUG
+// END_PREFERENCES
+// BEGIN_INTERNALS
+// END_INTERNALS
