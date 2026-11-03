@@ -20,6 +20,7 @@ var pixel_y := 0.0
 var invisible := false
 var dead := false
 var flying := false
+var gravity := 0            # gravity machine strength (x), 0 = not a machine
 
 # smooth movement
 var from_x := 1.0

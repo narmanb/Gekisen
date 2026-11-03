@@ -189,10 +189,13 @@ func _draw() -> void:
 	var x1 := int(ceil((tl.x + vs.x) / T)) + 1
 	var row0 := int(floor(tl.y / T)) - 1
 	var row1 := int(ceil((tl.y + vs.y) / T)) + 1
-	# turfs
-	for row in range(row0, row1 + 1):
+	# turfs. Icons bigger than one tile (beds, couches, buildings: 64x64 "big objects")
+	# extend up and to the right of their tile, so they are drawn in a second pass,
+	# otherwise the neighbouring floor tiles would paint over parts of them.
+	var big: Array = []
+	for row in range(row0, row1 + 4):
 		var y := h - row
-		for x in range(x0, x1 + 1):
+		for x in range(x0 - 3, x1 + 1):
 			var stack := Data.turf_stack(x, y, z)
 			if stack.is_empty():
 				continue
@@ -201,8 +204,15 @@ func _draw() -> void:
 				var ty: Dictionary = Data.types[str(int(ti))]
 				if not ty.has("icon") or ty.has("invis"):
 					continue
-				_sprite(int(ty["icon"]), ty.get("state", ""), int(ty.get("dir", 2)),
-					p + Vector2(ty.get("pixel_x", 0), -ty.get("pixel_y", 0)), now, false, {})
+				var id := int(ty["icon"])
+				var meta = Data.by_id.get(id)
+				var pp := p + Vector2(ty.get("pixel_x", 0), -ty.get("pixel_y", 0))
+				if meta != null and (int(meta["w"]) > 32 or int(meta["h"]) > 32):
+					big.append([id, ty.get("state", ""), int(ty.get("dir", 2)), pp])
+				elif x >= x0 and row <= row1:
+					_sprite(id, ty.get("state", ""), int(ty.get("dir", 2)), pp, now, false, {})
+	for b in big:
+		_sprite(b[0], b[1], b[2], b[3], now, false, {})
 	# movables
 	var list: Array = []
 	if ents.has(z):

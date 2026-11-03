@@ -20,21 +20,26 @@ redrawn by hand.
 | Monsters and NPCs | `/mob/Monster/*`, `/mob/NPC/*` | Original stats and exp/zenni rewards. Monsters aggro within 12 tiles, respawn, and stay out of safe zones. NPCs say lines taken from their original dialogue. |
 
 ### Added for this version
-* **MMO-style hotbar.** It has 3 bars of 10 slots. Every action (Attack, Self Train,
-  Meditate, Rest, Transform, Travel…) and every technique you learn can go on it. Open
-  **Skills**, tap something, then tap a slot. Hold a slot to clear it. New techniques are
-  added to empty slots automatically.
+* **MMO-style hotbar.** It has 3 bars of 10 slots. It starts with just Ki Blast, and new
+  battle techniques are added to empty slots automatically. Any action or technique can go
+  on it: open **Skills**, tap something, then tap a slot. Tap **Cancel placing** (or close
+  the book) to back out. Hold a slot to clear it.
+* **Action panel.** The round buttons above the Attack button hold Talk, Self Train,
+  Meditate, Rest, Transform and Revert, plus Fly, Power Up, Sense and Instant Transmission
+  once you learn them. A button lights up while it is active.
 * **Touch controls.** There's a joystick, a big Attack button and the hotbar. On a
   keyboard: arrows/WASD to move, 1–0 for slots, Space to attack, Tab to change bar,
   K for skills, C for stats.
-* **Travel (space pod).** It takes you to any planet. The list shows the recommended
-  level for each, worked out from the monsters placed there.
+* **Gravity rooms.** The gravity building on Earth (next to the Gravity Training
+  Enthusiast) has the original 100x, 200x, 300x and 500x machines. Talk to a machine to
+  turn it on. Every pull drains some powerlevel, but Self Train gives more exp, TP and stat
+  gains, and Meditate gives double skill exp. The rules come from `System/Gravity.dm`.
 * **Saving.** The game auto-saves every 30 s and when the app is paused, to
   `user://ruination_save.json`.
 
 ### Left out (multiplayer or still to do)
 Multiplayer, PvP, guilds, chat, admin tools, the bank, shops and items, quests, dungeons,
-gravity rooms, fusion and Oozaru details. About 70 techniques with complex DM logic are
+space travel, fusion and Oozaru details. About 70 techniques with complex DM logic are
 grouped into general behaviours: volleys, area blasts, binds, strikes, buffs, heals and
 utilities. The rest are faithful projectiles.
 
@@ -45,7 +50,8 @@ utilities. The rest are faithful projectiles.
    Focus** chooses which stat Self Train raises and which skill Meditate trains.
    **Meditate** on Ki Control to raise your usable power.
 3. At **level 2,000** you can use battle techniques and monsters start hunting you. Use
-   **Travel** to fly to Earth: Green Saibamen (level 10,000) are a good first target.
+   Leave the hospital through its exit to reach Earth. Green Saibamen (level 10,000) are
+   a good first target.
 4. Techniques unlock at the original levels (Kamehameha at 3,000, …). Transformations
    unlock from level 20,000, depending on your race and gene.
 

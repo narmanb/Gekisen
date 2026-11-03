@@ -15,9 +15,12 @@ const SKILL_NAMES := {"melee": "Melee", "block": "Block", "dodge": "Dodge", "cou
 	"ki_power": "Ki Power", "ki_use": "Ki Use", "ki_res": "Ki Resistance", "reflect": "Reflect", "weapon": "Weapon"}
 const FOCUS := ["Strength", "Defense", "Ki", "Powerlevel", "Exp"]
 const PK_LEVEL := 2000
-const BASE_ACTIONS := ["attack", "talk", "selftrain", "meditate", "rest", "transform", "revert", "focus", "travel"]
-const ZNAMES := {1: "Earth", 2: "Namek", 3: "Planet Vegeta", 4: "Other World", 5: "West City",
-	6: "Heaven", 7: "Capsule City", 8: "Dr. Gero's Lab", 9: "Whis' Planet", 10: "Beerus' Planet",
+const BASE_ACTIONS := ["attack", "talk", "selftrain", "meditate", "rest", "transform", "revert", "focus"]
+## Techniques that are actions rather than attacks: they live in the action panel, not on the hotbar by default.
+const UTILITY_KINDS := ["utility"]
+const HOTBAR_VERSION := 2
+const ZNAMES := {1: "Earth", 2: "Namek", 3: "Planet Vegeta", 4: "Realm of the Gods", 5: "Buildings",
+	6: "The Lookout", 7: "Other World", 8: "Dr. Gero's Lab", 9: "Whis' Planet", 10: "Beerus' Planet",
 	11: "Space", 12: "Space"}
 const HAIRS := {"Bald": "", "Goku": "hair - goku.dmi", "Vegeta": "hair - vegeta.dmi",
 	"Teen Gohan": "hair - teen gohan.dmi", "Adult Gohan": "hair - adult gohan.dmi",
@@ -47,6 +50,10 @@ var last_hurt := 0.0
 var timers: Array = []
 var traveling := false
 var running := false
+var grav := 0.0             # active gravity machine strength (0 = off)
+var grav_machine: Mob = null
+var grav_next := 0.0
+var gravtrain := 0.0        # training bonus from the last gravity pull (original M.gravtrain)
 
 
 func _process(_d: float) -> void:
@@ -64,6 +71,8 @@ func _process(_d: float) -> void:
 		if m.z == pe.z and not m.dead and now >= m.next_think:
 			think(m)
 	update_projectiles()
+	if grav > 0.0 and now >= grav_next:
+		gravity_pull()
 	if busy != "" and now >= busy_next:
 		busy_tick()
 	if now - last_tick >= 1000.0:
@@ -129,6 +138,12 @@ func spawn_from_map(ti: int, x: int, y: int, z: int) -> void:
 	m.invisible = t.has("invis")
 	m.path = p
 	m.kind = "npc" if p.begins_with("/mob") else "obj"
+	m.gravity = int(t.get("gravity", 0))
+	if p.begins_with("/mob/Gravity_Room"):
+		if m.gravity > 0:
+			m.name = "Gravity Machine %dx" % m.gravity
+		else:
+			m.kind = "obj"      # the other pieces of the machine sprite
 	if m.icon < 0:
 		m.dense = false
 	world.add(m)
@@ -210,8 +225,8 @@ func new_player(o: Dictionary) -> Dictionary:
 	for s in rs:
 		if p["skills"].has(s):
 			p["skills"][s][0] = float(rs[s])
-	p["hotbar"] = ["attack", "t:KiBlast", "selftrain", "meditate", "rest", "talk", "transform", "revert", "focus", "travel",
-		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	p["hotbar"] = ["t:KiBlast"]
+	p["hotbar_v"] = HOTBAR_VERSION
 	return p
 
 
@@ -275,8 +290,18 @@ func start(p: Dictionary) -> void:
 	for s in SKILLS:
 		if not P["skills"].has(s):
 			P["skills"][s] = [10.0, 0.0, 75.0]
-	while (P["hotbar"] as Array).size() < 30:
-		P["hotbar"].append("")
+	var hb: Array = P["hotbar"]
+	if int(P.get("hotbar_v", 1)) < HOTBAR_VERSION:
+		# old saves had the basic actions on the bar; they now live in the action panel
+		for i in hb.size():
+			if hb[i] in BASE_ACTIONS or hb[i] == "travel" or (str(hb[i]).begins_with("t:") and _is_utility(str(hb[i]).substr(2))):
+				hb[i] = ""
+		P["hotbar_v"] = HOTBAR_VERSION
+	for i in hb.size():
+		if hb[i] == "travel":
+			hb[i] = ""
+	while hb.size() < 30:
+		hb.append("")
 	pe = Mob.new()
 	pe.kind = "player"
 	pe.x = int(P["x"])
@@ -437,6 +462,8 @@ func _entered() -> void:
 	var tur := Data.turf(pe.x, pe.y, pe.z)
 	if tur.has("enter") and tur["enter"].has("warp"):
 		var w: Array = tur["enter"]["warp"]
+		if tur["enter"].has("msg"):
+			msg(tur["enter"]["msg"], Color(0.8, 0.8, 0.9))
 		teleport(int(w[0]), int(w[1]), int(w[2]))
 
 
@@ -480,7 +507,6 @@ func ability_info(id: String) -> Dictionary:
 		"rest": return {"name": "Rest", "desc": "Recover from fatigue and heal.", "glyph": "RST", "color": Color(0.35, 0.35, 0.4)}
 		"transform": return {"name": "Transform", "desc": "Transform into your next form (race and gene specific).", "glyph": "TRF", "color": Color(0.85, 0.65, 0.1)}
 		"revert": return {"name": "Revert", "desc": "Return to your base form.", "glyph": "REV", "color": Color(0.5, 0.4, 0.2)}
-		"travel": return {"name": "Travel", "desc": "Take a space pod to another planet.", "glyph": "POD", "color": Color(0.2, 0.45, 0.5)}
 		"focus": return {"name": "Training Focus", "desc": "Choose what Self Train and Meditate improve.", "glyph": "FOC", "color": Color(0.4, 0.3, 0.5)}
 	if id.begins_with("t:"):
 		var key := id.substr(2)
@@ -567,7 +593,6 @@ func use_ability(id: String) -> void:
 		"transform": transform()
 		"revert": revert()
 		"focus": choose_focus()
-		"travel": travel_menu()
 		_:
 			if id.begins_with("t:"):
 				use_tech(id.substr(2))
@@ -699,10 +724,11 @@ func monster_die(m: Mob) -> void:
 		after(randf_range(45000, 60000), func(): spawn_monster(path, home.x, home.y, home.z))
 
 
-func player_ko(by: Mob) -> void:
+func player_ko(by: Mob, reason := "") -> void:
 	revert(true)
 	stop_busy()
-	msg("%s knocked you out!" % (by.name if by else "Someone"), Color(1, 0.35, 0.35))
+	gravity_off()
+	msg(reason if reason != "" else "%s knocked you out!" % (by.name if by else "Someone"), Color(1, 0.35, 0.35))
 	msg("You wake up in the hospital.", Color(0.8, 0.8, 0.8))
 	for m in monsters:
 		if m.target == pe:
@@ -1138,7 +1164,7 @@ func _update_state() -> void:
 		"meditate", "rest":
 			pe.state = "meditate"
 		"selftrain":
-			pe.state = "train" if Data.has_state(pe.icon, "train") else ""
+			pe.state = "spar fury"
 		_:
 			pe.state = "flight" if pe.flying and Data.has_state(pe.icon, "flight") else ""
 
@@ -1158,6 +1184,8 @@ func busy_tick() -> void:
 				stop_busy()
 				return
 			var se := (5 + int(P["level"]) / 1000) * 2
+			if gravtrain > 0.0:
+				se *= 2
 			_skill_exp(P["med_focus"], se)
 			P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.05)
 			fatigue(4)
@@ -1185,7 +1213,6 @@ func busy_tick() -> void:
 func self_train_tick() -> void:
 	var lvl := float(P["level"])
 	var moden := float(P["moden"])
-	pe.do_flick("attack", now)
 	var expgain := roundf((randf_range(5, 20) + lvl / 250.0) * 1.2 * 4.0) + 1.0
 	var zen := roundf(randf_range(15, 600) + lvl / 2.0)
 	# Character_Up: stat gains in the chosen focus
@@ -1195,13 +1222,13 @@ func self_train_tick() -> void:
 	if randf() < 0.66 and randf() < 0.25:
 		match focus:
 			"Powerlevel":
-				P["pl_bonus"] = float(P["pl_bonus"]) + maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25))
+				P["pl_bonus"] = float(P["pl_bonus"]) + maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
 			"Ki":
-				P["ki_max"] = float(P["ki_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+				P["ki_max"] = float(P["ki_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
 			"Strength":
-				P["strength_max"] = float(P["strength_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+				P["strength_max"] = float(P["strength_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
 			"Defense":
-				P["defence_max"] = float(P["defence_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+				P["defence_max"] = float(P["defence_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
 			"Exp":
 				expgain *= 1.5
 	if randf() < 1.0 / 12.0:
@@ -1209,9 +1236,11 @@ func self_train_tick() -> void:
 		P[k] = float(P[k]) + 4.0
 	if buffs.has("exp"):
 		expgain *= float(buffs["exp"]["mult"])
+	if gravtrain > 0.0:
+		expgain += expgain * gravtrain
 	P["exp"] = float(P["exp"]) + expgain
 	if randf() < 0.05:
-		P["tp"] = float(P["tp"]) + randi_range(3, 12) + int(moden * 2)
+		P["tp"] = float(P["tp"]) + roundf((randi_range(3, 12) + int(moden * 2)) * (1.0 + gravtrain))
 	if randf() < 0.15:
 		P["zenni"] = float(P["zenni"]) + zen
 	fatigue(2)
@@ -1309,7 +1338,33 @@ func skill_gain(silent: bool) -> void:
 		learned.append(tkey)
 		if not silent:
 			msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
-		_auto_hotbar("t:" + tkey)
+		if not _is_utility(tkey):
+			_auto_hotbar("t:" + tkey)
+
+
+func _is_utility(key: String) -> bool:
+	return Data.tech(key).get("kind", "utility") in UTILITY_KINDS
+
+
+## Actions shown in the on-screen action panel (base actions + learned utility techniques).
+func panel_actions() -> Array:
+	var out: Array = ["talk", "selftrain", "meditate", "rest"]
+	for k in ["PowerUp", "Fly", "Sense", "InstantTransmission"]:
+		if k in P.get("learned", []):
+			out.append("t:" + k)
+	out.append_array(["transform", "revert"])
+	return out
+
+
+func is_active(id: String) -> bool:
+	match id:
+		"selftrain": return busy == "selftrain"
+		"meditate": return busy == "meditate"
+		"rest": return busy == "rest"
+		"t:PowerUp": return busy == "power"
+		"t:Fly": return pe != null and pe.flying
+		"revert": return int(P.get("form", 0)) > 0
+	return false
 
 
 func _auto_hotbar(id: String) -> void:
@@ -1390,87 +1445,16 @@ func second_tick() -> void:
 	P["ki"] = minf(float(P["ki"]), cap("ki"))
 
 
-# =================================================================== travel
-const TRAVEL := [7, 1, 2, 3, 4, 5, 6, 8, 9, 10]
-var _rec_levels := {}
-
-
-func recommended_level(z: int) -> float:
-	if _rec_levels.has(z):
-		return _rec_levels[z]
-	var lv: Array = []
-	for e in Data.map["entities"]:
-		if int(e[3]) != z:
-			continue
-		var p: String = Data.types[str(int(e[0]))]["path"]
-		if p.begins_with("/mob/Monster/"):
-			lv.append(_num(Data.mobs.get(p, {}).get("level", 0)))
-	lv.sort()
-	_rec_levels[z] = lv[lv.size() / 5] if not lv.is_empty() else 0.0
-	return _rec_levels[z]
-
-
-func travel_menu() -> void:
-	if busy != "":
-		stop_busy()
-	var opts: Array = []
-	for z in TRAVEL:
-		var rl := recommended_level(z)
-		opts.append("%s%s" % [zname(z), "  (monsters ~lvl %s)" % fmt(rl) if rl > 0 else "  (safe)"])
-	opts.append("Cancel")
-	ask("Space Pod", "Where do you wish to travel to?", opts, _on_travel)
-
-
-func _on_travel(_c: String, i: int) -> void:
-	if i < 0 or i >= TRAVEL.size():
-		return
-	var z: int = TRAVEL[i]
-	if z == pe.z and z != SPAWN.z:
-		msg("You are already here.", Color(0.8, 0.8, 0.8))
-		return
-	traveling = true
-	msg("Your space pod takes off...", Color(0.6, 0.85, 1))
-	after(1200, func(): _land(z))
-
-
-func _land(z: int) -> void:
-	traveling = false
-	if z == SPAWN.z:
-		teleport(SPAWN.x, SPAWN.y, SPAWN.z)
-		return
-	world.load_z(z)
-	var zi := Data.zinfo(z)
-	var cx := int(zi["w"]) / 2
-	var cy := int(zi["h"]) / 2
-	for r in range(0, 120):
-		for dx in range(-r, r + 1):
-			for dy in [-r, r]:
-				if _landable(cx + dx, cy + dy, z):
-					teleport(cx + dx, cy + dy, z)
-					return
-		for dy in range(-r + 1, r):
-			for dx in [-r, r]:
-				if _landable(cx + dx, cy + dy, z):
-					teleport(cx + dx, cy + dy, z)
-					return
-	teleport(cx, cy, z)
-
-
-func _landable(x: int, y: int, z: int) -> bool:
-	var t := Data.turf(x, y, z)
-	if t.is_empty() or int(t.get("dense", 0)) == 1 or not t.has("icon") or t.has("enter"):
-		return false
-	return world.can_enter(pe, x, y, z)
-
-
 # =================================================================== NPCs
 func interactables() -> Array:
 	var out: Array = []
-	for dx in range(-1, 2):
-		for dy in range(-1, 2):
+	for dx in range(-3, 4):
+		for dy in range(-3, 4):
 			for o in world.at(pe.x + dx, pe.y + dy, pe.z):
 				if o != pe and o.kind == "npc" and not o.dead and not o.invisible and o.icon >= 0:
-					out.append(o)
+					if o.gravity > 0 or (absi(dx) <= 1 and absi(dy) <= 1):
+						out.append(o)
+	out.sort_custom(func(a, b): return absi(a.x - pe.x) + absi(a.y - pe.y) < absi(b.x - pe.x) + absi(b.y - pe.y))
 	return out
 
 
@@ -1481,6 +1465,9 @@ func interact(o: Mob = null) -> void:
 			msg("There is no one here to talk to.", Color(0.6, 0.6, 0.6))
 			return
 		o = l[0]
+	if o.gravity > 0:
+		grav_machine_menu(o)
+		return
 	var d: Dictionary = Data.mobs.get(o.path, {})
 	var talk: String = d.get("talk", "")
 	if talk == "":
@@ -1495,6 +1482,62 @@ func _on_talk(c: String, _i: int) -> void:
 		P["ki"] = cap("ki")
 		P["stam"] = 0.0
 		msg("You feel fully restored.", Color(0.5, 1, 0.5))
+
+
+# =================================================================== gravity rooms
+## The gravity building (Earth, south-west of Capsule City) has four chambers with machines
+## at 100x, 200x, 300x and 500x. Ported from System/Gravity.dm: every pull (7.5 s) drains
+## powerlevel_max * gravity/2000 * (1%, 5% or 11%) and adds fatigue; while gravity is on,
+## Self Train gives gravity/1300-1800 more exp, TP and stat ticks and Meditate gives double.
+func grav_machine_menu(o: Mob) -> void:
+	var state := "ON at %dx" % int(grav) if grav > 0.0 else "off"
+	ask("Gravity Training", "Turn on the gravity machine? (%dx gravity)\nThe machine is %s.\nWhile it is on you lose some powerlevel every pull, but Self Train and Meditate give more." % [o.gravity, state],
+		["Turn on the gravity", "Turn off the gravity", "Cancel"], _on_grav.bind(o))
+
+
+func _on_grav(c: String, _i: int, o: Mob) -> void:
+	match c:
+		"Turn on the gravity":
+			if grav > 0.0 and grav_machine == o:
+				msg("The gravity machine is already on!", Color(1, 0.8, 0.4))
+				return
+			grav = float(o.gravity)
+			grav_machine = o
+			grav_next = now + 1500.0
+			msg("You set the gravity to: %dx" % o.gravity, Color(0.4, 1, 1))
+		"Turn off the gravity":
+			gravity_off("You turned off the gravity machine.")
+
+
+func gravity_off(text := "") -> void:
+	if grav <= 0.0:
+		return
+	grav = 0.0
+	grav_machine = null
+	gravtrain = 0.0
+	if text != "":
+		msg(text, Color(0.5, 1, 0.5))
+
+
+func gravity_pull() -> void:
+	grav_next = now + 7500.0
+	var o := grav_machine
+	if o == null or o.z != pe.z or absi(o.x - pe.x) > 16 or absi(o.y - pe.y) > 16:
+		gravity_off("You left the gravity room; the machine shuts down.")
+		return
+	var dmg: float = cap("powerlevel") * (grav / 2000.0) * [0.01, 0.05, 0.11][randi() % 3]
+	P["powerlevel"] = float(P["powerlevel"]) - dmg
+	var mx: float = P["stam_max"]
+	if float(P["stam"]) < mx:
+		fatigue(mx * (0.02 if randf() < 0.2 else 0.005))
+	gravtrain = grav / randf_range(1300.0, 1800.0)
+	world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.85, 0.3))
+	msg("The (x%d) gravity drained %s of your health!" % [int(grav), fmt(dmg)], Color(0.5, 1, 0.5))
+	if float(P["powerlevel"]) <= 0.0:
+		gravity_off()
+		player_ko(null, "The gravity crushed you!")
+	elif float(P["powerlevel"]) < cap("powerlevel") * 0.25:
+		msg("You feel extremely weak from gravity pushing down on you!", Color(1, 0.4, 0.4))
 
 
 # =================================================================== saving

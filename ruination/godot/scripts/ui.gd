@@ -17,6 +17,9 @@ var page := 0
 var page_label: Button
 var stick: Control
 var attack_btn: Control
+var action_panel: Control
+var action_buttons: Array = []
+var book_cancel: Button
 var modal_layer: Control
 var dialog_panel: PanelContainer
 var dialog_queue: Array = []
@@ -113,7 +116,7 @@ func _button(text: String, cb: Callable, size := 18) -> Button:
 
 
 func set_game_ui(on: bool) -> void:
-	for n in [hud, hotbar, stick, attack_btn]:
+	for n in [hud, hotbar, stick, attack_btn, action_panel]:
 		n.visible = on
 
 
@@ -212,10 +215,14 @@ func _process(_d: float) -> void:
 	_set_bar("stam", P["stam"], P["stam_max"])
 	_set_bar("exp", P["exp"], P["tnl"])
 	hud_labels["info"].text = "%s zenni · %s (%d,%d)%s" % [Game.fmt(P["zenni"]), Game.zname(int(P["z"])), int(P["x"]), int(P["y"]),
-		" · SAFE" if Data.is_safe(int(P["x"]), int(P["y"]), int(P["z"])) else ""]
+		(" · SAFE" if Data.is_safe(int(P["x"]), int(P["y"]), int(P["z"])) else "") + (" · %dx GRAVITY" % int(Game.grav) if Game.grav > 0.0 else "")]
 	for s in slots:
 		s.queue_redraw()
 	attack_btn.queue_redraw()
+	if Engine.get_process_frames() % 15 == 0:
+		_refresh_actions()
+	for b in action_buttons:
+		b.queue_redraw()
 	# fade old log lines
 	var t := Time.get_ticks_msec()
 	for l in log_box.get_children():
@@ -344,6 +351,61 @@ func _build_hotbar() -> void:
 	attack_btn.position = Vector2(-140, -140)
 	attack_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(attack_btn)
+	action_panel = Control.new()
+	action_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	action_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(action_panel)
+
+
+## Round buttons on the right edge for the non-combat actions (train, meditate, rest,
+## fly, power up, transform...). They can also be placed on the hotbar from the Skills book.
+class ActionButton extends Control:
+	var id := ""
+	func _draw() -> void:
+		var info: Dictionary = Game.ability_info(id)
+		var c := size / 2
+		var on: bool = Game.is_active(id)
+		draw_circle(c, size.x / 2, Color(info["color"], 0.9) if on else Color(0.08, 0.09, 0.15, 0.78))
+		draw_arc(c, size.x / 2 - 1, 0, TAU, 40, GOLD if on else Color(info["color"].lightened(0.3), 0.9), 3 if on else 2)
+		var font := ThemeDB.fallback_font
+		var g: String = info["glyph"]
+		var w := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
+		draw_string(font, Vector2(c.x - w / 2, c.y + 2), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color.WHITE)
+		var nm: String = info["name"].replace("Instant Transmission", "Teleport")
+		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
+		draw_string(font, Vector2(c.x - nw / 2, c.y + 15), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1, 1, 1, 0.85))
+
+
+func _refresh_actions() -> void:
+	var ids: Array = Game.panel_actions()
+	var cur: Array = []
+	for b in action_buttons:
+		cur.append(b.id)
+	if cur == ids:
+		return
+	for b in action_buttons:
+		b.queue_free()
+	action_buttons.clear()
+	# two columns above the attack button, filled bottom-up
+	var vs := root.get_viewport_rect().size
+	var d := 62.0
+	for i in ids.size():
+		var b := ActionButton.new()
+		b.id = ids[i]
+		b.size = Vector2(56, 56)
+		var col := i % 2
+		var row := i / 2
+		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 220 - row * d)
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		action_panel.add_child(b)
+		action_buttons.append(b)
+
+
+func _action_at(p: Vector2) -> String:
+	for b in action_buttons:
+		if (p - (b.global_position + b.size / 2)).length() <= b.size.x / 2 + 3:
+			return b.id
+	return ""
 
 
 func _page(d: int) -> void:
@@ -367,8 +429,7 @@ func _slot_tap(i: int) -> void:
 			hb[old] = hb[k]
 		hb[k] = assign_id
 		Game.msg("Placed %s on bar %d slot %d." % [Game.ability_info(assign_id)["name"], page + 1, i + 1], GOLD)
-		assign_id = ""
-		assign_hint.text = ""
+		_cancel_assign()
 		return
 	Game.use_ability(slot_id(i))
 
@@ -419,6 +480,12 @@ func _input(event: InputEvent) -> void:
 			elif _slot_at(p) >= 0:
 				touches[event.index] = {"kind": "slot", "slot": _slot_at(p), "t": Time.get_ticks_msec()}
 				get_viewport().set_input_as_handled()
+			elif _action_at(p) != "":
+				var aid := _action_at(p)
+				touches[event.index] = {"kind": "action"}
+				if assign_id == "":
+					Game.use_ability(aid)
+				get_viewport().set_input_as_handled()
 			elif (p - (attack_btn.global_position + attack_btn.size / 2)).length() < attack_btn.size.x / 2:
 				touches[event.index] = {"kind": "attack", "t": Time.get_ticks_msec()}
 				Game.use_ability("attack")
@@ -464,6 +531,11 @@ func _input(event: InputEvent) -> void:
 			_page(1)
 		elif kc == KEY_K:
 			toggle_book()
+		elif kc == KEY_ESCAPE:
+			if assign_id != "":
+				_cancel_assign()
+			elif book.visible:
+				toggle_book()
 		elif kc == KEY_C:
 			toggle_stats()
 	_keys_move()
@@ -525,6 +597,9 @@ func _build_book() -> void:
 	var t := _label("Skills & Techniques", 22, GOLD)
 	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	h.add_child(t)
+	book_cancel = _button("Cancel placing", func(): _cancel_assign())
+	book_cancel.visible = false
+	h.add_child(book_cancel)
 	h.add_child(_button("Close", func(): toggle_book()))
 	book_info = _label("Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it.", 15, Color(0.8, 0.82, 0.9))
 	book_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -546,6 +621,17 @@ func toggle_book() -> void:
 	if book.visible:
 		stats_panel.visible = false
 		_refresh_book()
+	else:
+		_cancel_assign()
+
+
+func _cancel_assign() -> void:
+	assign_id = ""
+	assign_hint.text = ""
+	if book_cancel:
+		book_cancel.visible = false
+	if book_info:
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it."
 
 
 func _refresh_book() -> void:
@@ -589,6 +675,7 @@ func _pick(id: String) -> void:
 	assign_id = id
 	book_info.text = "%s — %s\nNow tap a hotbar slot to place it (or tap the slot keys 1-0)." % [info["name"], info["desc"]]
 	assign_hint.text = "Tap a hotbar slot to place %s" % info["name"]
+	book_cancel.visible = true
 
 
 # =================================================================== stats
@@ -661,7 +748,6 @@ func _build_menu() -> void:
 	v.add_theme_constant_override("separation", 8)
 	menu_panel.add_child(v)
 	v.add_child(_label("Menu", 22, GOLD))
-	v.add_child(_button("Travel (Space Pod)", func(): menu_panel.visible = false; Game.travel_menu()))
 	v.add_child(_button("Training Focus", func(): menu_panel.visible = false; Game.choose_focus()))
 	v.add_child(_button("Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()))
 	v.add_child(_button("Character Stats", func(): menu_panel.visible = false; toggle_stats()))

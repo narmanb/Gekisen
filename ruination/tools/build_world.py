@@ -79,7 +79,11 @@ def enter_rule(tree, path):
     for m in re.finditer(r'\.loc\s*=\s*locate\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)', body):
         x, y, z = int(m.group(1)), int(m.group(2)), int(m.group(3))
         if 1 <= x <= MAXX and 1 <= y <= MAXY and 1 <= z <= MAXZ:
-            return {'warp': [x, y, z]}
+            rule = {'warp': [x, y, z]}
+            note = re.search(r'M\s*<<\s*"([^"\[]{8,})"', body)
+            if note and not re.search(r"cannot|can't|don't|must|need|key", note.group(1), re.I):
+                rule['msg'] = re.sub(r'<[^>]+>', '', note.group(1)).strip()
+            return rule
     if re.search(r'return\s*0', body) and not re.search(r'return\s*1', body):
         return {'block': 'all'}
     return None
@@ -123,6 +127,8 @@ def main():
                 ent[pv] = num(v.get(pv))
         if num(v.get('invisibility')):
             ent['invis'] = 1
+        if path.endswith('Gravity_Well_2'):
+            ent['gravity'] = int(num((overrides or {}).get('totalamount'), 100))
         if 'Safe_Zone' in path:
             ent['safe'] = 1
         rule = enter_rule(tree, path)
