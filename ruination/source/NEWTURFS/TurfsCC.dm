@@ -1,0 +1,62 @@
+turf/CapsuleCorp
+	icon = 'TurfCC.dmi'
+	density = 1
+	Structure
+		One/icon_state = "3.6"
+		Two/icon_state = "3.7"
+		Three/icon_state = "3.8"
+		Four/icon_state = "3.9"
+
+		Five/icon_state = "4.0"
+		Six/icon_state = "4.1"
+		Seven/icon_state = "4.2"
+		Eight/icon_state = "4.3"
+		Nine/icon_state = "4.4"
+		Ten/icon_state = "4.5"
+		Eleven/icon_state = "4.6"
+		Twelve/icon_state = "4.7"
+		Thirteen/icon_state = "4.8"
+		Fourteen/icon_state = "4.9"
+
+		Part1/icon_state = "5.0"
+		Part2/icon_state = "5.1"
+		Part3/icon_state = "5.2"
+		Part4/icon_state = "5.3"
+		Part5/icon_state = "5.4"
+		Part6/icon_state = "5.5"
+		Part7/icon_state = "5.6"
+		Part8/icon_state = "5.7"
+		Part9/icon_state = "5.8"
+		Part10/icon_state = "5.9"
+
+		Bit1/icon_state = "6.0"
+		Bit2/icon_state = "6.1"
+		Bit3/icon_state = "6.2"
+		Bit4/icon_state = "6.3"
+		Bit5/icon_state = "6.4"
+		Bit6/icon_state = "6.5"
+		Bit7/icon_state = "6.6"
+		Bit8/icon_state = "6.7"
+		Bit9/icon_state = "6.8"
+		Bit10/icon_state = "6.9"
+
+	BUILDING
+		Build98/icon_state = "9.8"
+		Build99/icon_state = "9.9"
+
+		BuildP1/icon_state = "100.0"
+		BuildP2/icon_state = "100.1"
+		BuildP3/icon_state = "100.2"
+		BuildP4/icon_state = "100.3"
+		BuildP5/icon_state = "100.4"
+		BuildP6/icon_state = "100.5"
+		BuildP7/icon_state = "100.6"
+		BuildP8/icon_state = "100.7"
+		BuildP9/icon_state = "100.8"
+		BuildP10/icon_state = "100.9"
+
+		BuildPP1/icon_state = "101.0"
+		BuildPP2/icon_state = "101.1"
+		BuildPP3/icon_state = "101.2"
+		BuildPP4/icon_state = "101.3"
+		BuildPP5/icon_state = "101.4"

@@ -1,0 +1,1518 @@
+extends Node
+## Gameplay rules ported from Dragonball Ruination's DM code.
+## (AttackNormal, Monster AI Attack2, ProjectilesJustin dmg, Self Train, Meditate_Gain,
+##  Rest_Gain, Level_Up, Exp_Check, Skill_Gain, transformations.)
+
+signal log_msg(text: String, color: Color)
+signal dialog(title: String, text: String, options: Array, cb: Callable)
+
+const SAVE_PATH := "user://ruination_save.json"
+const SPAWN := Vector3i(395, 252, 7)
+const SKILLS := ["melee", "block", "dodge", "counter", "critical", "durability", "ki_control",
+	"ki_cast", "ki_power", "ki_use", "ki_res", "reflect", "weapon"]
+const SKILL_NAMES := {"melee": "Melee", "block": "Block", "dodge": "Dodge", "counter": "Counter",
+	"critical": "Critical", "durability": "Durability", "ki_control": "Ki Control", "ki_cast": "Ki Cast",
+	"ki_power": "Ki Power", "ki_use": "Ki Use", "ki_res": "Ki Resistance", "reflect": "Reflect", "weapon": "Weapon"}
+const FOCUS := ["Strength", "Defense", "Ki", "Powerlevel", "Exp"]
+const PK_LEVEL := 2000
+const BASE_ACTIONS := ["attack", "talk", "selftrain", "meditate", "rest", "transform", "revert", "focus", "travel"]
+const ZNAMES := {1: "Earth", 2: "Namek", 3: "Planet Vegeta", 4: "Other World", 5: "West City",
+	6: "Heaven", 7: "Capsule City", 8: "Dr. Gero's Lab", 9: "Whis' Planet", 10: "Beerus' Planet",
+	11: "Space", 12: "Space"}
+const HAIRS := {"Bald": "", "Goku": "hair - goku.dmi", "Vegeta": "hair - vegeta.dmi",
+	"Teen Gohan": "hair - teen gohan.dmi", "Adult Gohan": "hair - adult gohan.dmi",
+	"Future Gohan": "hair - future gohan.dmi", "Hercule": "hair - hercule.dmi", "Raditz": "hair - raditz.dmi",
+	"Trunks Long": "hair - trunks long.dmi", "Female Long": "hair_femalelong.dmi",
+	"Female Ponytail": "hairfemaleponytail.dmi"}
+const MODES := [[1000, 0.1, "Super Easy"], [2000, 0.1, "Easy"], [3500, 0.25, "Medium"], [5000, 0.5, "Hard"],
+	[7500, 1.0, "Hardcore"], [10000, 1.5, "Expert"], [13500, 2.0, "Sensei"], [18000, 3.0, "Master"],
+	[25000, 4.0, "Grandmaster"], [35000, 5.0, "Legendary"], [50000, 6.0, "Mythical"], [75000, 8.0, "Godly"]]
+
+var now := 0.0
+var world: Node2D
+var P := {}                 # player save data
+var pe: Mob                 # player entity
+var monsters := {}
+var projectiles: Array = []
+var busy := ""              # selftrain | meditate | rest | power
+var busy_next := 0.0
+var cooldowns := {}
+var buffs := {}             # stat -> {mult, until}
+var toggles := {}           # aura / kaioken / shield
+var move_dir := 0
+var last_tick := 0.0
+var last_save := 0.0
+var last_melee := 0.0
+var last_hurt := 0.0
+var timers: Array = []
+var traveling := false
+var running := false
+
+
+func _process(_d: float) -> void:
+	now = float(Time.get_ticks_msec())
+	if not running or pe == null:
+		return
+	if not timers.is_empty():
+		var due := timers.filter(func(t): return t[0] <= now)
+		timers = timers.filter(func(t): return t[0] > now)
+		for t in due:
+			t[1].call()
+	if move_dir != 0 and not pe.mid_step(now) and not traveling:
+		try_step(move_dir)
+	for m in monsters.keys():
+		if m.z == pe.z and not m.dead and now >= m.next_think:
+			think(m)
+	update_projectiles()
+	if busy != "" and now >= busy_next:
+		busy_tick()
+	if now - last_tick >= 1000.0:
+		second_tick()
+		last_tick = now
+	if now - last_save > 30000.0:
+		save()
+		last_save = now
+
+
+func after(ms: float, f: Callable) -> void:
+	timers.append([now + ms, f])
+
+
+func msg(t: String, c := Color.WHITE) -> void:
+	log_msg.emit(t, c)
+
+
+func ask(title: String, text: String, opts: Array, cb: Callable) -> void:
+	dialog.emit(title, text, opts, cb)
+
+
+static func fmt(n: float) -> String:
+	if absf(n) >= 1.0e15:
+		return "%.3e" % n
+	var neg := n < 0
+	var s := str(int(absf(roundf(n))))
+	var out := ""
+	var c := 0
+	for i in range(s.length() - 1, -1, -1):
+		out = s[i] + out
+		c += 1
+		if c % 3 == 0 and i > 0:
+			out = "," + out
+	return ("-" if neg else "") + out
+
+
+func zname(z: int) -> String:
+	return ZNAMES.get(z, "Area %d" % z)
+
+
+# =================================================================== spawning
+func spawn_from_map(ti: int, x: int, y: int, z: int) -> void:
+	var t: Dictionary = Data.types[str(ti)]
+	var p: String = t["path"]
+	if p.begins_with("/mob/Monster/"):
+		spawn_monster(p, x, y, z, t)
+		return
+	var m := Mob.new()
+	m.x = x
+	m.y = y
+	m.z = z
+	m.from_x = x
+	m.from_y = y
+	m.icon = int(t.get("icon", -1))
+	m.state = t.get("state", "")
+	m.dir = int(t.get("dir", 2))
+	m.name = t.get("name", "")
+	m.dense = int(t.get("dense", 0)) == 1
+	m.layer = float(t.get("layer", 4.0 if p.begins_with("/mob") else 3.0))
+	m.pixel_x = t.get("pixel_x", 0)
+	m.pixel_y = t.get("pixel_y", 0)
+	m.invisible = t.has("invis")
+	m.path = p
+	m.kind = "npc" if p.begins_with("/mob") else "obj"
+	if m.icon < 0:
+		m.dense = false
+	world.add(m)
+
+
+func spawn_monster(p: String, x: int, y: int, z: int, t := {}) -> Mob:
+	var d: Dictionary = Data.mobs.get(p, {})
+	var m := Mob.new()
+	m.x = x
+	m.y = y
+	m.z = z
+	m.from_x = x
+	m.from_y = y
+	m.icon = int(t.get("icon", d.get("icon", -1)))
+	m.state = t.get("state", d.get("state", ""))
+	m.name = d.get("name", p.get_file().replace("_", " "))
+	m.kind = "monster"
+	m.path = p
+	m.layer = 4.0
+	m.level = _num(d.get("level", 1))
+	m.powerlevel_max = maxf(1.0, _num(d.get("powerlevel_max", d.get("powerlevel", 10))))
+	m.powerlevel = m.powerlevel_max
+	m.strength = maxf(1.0, _num(d.get("strength", 1)))
+	m.defence = maxf(0.0, _num(d.get("defence", 1)))
+	m.durability = _num(d.get("durability", 100))
+	m.dodge = _num(d.get("dodge", 0))
+	m.block = _num(d.get("block", 0))
+	m.exp_reward = _num(d.get("exp", 0))
+	m.zenni_reward = _num(d.get("zenni", 0))
+	m.race = str(d.get("race", ""))
+	m.home = Vector3i(x, y, z)
+	m.aggro = not p.begins_with("/mob/Monster/Peaceful")
+	m.respawn = true
+	m.next_think = now + randf_range(300, 1500)
+	world.add(m)
+	monsters[m] = true
+	return m
+
+
+func _num(v) -> float:
+	if v is float or v is int:
+		return float(v)
+	if v is String:
+		var s: String = v.strip_edges()
+		if s.is_valid_float():
+			return s.to_float()
+		var e := Expression.new()       # values like "1000000000 * 23000"
+		if e.parse(s.replace(" ", "")) == OK:
+			var r = e.execute()
+			if r is float or r is int:
+				return float(r)
+	return 0.0
+
+
+# =================================================================== player
+func new_player(o: Dictionary) -> Dictionary:
+	var rd: Dictionary = Data.rules["races"][o["race"]]
+	var p := {
+		"name": o.get("name", "Fighter"), "race": o["race"], "gene": o.get("gene", ""),
+		"gender": o.get("gender", "Male"), "skin": o.get("skin", "Tan"), "hair": o.get("hair", "Goku"),
+		"level": 1, "exp": 0.0, "tnl": 20.0, "expup": 0.0, "moden": 1, "mode": "Beginner", "modes": 0,
+		"zenni": 500.0, "tp": 0.0,
+		"pl_bonus": 0.0, "powerlevel": 300.0, "ki": 300.0, "ki_max": 300.0,
+		"strength_max": 250.0, "defence_max": 250.0, "stam": 0.0, "stam_max": 1000.0,
+		"power_multi": 4.0, "ki_multi": 4.0, "strength_multi": 4.0, "defence_multi": 4.0,
+		"skills": {}, "learned": [], "hotbar": [], "form": 0, "focus": "Strength", "med_focus": "ki_control",
+		"x": SPAWN.x + randi_range(-4, 4), "y": SPAWN.y + randi_range(-6, 6), "z": SPAWN.z, "dir": 2,
+		"kills": 0, "playtime": 0.0,
+	}
+	var mul: Dictionary = rd.get("multi", {})
+	for k in ["power", "ki", "strength", "defence"]:
+		p[k + "_multi"] = float(mul.get(k, 4))
+	var gm: Dictionary = rd.get("gene_multi", {}).get(p["gene"], {})
+	for k in gm:
+		p[k + "_multi"] += float(gm[k])
+	for s in SKILLS:
+		p["skills"][s] = [10.0, 0.0, 75.0]       # value, exp, tnl
+	var rs: Dictionary = rd.get("skills", {})
+	for s in rs:
+		if p["skills"].has(s):
+			p["skills"][s][0] = float(rs[s])
+	p["hotbar"] = ["attack", "t:KiBlast", "selftrain", "meditate", "rest", "talk", "transform", "revert", "focus", "travel",
+		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	return p
+
+
+func base_icon(p: Dictionary) -> int:
+	var rd: Dictionary = Data.rules["races"][p["race"]]
+	var icons: Array = rd.get("icons", [])
+	if rd.get("custom", false) or icons.is_empty():
+		var g := "female" if p.get("gender", "Male") == "Female" else "male"
+		var sk: String = {"Tan": "tan", "White": "white", "Dark": "dark"}.get(p.get("skin", "Tan"), "tan")
+		return Data.icon_id("%s - %s.dmi" % [g, sk])
+	var idx := 0
+	if (p["race"] == "Bio Android" and p.get("skin", "") == "Blue") or (p["race"] == "Feline" and p.get("gene", "") == "Godly"):
+		idx = 1
+	return Data.icon_id(icons[mini(idx, icons.size() - 1)])
+
+
+func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
+	var rd: Dictionary = Data.rules["races"][p["race"]]
+	var f := current_form(p)
+	e.icon = base_icon(p)
+	if not f.is_empty() and f.has("icon") and Data.icon_id(f["icon"]) >= 0:
+		e.icon = Data.icon_id(f["icon"])
+	e.overlays = []
+	e.underlays = []
+	if rd.get("custom", false):
+		var base_hair: String = HAIRS.get(p.get("hair", "Bald"), "")
+		var hid := Data.icon_id(base_hair)
+		if not f.is_empty() and int(f.get("ssjhair", 0)) == 1 and base_hair != "":
+			# Hair.dm SSJHair_Apply / USSJHair_Apply: "<hair> ssj.dmi", "<hair> ussj.dmi", SSJ3/SSJ4 hair
+			var n := int(p.get("form", 1))
+			var cand: Array = []
+			if n >= 5:
+				cand = ["hair - ssj4.dmi"]
+			elif n == 4:
+				cand = ["hair - ssj3.dmi"]
+			elif n == 3:
+				cand = [base_hair.replace(".dmi", " ussj.dmi")]
+			cand.append_array([base_hair.replace(".dmi", " ssj.dmi"), base_hair.replace(".dmi", "ssj.dmi")])
+			for c in cand:
+				if Data.icon_id(c) >= 0:
+					hid = Data.icon_id(c)
+					break
+		if hid >= 0:
+			e.overlays.append({"icon": hid})
+	if e == pe:
+		var aura_name := "defaultaurablue.dmi"
+		if not f.is_empty():
+			aura_name = "defaultaurayellow.dmi" if int(f.get("ssjhair", 0)) == 1 else "defaultaurapurple.dmi"
+		var aura := Data.icon_id(aura_name)
+		if (busy == "power" or toggles.get("aura", false) or not f.is_empty()) and aura >= 0:
+			e.underlays.append({"icon": aura, "state": "", "alpha": 0.9})
+		if toggles.get("kaioken", false):
+			var ka := Data.icon_id("kaio aura.dmi")
+			if ka >= 0:
+				e.underlays.append({"icon": ka, "state": ""})
+	e.name = p["name"]
+
+
+func start(p: Dictionary) -> void:
+	P = p
+	for s in SKILLS:
+		if not P["skills"].has(s):
+			P["skills"][s] = [10.0, 0.0, 75.0]
+	while (P["hotbar"] as Array).size() < 30:
+		P["hotbar"].append("")
+	pe = Mob.new()
+	pe.kind = "player"
+	pe.x = int(P["x"])
+	pe.y = int(P["y"])
+	pe.z = int(P["z"])
+	pe.from_x = pe.x
+	pe.from_y = pe.y
+	pe.dir = int(P.get("dir", 2))
+	busy = ""
+	toggles = {}
+	buffs = {}
+	world.load_z(pe.z)
+	if not world.can_enter(pe, pe.x, pe.y, pe.z):
+		_nearest_free(pe.x, pe.y, pe.z)
+	world.add(pe)
+	world.focus = pe
+	build_appearance()
+	running = true
+	last_tick = now
+	skill_gain(true)
+	msg("Welcome to Dragonball Ruination, %s!" % P["name"], Color(1, 0.75, 0.2))
+	if int(P["level"]) < PK_LEVEL:
+		msg("Self Train to level %s to unlock battle techniques. Rest when you get tired." % fmt(PK_LEVEL), Color(0.6, 0.85, 1))
+
+
+func _nearest_free(x: int, y: int, z: int) -> void:
+	for r in range(1, 12):
+		for dx in range(-r, r + 1):
+			for dy in range(-r, r + 1):
+				if world.can_enter(pe, x + dx, y + dy, z):
+					pe.x = x + dx
+					pe.y = y + dy
+					pe.from_x = pe.x
+					pe.from_y = pe.y
+					return
+
+
+# =================================================================== derived stats
+func skill(s: String) -> float:
+	var v: float = P["skills"][s][0]
+	if buffs.has(s):
+		v *= float(buffs[s]["mult"])
+	return v
+
+
+func current_form(p: Dictionary = P) -> Dictionary:
+	var n := int(p.get("form", 0))
+	if n <= 0:
+		return {}
+	var fl := forms_for(p)
+	return fl[n - 1] if n <= fl.size() else {}
+
+
+func forms_for(p: Dictionary = P) -> Array:
+	var rf: Dictionary = Data.rules["forms"].get(p["race"], {})
+	var lst = rf.get(p.get("gene", ""), rf.get("*", null))
+	if lst == null and not rf.is_empty():
+		lst = rf.values()[0]
+	if lst == null or (lst as Array).is_empty():
+		lst = [{"form": 1, "level": 20000, "pl": 10, "ki": 10, "str": 11, "def": 11},
+			{"form": 2, "level": 50000, "pl": 20, "ki": 20, "str": 22, "def": 22},
+			{"form": 3, "level": 100000, "pl": 30, "ki": 30, "str": 33, "def": 33},
+			{"form": 4, "level": 150000, "pl": 40, "ki": 40, "str": 44, "def": 44}]
+	return lst
+
+
+func _buff(stat: String) -> float:
+	var m := 1.0
+	if buffs.has(stat):
+		m *= float(buffs[stat]["mult"])
+	if stat in ["strength", "powerlevel"] and toggles.get("kaioken", false):
+		m *= 1.5
+	return m
+
+
+func kc() -> float:
+	return clampf(skill("ki_control"), 1.0, 100.0) / 100.0
+
+
+func pl_max() -> float:
+	var calc: float = float(P["strength_max"]) * 0.2 + float(P["ki_max"]) * 0.2 + float(P["defence_max"]) * 0.6
+	return maxf(300.0, calc + float(P["pl_bonus"]))
+
+
+func cap(stat: String) -> float:
+	var f := current_form()
+	match stat:
+		"powerlevel":
+			return pl_max() * kc() * (float(f.get("pl", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+		"ki":
+			return float(P["ki_max"]) * kc() * (float(f.get("ki", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+		"strength":
+			return float(P["strength_max"]) * kc() * (float(f.get("str", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+		"defence":
+			return float(P["defence_max"]) * kc() * (float(f.get("def", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+	return 0.0
+
+
+func tired() -> bool:
+	return float(P["stam"]) >= float(P["stam_max"])
+
+
+func fatigue(v: float) -> void:
+	if buffs.has("stamina"):
+		v *= 0.5
+	P["stam"] = clampf(float(P["stam"]) + v, 0.0, float(P["stam_max"]))
+
+
+# =================================================================== movement
+func set_move_dir(d: int) -> void:
+	move_dir = d
+
+
+func dir_to(dx: int, dy: int) -> int:
+	var d := 0
+	if dy > 0:
+		d |= 1
+	elif dy < 0:
+		d |= 2
+	if dx > 0:
+		d |= 4
+	elif dx < 0:
+		d |= 8
+	return d if d != 0 else 2
+
+
+func try_step(d: int) -> void:
+	if now < pe.stun_until:
+		return
+	if busy != "":
+		stop_busy()
+	pe.dir = d
+	P["dir"] = d
+	var nx: int = pe.x + Data.DIR_DX[d]
+	var ny: int = pe.y + Data.DIR_DY[d]
+	var dur := 105.0 if pe.flying else 165.0
+	if world.can_enter(pe, nx, ny, pe.z):
+		world.move(pe, nx, ny, pe.z, dur, now)
+		_entered()
+	elif Data.DIR_DX[d] != 0 and Data.DIR_DY[d] != 0:
+		if world.can_enter(pe, pe.x + Data.DIR_DX[d], pe.y, pe.z):
+			world.move(pe, pe.x + Data.DIR_DX[d], pe.y, pe.z, dur, now)
+			_entered()
+		elif world.can_enter(pe, pe.x, pe.y + Data.DIR_DY[d], pe.z):
+			world.move(pe, pe.x, pe.y + Data.DIR_DY[d], pe.z, dur, now)
+			_entered()
+	else:
+		var tur := Data.turf(nx, ny, pe.z)
+		if tur.has("enter") and tur["enter"].has("warp"):
+			var w: Array = tur["enter"]["warp"]
+			teleport(int(w[0]), int(w[1]), int(w[2]))
+	P["x"] = pe.x
+	P["y"] = pe.y
+	P["z"] = pe.z
+
+
+func _entered() -> void:
+	var tur := Data.turf(pe.x, pe.y, pe.z)
+	if tur.has("enter") and tur["enter"].has("warp"):
+		var w: Array = tur["enter"]["warp"]
+		teleport(int(w[0]), int(w[1]), int(w[2]))
+
+
+func teleport(x: int, y: int, z: int) -> void:
+	if z != pe.z:
+		world.load_z(z)
+		msg("You arrive at %s." % zname(z), Color(0.6, 0.85, 1))
+	var tx := x
+	var ty := y
+	if not world.can_enter(pe, x, y, z):
+		var found := false
+		for r in range(1, 6):
+			for dx in range(-r, r + 1):
+				for dy in range(-r, r + 1):
+					if not found and world.can_enter(pe, x + dx, y + dy, z):
+						tx = x + dx
+						ty = y + dy
+						found = true
+	world.move(pe, tx, ty, z, 0, now)
+	P["x"] = pe.x
+	P["y"] = pe.y
+	P["z"] = pe.z
+	projectiles = projectiles.filter(func(pr): return pr.z == z)
+
+
+# =================================================================== abilities
+## Everything the player can put on the hotbar: base actions + learned techniques.
+func abilities() -> Array:
+	var out: Array = BASE_ACTIONS.duplicate()
+	for t in P.get("learned", []):
+		out.append("t:" + t)
+	return out
+
+
+func ability_info(id: String) -> Dictionary:
+	match id:
+		"attack": return {"name": "Attack", "desc": "Punch the enemy in front of you (or the nearest one).", "glyph": "ATK", "color": Color(0.75, 0.2, 0.15)}
+		"talk": return {"name": "Talk", "desc": "Talk to the person next to you.", "glyph": "TLK", "color": Color(0.2, 0.55, 0.55)}
+		"selftrain": return {"name": "Self Train", "desc": "Shadow box to gain exp, zenni and stats in your training focus. Tires you out.", "glyph": "TRN", "color": Color(0.25, 0.5, 0.25)}
+		"meditate": return {"name": "Meditate", "desc": "Meditate to train a skill (default Ki Control) and recover ki.", "glyph": "MED", "color": Color(0.3, 0.35, 0.7)}
+		"rest": return {"name": "Rest", "desc": "Recover from fatigue and heal.", "glyph": "RST", "color": Color(0.35, 0.35, 0.4)}
+		"transform": return {"name": "Transform", "desc": "Transform into your next form (race and gene specific).", "glyph": "TRF", "color": Color(0.85, 0.65, 0.1)}
+		"revert": return {"name": "Revert", "desc": "Return to your base form.", "glyph": "REV", "color": Color(0.5, 0.4, 0.2)}
+		"travel": return {"name": "Travel", "desc": "Take a space pod to another planet.", "glyph": "POD", "color": Color(0.2, 0.45, 0.5)}
+		"focus": return {"name": "Training Focus", "desc": "Choose what Self Train and Meditate improve.", "glyph": "FOC", "color": Color(0.4, 0.3, 0.5)}
+	if id.begins_with("t:"):
+		var key := id.substr(2)
+		var t := Data.tech(key)
+		var info := {"name": t.get("name", key), "glyph": _abbr(t.get("name", key)), "color": _tech_color(t), "tech": key}
+		info["desc"] = _tech_desc(t)
+		if t.has("icon") and Data.icon_id(t["icon"]) >= 0:
+			info["icon"] = Data.icon_id(t["icon"])
+			info["state"] = t.get("state", "")
+		return info
+	return {"name": id, "glyph": "?", "color": Color.GRAY, "desc": ""}
+
+
+func _abbr(n: String) -> String:
+	var parts := n.split(" ", false)
+	if parts.size() >= 2:
+		return (parts[0].substr(0, 1) + parts[1].substr(0, 2)).to_upper()
+	return n.substr(0, 3).to_upper()
+
+
+func _tech_color(t: Dictionary) -> Color:
+	match t.get("kind", ""):
+		"blast": return Color(0.2, 0.45, 0.85)
+		"multi": return Color(0.25, 0.6, 0.9)
+		"aoe": return Color(0.85, 0.35, 0.1)
+		"bind": return Color(0.55, 0.25, 0.65)
+		"strike": return Color(0.7, 0.2, 0.2)
+		"buff": return Color(0.8, 0.6, 0.1)
+		"heal": return Color(0.2, 0.7, 0.35)
+	return Color(0.4, 0.4, 0.45)
+
+
+func _tech_desc(t: Dictionary) -> String:
+	var d := ""
+	match t.get("kind", ""):
+		"blast":
+			d = ("Beam" if t.get("beam", 0) else "Ki projectile") + " (range %d)%s." % [int(t.get("range", 18)), ", explodes" if t.get("splash", 0) else ""]
+		"multi":
+			d = "Fires a volley of %d ki blasts." % int(t.get("shots", 3))
+		"aoe":
+			d = "Explosion around you (radius %d)." % int(t.get("radius", 2))
+		"bind":
+			d = "Damages and immobilises the target for %d s." % int(t.get("stun", 3))
+		"strike":
+			d = "Powerful close-range attack."
+		"buff":
+			d = "Boosts %s." % t.get("stat", "")
+		"heal":
+			d = "Restores your health." if float(t.get("amount", 0)) > 0 else "Absorbs ki."
+		_:
+			d = {"fly": "Toggle flight: fast travel, passes over obstacles.", "sense": "Sense the power of nearby enemies.",
+				"teleport": "Instant Transmission back to Capsule City.", "dash": "Dash forward.",
+				"oozaru": "Transform into a giant ape for a while.", "powerup": "Charge your power and ki.",
+				"powerdown": "Lower your power."}.get(t.get("what", ""), "Technique.")
+	if t.has("cost"):
+		d += " Ki cost %s." % fmt(tech_cost(t))
+	if t.has("cd"):
+		d += " Cooldown %ss." % str(t["cd"])
+	return d
+
+
+func tech_cost(t: Dictionary) -> float:
+	# var/cost = ((curki * a) * (usr.kiuse/100)) + b   with kiuse = 120
+	var c = t.get("cost")
+	if c == null or P.is_empty():
+		return 0.0
+	var curki: float = float(P["ki_max"]) * kc()
+	return roundf(curki * float(c[0]) * 1.2 + float(c[1]))
+
+
+func cooldown_left(id: String) -> float:
+	return maxf(0.0, float(cooldowns.get(id, 0.0)) - now)
+
+
+func use_ability(id: String) -> void:
+	if id == "" or pe == null or traveling:
+		return
+	match id:
+		"attack": melee()
+		"talk": interact()
+		"selftrain": toggle_busy("selftrain")
+		"meditate": toggle_busy("meditate")
+		"rest": toggle_busy("rest")
+		"transform": transform()
+		"revert": revert()
+		"focus": choose_focus()
+		"travel": travel_menu()
+		_:
+			if id.begins_with("t:"):
+				use_tech(id.substr(2))
+
+
+# =================================================================== combat
+func facing_target(any_adjacent := true) -> Mob:
+	var fx: int = pe.x + Data.DIR_DX[pe.dir]
+	var fy: int = pe.y + Data.DIR_DY[pe.dir]
+	for o in world.at(fx, fy, pe.z):
+		if o.kind == "monster" and not o.dead:
+			return o
+	if any_adjacent:
+		for d in [2, 1, 4, 8, 6, 10, 5, 9]:
+			for o in world.at(pe.x + Data.DIR_DX[d], pe.y + Data.DIR_DY[d], pe.z):
+				if o.kind == "monster" and not o.dead:
+					pe.dir = d
+					return o
+	return null
+
+
+func nearest_monster(r: int) -> Mob:
+	var best: Mob = null
+	var bd := 9999
+	for m in monsters:
+		if m.dead or m.z != pe.z:
+			continue
+		var d: int = maxi(absi(m.x - pe.x), absi(m.y - pe.y))
+		if d <= r and d < bd:
+			bd = d
+			best = m
+	return best
+
+
+func melee() -> void:
+	var cd := clampf(60.0 - skill("melee") / 2.0, 2.0, 15.0) * 25.0   # AttackNormal cooldown
+	if now - last_melee < maxf(280.0, cd):
+		return
+	if busy != "":
+		stop_busy()
+	if tired():
+		msg("You are too tired to fight!", Color(1, 0.4, 0.4))
+		return
+	var m := facing_target()
+	pe.do_flick("attack", now)
+	last_melee = now
+	if m == null:
+		for o in world.at(pe.x + Data.DIR_DX[pe.dir], pe.y + Data.DIR_DY[pe.dir], pe.z):
+			if o.kind == "npc":
+				interact(o)
+		return
+	if Data.is_safe(pe.x, pe.y, pe.z):
+		msg("You are in a Safe Zone!", Color(1, 0.4, 0.4))
+		return
+	# AttackNormal
+	var attack := cap("strength") * (skill("melee") / 100.0) * randf_range(0.6, 1.0)
+	var defense := m.defence * (m.durability / 100.0) * randf_range(0.85, 1.0)
+	var dmg := attack - defense
+	var crit := randf() * 100.0 < 1.0 + skill("critical") / 10.0
+	if crit:
+		dmg *= 1.2
+		_skill_exp("critical", 5 + int(P["level"]) / 750)
+	dmg = maxf(1.0, roundf(dmg))
+	m.powerlevel -= dmg
+	m.target = pe
+	_skill_exp("melee", 2 + int(P["level"]) / 1250)
+	fatigue(1)
+	if randf() < 0.1:
+		P["strength_max"] = float(P["strength_max"]) + randi_range(10, 100) + float(P["level"]) / 2.0
+	world.floater(m.x, m.y, m.z, ("CRIT " if crit else "") + fmt(dmg), Color(1, 0.85, 0.3) if not crit else Color(1, 0.4, 0.2))
+	if m.powerlevel <= 0:
+		monster_die(m)
+
+
+func monster_attack(m: Mob) -> void:
+	if pe.flying or Data.is_safe(pe.x, pe.y, pe.z):
+		return
+	m.do_flick("attack", now)
+	var attack := m.strength + m.powerlevel * 0.1
+	var defense := cap("defence") * (skill("durability") / 100.0) + cap("powerlevel") * 0.01
+	var dmg := maxf(1.0, attack - defense)
+	if toggles.get("shield", false):
+		dmg *= 0.65
+	if buffs.has("barrier"):
+		dmg *= 0.5
+	if randf() * 100.0 < skill("dodge") / 5.0:
+		_skill_exp("dodge", 5 + int(P["level"]) / 250)
+		world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
+		return
+	if randf() * 100.0 < skill("block") / 5.0:
+		dmg /= 4.0
+		_skill_exp("block", 5 + int(P["level"]) / 250)
+	if randf() * 100.0 < skill("counter") / 10.0:
+		_skill_exp("counter", 5 + int(P["level"]) / 250)
+		var cdmg := maxf(1.0, cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0)
+		m.powerlevel -= cdmg
+		world.floater(m.x, m.y, m.z, "Counter " + fmt(cdmg), Color(1, 0.8, 0.3))
+		if m.powerlevel <= 0:
+			monster_die(m)
+			return
+	P["powerlevel"] = float(P["powerlevel"]) - roundf(dmg)
+	last_hurt = now
+	_skill_exp("durability", 1 + int(P["level"]) / 1500)
+	if busy != "":
+		stop_busy()
+	world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.3, 0.3))
+	if float(P["powerlevel"]) <= 0:
+		player_ko(m)
+
+
+func monster_die(m: Mob) -> void:
+	if m.dead:
+		return
+	m.dead = true
+	world.remove(m)
+	P["kills"] = int(P["kills"]) + 1
+	var e := m.exp_reward
+	var z := m.zenni_reward
+	if buffs.has("exp"):
+		e *= float(buffs["exp"]["mult"])
+	P["exp"] = float(P["exp"]) + e
+	P["zenni"] = float(P["zenni"]) + z
+	msg("You defeated %s! +%s exp, +%s zenni" % [m.name, fmt(e), fmt(z)], Color(0.5, 1, 0.5))
+	level_up()
+	var path := m.path
+	var home := m.home
+	monsters.erase(m)
+	if m.respawn:
+		after(randf_range(45000, 60000), func(): spawn_monster(path, home.x, home.y, home.z))
+
+
+func player_ko(by: Mob) -> void:
+	revert(true)
+	stop_busy()
+	msg("%s knocked you out!" % (by.name if by else "Someone"), Color(1, 0.35, 0.35))
+	msg("You wake up in the hospital.", Color(0.8, 0.8, 0.8))
+	for m in monsters:
+		if m.target == pe:
+			m.target = null
+	P["powerlevel"] = cap("powerlevel")
+	P["ki"] = cap("ki")
+	P["stam"] = 0.0
+	pe.flying = false
+	teleport(SPAWN.x, SPAWN.y, SPAWN.z)
+	_update_state()
+	build_appearance()
+	save()
+
+
+# =================================================================== techniques
+func use_tech(key: String) -> void:
+	var t := Data.tech(key)
+	if t.is_empty():
+		return
+	var id := "t:" + key
+	if cooldown_left(id) > 0:
+		return
+	var kind: String = t.get("kind", "utility")
+	var offensive := kind in ["blast", "multi", "aoe", "bind", "strike"]
+	if offensive:
+		if int(P["level"]) < PK_LEVEL:
+			msg("Reach level %s to be able to use battle techniques." % fmt(PK_LEVEL), Color(1, 0.5, 0.4))
+			return
+		if Data.is_safe(pe.x, pe.y, pe.z):
+			msg("You are in a Safe Zone!", Color(1, 0.4, 0.4))
+			return
+		if tired():
+			msg("You are too tired to fight!", Color(1, 0.4, 0.4))
+			return
+		if pe.flying and kind != "blast":
+			msg("You can't do that while flying.", Color(1, 0.4, 0.4))
+			return
+	var cost := tech_cost(t)
+	if float(P["ki"]) < cost:
+		msg("You don't have enough ki!", Color(1, 0.4, 0.4))
+		return
+	if busy != "" and offensive:
+		stop_busy()
+	P["ki"] = float(P["ki"]) - cost
+	cooldowns[id] = now + float(t.get("cd", 0.6 if kind == "blast" else 1.5)) * 1000.0
+	if offensive:
+		fatigue(10)
+		_skill_exp("ki_cast", 3 + int(P["level"]) / 2000)
+		_skill_exp("ki_use", 5 + int(P["level"]) / 1000)
+	match kind:
+		"blast":
+			pe.do_flick("blast", now)
+			fire(pe, t, blast_damage(t), pe.dir)
+		"multi":
+			var n := int(t.get("shots", 3))
+			var base := _ki_damage(float(t.get("pow", 0.05)))
+			var dirs := _volley_dirs(pe.dir, n)
+			for i in n:
+				var vd: int = dirs[i]
+				after(i * 110.0, func(): fire(pe, {"icon": "techs.dmi", "state": "blastr", "range": 14, "speed": 14}, base, vd))
+		"aoe":
+			_explosion(pe.x, pe.y, pe.z, int(t.get("radius", 2)), _ki_damage(float(t.get("pow", 0.1))), null)
+			if t.has("selfcost"):
+				P["powerlevel"] = maxf(1.0, float(P["powerlevel"]) * (1.0 - float(t["selfcost"])))
+		"bind":
+			_bind(t)
+		"strike":
+			_strike(t)
+		"buff":
+			var stat: String = t.get("stat", "")
+			if int(t.get("toggle", 0)) == 1:
+				toggles[stat] = not toggles.get(stat, false)
+				msg("%s %s." % [t.get("name", key), "on" if toggles[stat] else "off"], Color(1, 0.85, 0.4))
+			else:
+				buffs[stat] = {"mult": float(t.get("mult", 1.25)), "until": now + float(t.get("secs", 60)) * 1000.0}
+				msg("%s! (%s boosted for %ds)" % [t.get("name", key), stat, int(t.get("secs", 60))], Color(1, 0.85, 0.4))
+			build_appearance()
+		"heal":
+			var amt: float = cap("powerlevel") * float(t.get("amount", 0.2))
+			P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + amt)
+			if t.has("ki"):
+				P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * float(t["ki"]))
+			if int(t.get("drain", 0)) == 1:
+				var m := facing_target()
+				if m:
+					_hit_monster(m, amt * 0.5, Color(0.5, 1, 0.5))
+			world.floater(pe.x, pe.y, pe.z, "+" + fmt(amt), Color(0.4, 1, 0.5))
+		_:
+			utility(t, key)
+
+
+func _bind(t: Dictionary) -> void:
+	var targets: Array = []
+	if t.has("radius"):
+		for m in monsters:
+			if not m.dead and m.z == pe.z and maxi(absi(m.x - pe.x), absi(m.y - pe.y)) <= int(t["radius"]):
+				targets.append(m)
+	else:
+		var m := facing_target()
+		if m == null:
+			m = nearest_monster(6)
+		if m:
+			targets.append(m)
+	if targets.is_empty():
+		msg("No target in range.", Color(0.8, 0.8, 0.8))
+	for m in targets:
+		m.stun_until = now + float(t.get("stun", 3)) * 1000.0
+		_hit_monster(m, _ki_damage(float(t.get("pow", 0.05))), Color(0.85, 0.5, 1))
+
+
+func _strike(t: Dictionary) -> void:
+	if t.has("dash"):
+		for i in int(t["dash"]):
+			var nx: int = pe.x + Data.DIR_DX[pe.dir]
+			var ny: int = pe.y + Data.DIR_DY[pe.dir]
+			if facing_target(false) != null or not world.can_enter(pe, nx, ny, pe.z):
+				break
+			world.move(pe, nx, ny, pe.z, 60, now)
+	var m := facing_target()
+	if m == null:
+		msg("No target in range.", Color(0.8, 0.8, 0.8))
+		return
+	var dmg := maxf(1.0, cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0) * float(t.get("pow", 1.5))
+	for h in int(t.get("hits", 1)):
+		if not m.dead:
+			_hit_monster(m, dmg, Color(1, 0.6, 0.3))
+	if t.has("dot") and not m.dead:
+		m.dot_until = now + float(t["dot"]) * 1000.0
+		m.dot_amount = dmg * 0.1
+	if t.has("knock") and not m.dead:
+		for i in int(t["knock"]):
+			var kx: int = m.x + Data.DIR_DX[pe.dir]
+			var ky: int = m.y + Data.DIR_DY[pe.dir]
+			if world.can_enter(m, kx, ky, m.z):
+				world.move(m, kx, ky, m.z, 70, now)
+	pe.do_flick("attack", now)
+
+
+func _volley_dirs(d: int, n: int) -> Array:
+	var sides: Array
+	if Data.DIR_DX[d] == 0:
+		sides = [d | 4, d | 8]
+	elif Data.DIR_DY[d] == 0:
+		sides = [d | 1, d | 2]
+	else:
+		sides = [d & 3, d & 12]
+	var out: Array = []
+	for i in n:
+		out.append(d if (i % 3 == 0 or n <= 3) else sides[i % 2])
+	return out
+
+
+func utility(t: Dictionary, key: String) -> void:
+	match t.get("what", ""):
+		"fly":
+			pe.flying = not pe.flying
+			if busy != "":
+				stop_busy()
+			msg("You take to the sky." if pe.flying else "You land.", Color(0.6, 0.85, 1))
+			if not pe.flying and not world.can_enter(pe, pe.x, pe.y, pe.z):
+				pe.flying = true
+				msg("You can't land here!", Color(1, 0.4, 0.4))
+			_update_state()
+		"sense":
+			var lst: Array = []
+			for m in monsters:
+				if not m.dead and m.z == pe.z and maxi(absi(m.x - pe.x), absi(m.y - pe.y)) <= 15:
+					lst.append(m)
+			lst.sort_custom(func(a, b): return maxi(absi(a.x - pe.x), absi(a.y - pe.y)) < maxi(absi(b.x - pe.x), absi(b.y - pe.y)))
+			var txt := ""
+			for m in lst.slice(0, 8):
+				txt += "%s (lvl %s) PL %s\n" % [m.name, fmt(m.level), fmt(m.powerlevel)]
+			ask("Sense", txt if txt != "" else "You sense no one nearby.", ["OK"], func(_c, _i): pass)
+		"teleport":
+			pe.do_flick("IT", now)
+			teleport(SPAWN.x, SPAWN.y, SPAWN.z)
+		"dash":
+			for i in 3:
+				var nx: int = pe.x + Data.DIR_DX[pe.dir]
+				var ny: int = pe.y + Data.DIR_DY[pe.dir]
+				if world.can_enter(pe, nx, ny, pe.z):
+					world.move(pe, nx, ny, pe.z, 40, now)
+			P["x"] = pe.x
+			P["y"] = pe.y
+		"oozaru":
+			if P["race"] in ["Saiyan", "Half Saiyan"]:
+				buffs["strength"] = {"mult": 10.0, "until": now + 60000.0}
+				buffs["defence"] = {"mult": 5.0, "until": now + 60000.0}
+				var oz := Data.icon_id("oozaru.dmi")
+				if oz >= 0:
+					pe.icon = oz
+				after(60000.0, func(): build_appearance())
+				msg("You look at the fake moon and transform into an Oozaru!", Color(1, 0.6, 0.3))
+			else:
+				msg("You create a fake moon. It's pretty.", Color(0.8, 0.8, 0.8))
+		"powerup":
+			toggle_busy("power")
+		"powerdown":
+			P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel") * 0.1)
+			msg("You lower your power.", Color(0.8, 0.8, 0.8))
+		_:
+			msg("%s isn't available in this version yet." % t.get("name", key), Color(0.8, 0.8, 0.8))
+
+
+func _ki_damage(pw: float) -> float:
+	return (maxf(float(P["powerlevel"]), 0.0) * 0.05 + cap("ki") * pw * 2.0) * skill("ki_power") / 100.0
+
+
+func blast_damage(t: Dictionary) -> float:
+	var co: Dictionary = t.get("coef", {"powerlevel": 0.05, "ki": 0.05})
+	var d := 0.0
+	d += float(co.get("powerlevel", 0)) * maxf(float(P["powerlevel"]), 0.0)
+	d += float(co.get("ki", 0)) * cap("ki")
+	d += float(co.get("strength", 0)) * cap("strength")
+	d += float(co.get("defence", 0)) * cap("defence")
+	var scale: String = t.get("scale", "ki_power")
+	var sv := skill(scale) if P["skills"].has(scale) else 100.0
+	d *= sv / 100.0
+	if randf() * 100.0 < skill("ki_cast") / 4.0:
+		d *= 1.35   # critblast
+	return roundf(d)
+
+
+func fire(owner: Mob, t: Dictionary, dmg: float, d: int) -> void:
+	var pr := Mob.new()
+	pr.kind = "proj"
+	pr.x = owner.x
+	pr.y = owner.y
+	pr.z = owner.z
+	pr.from_x = pr.x
+	pr.from_y = pr.y
+	pr.dir = d
+	pr.icon = Data.icon_id(t.get("icon", "techs.dmi"))
+	pr.state = t.get("state", "")
+	pr.layer = 5.0
+	pr.dense = false
+	pr.owner = owner
+	pr.damage = dmg
+	pr.tech = t
+	pr.steps = int(t.get("range", 18))
+	pr.next_step = now + 30
+	world.add(pr)
+	projectiles.append(pr)
+
+
+func update_projectiles() -> void:
+	for pr in projectiles:
+		if pr.dead or now < pr.next_step:
+			continue
+		var spd := 900.0 / maxf(4.0, float(pr.tech.get("speed", 18)))
+		pr.next_step = now + clampf(spd, 25.0, 80.0)
+		var nx: int = pr.x + Data.DIR_DX[pr.dir]
+		var ny: int = pr.y + Data.DIR_DY[pr.dir]
+		var hit: Mob = null
+		for o in world.at(nx, ny, pr.z):
+			if o != pr.owner and not o.dead and o.kind == "monster":
+				hit = o
+				break
+		var tur := Data.turf(nx, ny, pr.z)
+		if hit:
+			_hit_monster(hit, pr.damage, Color(0.5, 0.9, 1))
+			if randf() < 0.1:
+				_skill_exp("ki_power", 1 + int(P["level"]) / 1250)
+			if int(pr.tech.get("splash", 0)) > 0:
+				_explosion(nx, ny, pr.z, int(pr.tech["splash"]), pr.damage * float(pr.tech.get("splashk", 0.5)), hit)
+			if not pr.tech.get("pierce", 0):
+				_kill_proj(pr)
+				continue
+		if tur.is_empty() or int(tur.get("dense", 0)) == 1 or pr.steps <= 0:
+			_kill_proj(pr)
+			continue
+		if pr.tech.get("beam", 0):
+			var tr := Mob.new()
+			tr.kind = "proj"
+			tr.x = pr.x
+			tr.y = pr.y
+			tr.z = pr.z
+			tr.from_x = tr.x
+			tr.from_y = tr.y
+			tr.dir = pr.dir
+			tr.icon = pr.icon
+			tr.state = pr.state + " trail" if Data.has_state(pr.icon, pr.state + " trail") else pr.state
+			tr.layer = 4.9
+			tr.dense = false
+			world.add(tr)
+			pr.trail.append(tr)
+		world.move(pr, nx, ny, pr.z, pr.next_step - now, now)
+		pr.steps -= 1
+	projectiles = projectiles.filter(func(p): return not p.dead)
+
+
+func _kill_proj(pr: Mob) -> void:
+	pr.dead = true
+	world.remove(pr)
+	var tr: Array = pr.trail
+	after(250, func(): _remove_all(tr))
+
+
+func _remove_all(lst: Array) -> void:
+	for t in lst:
+		world.remove(t)
+
+
+func _hit_monster(m: Mob, raw: float, col: Color) -> void:
+	if m.dead:
+		return
+	var dmg := maxf(1.0, roundf(raw - m.defence * 0.04))
+	m.powerlevel -= dmg
+	m.target = pe
+	world.floater(m.x, m.y, m.z, fmt(dmg), col)
+	if m.powerlevel <= 0:
+		monster_die(m)
+
+
+func _explosion(x: int, y: int, z: int, r: int, dmg: float, skip: Mob) -> void:
+	var ex := Data.icon_id("explosion.dmi")
+	if ex >= 0:
+		var fx := Mob.new()
+		fx.kind = "proj"
+		fx.x = x
+		fx.y = y
+		fx.z = z
+		fx.from_x = x
+		fx.from_y = y
+		fx.icon = ex
+		fx.layer = 6.0
+		fx.dense = false
+		world.add(fx)
+		after(500, func(): world.remove(fx))
+	for m in monsters.keys():
+		if m == skip or m.dead or m.z != z:
+			continue
+		if maxi(absi(m.x - x), absi(m.y - y)) <= r:
+			_hit_monster(m, dmg, Color(1, 0.6, 0.2))
+
+
+# =================================================================== monster AI
+func think(m: Mob) -> void:
+	m.next_think = now + (randf_range(380.0, 650.0) if (m.target or m.aggro) else randf_range(1500.0, 3500.0))
+	if now < m.stun_until:
+		return
+	if now < m.dot_until:
+		_hit_monster(m, m.dot_amount, Color(0.6, 1, 0.4))
+		if m.dead:
+			return
+	var dx := pe.x - m.x
+	var dy := pe.y - m.y
+	var dist := maxi(absi(dx), absi(dy))
+	var can_hunt := not Data.is_safe(pe.x, pe.y, pe.z) and not traveling
+	var engaged := m.target == pe or (m.aggro and dist <= 12 and int(P["level"]) >= PK_LEVEL and can_hunt)
+	if engaged and dist <= 14 and can_hunt:
+		if dist <= 1:
+			m.dir = dir_to(dx, dy)
+			if now >= m.next_attack:
+				m.next_attack = now + randf_range(900.0, 1400.0)
+				monster_attack(m)
+		else:
+			_chase(m, dx, dy)
+		return
+	m.target = null
+	if m.powerlevel < m.powerlevel_max:
+		m.powerlevel = minf(m.powerlevel_max, m.powerlevel + m.powerlevel_max * 0.05)
+	if randf() < 0.35:
+		var d: int = [1, 2, 4, 8][randi() % 4]
+		if absi(m.x - m.home.x) > 5 or absi(m.y - m.home.y) > 5:
+			d = dir_to(m.home.x - m.x, m.home.y - m.y)
+		_step_mob(m, d)
+
+
+func _chase(m: Mob, dx: int, dy: int) -> void:
+	if _step_mob(m, dir_to(dx, dy)):
+		return
+	if dx != 0 and _step_mob(m, 4 if dx > 0 else 8):
+		return
+	if dy != 0 and _step_mob(m, 1 if dy > 0 else 2):
+		return
+	_step_mob(m, [1, 2, 4, 8][randi() % 4])
+
+
+func _step_mob(m: Mob, d: int) -> bool:
+	var nx: int = m.x + Data.DIR_DX[d]
+	var ny: int = m.y + Data.DIR_DY[d]
+	m.dir = d
+	if not world.can_enter(m, nx, ny, m.z) or Data.is_safe(nx, ny, m.z):
+		return false
+	if Data.turf(nx, ny, m.z).has("enter"):
+		return false
+	world.move(m, nx, ny, m.z, 280, now)
+	return true
+
+
+# =================================================================== training
+func toggle_busy(kind: String) -> void:
+	if busy == kind:
+		stop_busy()
+		return
+	if busy != "":
+		stop_busy()
+	if kind != "rest" and tired():
+		msg("You are too tired. Rest first!", Color(1, 0.4, 0.4))
+		return
+	if pe.flying and kind != "power":
+		msg("Not while flying.", Color(1, 0.4, 0.4))
+		return
+	if kind == "rest" and float(P["stam"]) <= 0 and float(P["powerlevel"]) >= cap("powerlevel") * 0.999:
+		msg("You aren't tired.", Color(0.8, 0.8, 0.8))
+		return
+	busy = kind
+	busy_next = now + 600.0
+	match kind:
+		"selftrain": msg("You begin shadow boxing. (Focus: %s)" % P["focus"], Color(0.6, 0.85, 1))
+		"meditate": msg("You begin meditating on %s." % SKILL_NAMES[P["med_focus"]], Color(0.6, 0.85, 1))
+		"rest": msg("You sit down and rest.", Color(0.6, 0.85, 1))
+		"power": msg("You begin powering up!", Color(1, 0.85, 0.4))
+	_update_state()
+	build_appearance()
+
+
+func stop_busy() -> void:
+	if busy == "":
+		return
+	var was := busy
+	busy = ""
+	_update_state()
+	if was == "power":
+		build_appearance()
+
+
+func _update_state() -> void:
+	if pe == null:
+		return
+	match busy:
+		"meditate", "rest":
+			pe.state = "meditate"
+		"selftrain":
+			pe.state = "train" if Data.has_state(pe.icon, "train") else ""
+		_:
+			pe.state = "flight" if pe.flying and Data.has_state(pe.icon, "flight") else ""
+
+
+func busy_tick() -> void:
+	match busy:
+		"selftrain":
+			busy_next = now + 600.0
+			if tired():
+				msg("You collapse on the floor trying to catch your breath.", Color(1, 0.5, 0.4))
+				stop_busy()
+				return
+			self_train_tick()
+		"meditate":
+			busy_next = now + 2400.0
+			if tired():
+				stop_busy()
+				return
+			var se := (5 + int(P["level"]) / 1000) * 2
+			_skill_exp(P["med_focus"], se)
+			P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.05)
+			fatigue(4)
+			world.floater(pe.x, pe.y, pe.z, "+%d %s" % [se, SKILL_NAMES[P["med_focus"]]], Color(0.6, 0.8, 1))
+		"rest":
+			busy_next = now + 1000.0
+			var mx: float = P["stam_max"]
+			P["stam"] = maxf(0.0, float(P["stam"]) - randf_range(mx / 20.0, mx / 10.0))
+			var k := ((kc() * 100.0 / 30.0) * (kc() * 100.0 / 20.0) + 1.0) / 5.0
+			P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + pl_max() / 50.0 * k + cap("powerlevel") * 0.02)
+			P["ki"] = minf(cap("ki"), float(P["ki"]) + float(P["ki_max"]) / 50.0 * k + cap("ki") * 0.02)
+			if float(P["stam"]) <= 0 and float(P["powerlevel"]) >= cap("powerlevel") * 0.999:
+				msg("You feel rested.", Color(0.6, 1, 0.6))
+				stop_busy()
+		"power":
+			busy_next = now + 500.0
+			P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + cap("powerlevel") / 10.0)
+			P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") / 10.0)
+			fatigue(3)
+			if float(P["powerlevel"]) >= cap("powerlevel") and float(P["ki"]) >= cap("ki"):
+				msg("You are fully powered up.", Color(1, 0.85, 0.4))
+				stop_busy()
+
+
+func self_train_tick() -> void:
+	var lvl := float(P["level"])
+	var moden := float(P["moden"])
+	pe.do_flick("attack", now)
+	var expgain := roundf((randf_range(5, 20) + lvl / 250.0) * 1.2 * 4.0) + 1.0
+	var zen := roundf(randf_range(15, 600) + lvl / 2.0)
+	# Character_Up: stat gains in the chosen focus
+	var lg := minf(lvl, 200000.0)
+	lg = randf_range(lg * 0.3, lg * 0.5)
+	var focus: String = P["focus"]
+	if randf() < 0.66 and randf() < 0.25:
+		match focus:
+			"Powerlevel":
+				P["pl_bonus"] = float(P["pl_bonus"]) + maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25))
+			"Ki":
+				P["ki_max"] = float(P["ki_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+			"Strength":
+				P["strength_max"] = float(P["strength_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+			"Defense":
+				P["defence_max"] = float(P["defence_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25))
+			"Exp":
+				expgain *= 1.5
+	if randf() < 1.0 / 12.0:
+		var k: String = ["ki_max", "strength_max", "defence_max"][randi() % 3]
+		P[k] = float(P[k]) + 4.0
+	if buffs.has("exp"):
+		expgain *= float(buffs["exp"]["mult"])
+	P["exp"] = float(P["exp"]) + expgain
+	if randf() < 0.05:
+		P["tp"] = float(P["tp"]) + randi_range(3, 12) + int(moden * 2)
+	if randf() < 0.15:
+		P["zenni"] = float(P["zenni"]) + zen
+	fatigue(2)
+	level_up()
+
+
+func choose_focus() -> void:
+	var opts: Array = []
+	for f in FOCUS:
+		opts.append("Train: " + f)
+	for s in SKILLS:
+		opts.append("Meditate: " + SKILL_NAMES[s])
+	opts.append("Cancel")
+	ask("Training Focus", "Self Train focus: %s\nMeditation focus: %s" % [P["focus"], SKILL_NAMES[P["med_focus"]]], opts, _on_focus)
+
+
+func _on_focus(c: String, _i: int) -> void:
+	if c.begins_with("Train: "):
+		P["focus"] = c.substr(7)
+		msg("Self Train will now focus on %s." % P["focus"], Color(0.6, 0.85, 1))
+	elif c.begins_with("Meditate: "):
+		var nm := c.substr(10)
+		for s in SKILLS:
+			if SKILL_NAMES[s] == nm:
+				P["med_focus"] = s
+		msg("You will meditate on %s." % nm, Color(0.6, 0.85, 1))
+
+
+func _skill_exp(s: String, amount: float) -> void:
+	var sk: Array = P["skills"][s]
+	if sk[0] >= 100:
+		return
+	sk[1] += amount
+	while sk[1] >= sk[2] and sk[0] < 100:
+		sk[1] -= sk[2]
+		sk[2] = roundf(sk[2] * 1.1)
+		sk[0] += 1
+		if int(sk[0]) % 5 == 0:
+			msg("%s increased to %d!" % [SKILL_NAMES[s], int(sk[0])], Color(0.7, 0.8, 1))
+		if s == "ki_control" and sk[0] >= 100:
+			skill_gain(false)
+
+
+# =================================================================== levels
+func level_up() -> void:
+	var leveled := false
+	var guard := 0
+	while float(P["exp"]) >= float(P["tnl"]) and guard < 5000:
+		guard += 1
+		var L := float(P["level"])
+		var kg := (randf_range(1, 4) + L * 0.1 * float(P["ki_multi"]) / 5.0) / 2.0
+		var sg := (randf_range(1, 4) + L * 0.1 * float(P["strength_multi"]) / 5.0) / 2.0
+		var dg := (randf_range(1, 4) + L * 0.1 * float(P["defence_multi"]) / 5.0) / 2.0
+		P["exp"] = float(P["exp"]) - float(P["tnl"])
+		P["level"] = int(P["level"]) + 1
+		P["ki_max"] = float(P["ki_max"]) + kg
+		P["strength_max"] = float(P["strength_max"]) + sg
+		P["defence_max"] = float(P["defence_max"]) + dg
+		P["tnl"] = float(P["tnl"]) + float(P["expup"])
+		leveled = true
+		var lv := int(P["level"])
+		var mi := int(P["modes"])
+		if mi < MODES.size() and lv >= int(MODES[mi][0]):
+			P["expup"] = float(P["expup"]) + float(MODES[mi][1])
+			P["moden"] = int(P["moden"]) + 1
+			P["mode"] = MODES[mi][2]
+			P["modes"] = mi + 1
+			msg("Training Information: you have entered %s Mode!" % P["mode"], Color(0.4, 0.6, 1))
+		if lv == PK_LEVEL:
+			msg("You can now use battle techniques and fight monsters!", Color(1, 0.75, 0.2))
+	if leveled:
+		skill_gain(false)
+
+
+## Skill_Gain(): learn techniques by race / gene / level.
+func skill_gain(silent: bool) -> void:
+	var learned: Array = P["learned"]
+	for e in Data.rules["learn"]:
+		var tkey: String = e["tech"]
+		if tkey in learned:
+			continue
+		if e.has("race") and e["race"] != P["race"]:
+			continue
+		if e.has("gene") and e["gene"] != P["gene"]:
+			continue
+		if int(P["level"]) < int(e["level"]):
+			continue
+		var req = e.get("req")
+		if req == "weapon":
+			continue
+		if req == "ki_control_mastered" and float(P["skills"]["ki_control"][0]) < 100:
+			continue
+		if Data.tech(tkey).is_empty():
+			continue
+		learned.append(tkey)
+		if not silent:
+			msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
+		_auto_hotbar("t:" + tkey)
+
+
+func _auto_hotbar(id: String) -> void:
+	var hb: Array = P["hotbar"]
+	if id in hb:
+		return
+	for i in hb.size():
+		if hb[i] == "":
+			hb[i] = id
+			return
+
+
+# =================================================================== transform
+func transform() -> void:
+	if busy != "":
+		stop_busy()
+	var fl := forms_for()
+	var cur := int(P["form"])
+	if cur >= fl.size():
+		msg("You are already at your strongest form.", Color(0.8, 0.8, 0.8))
+		return
+	var nf: Dictionary = fl[cur]
+	if int(P["level"]) < int(nf["level"]):
+		msg("You need level %s for your next form (%s gene)." % [fmt(nf["level"]), P["gene"]], Color(1, 0.5, 0.4))
+		return
+	if tired():
+		msg("You are too tired to transform.", Color(1, 0.4, 0.4))
+		return
+	P["form"] = cur + 1
+	P["powerlevel"] = cap("powerlevel")
+	P["ki"] = cap("ki")
+	pe.do_flick("enrage", now)
+	msg("You transform! (Form %d: power x%s)" % [P["form"], str(nf["pl"])], Color(1, 0.75, 0.2))
+	build_appearance()
+
+
+func revert(quiet := false) -> void:
+	if int(P["form"]) == 0:
+		return
+	P["form"] = 0
+	P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel"))
+	P["ki"] = minf(float(P["ki"]), cap("ki"))
+	if not quiet:
+		msg("You revert to your base form.", Color(0.8, 0.8, 0.8))
+	build_appearance()
+
+
+# =================================================================== per second
+func second_tick() -> void:
+	P["playtime"] = float(P["playtime"]) + 1.0
+	for k in buffs.keys():
+		if now > float(buffs[k]["until"]):
+			buffs.erase(k)
+			msg("Your %s boost wears off." % k, Color(0.8, 0.8, 0.8))
+	if int(P["form"]) > 0:
+		fatigue(1)
+		if tired():
+			msg("You are too exhausted to stay transformed.", Color(1, 0.5, 0.4))
+			revert()
+	if toggles.get("kaioken", false):
+		P["powerlevel"] = float(P["powerlevel"]) - cap("powerlevel") * 0.01
+		fatigue(2)
+		if float(P["powerlevel"]) <= cap("powerlevel") * 0.05:
+			toggles["kaioken"] = false
+			msg("Your body can't take the Kaioken anymore!", Color(1, 0.5, 0.4))
+			build_appearance()
+	if toggles.get("shield", false):
+		P["ki"] = float(P["ki"]) - cap("ki") * 0.005
+		if float(P["ki"]) <= 0:
+			toggles["shield"] = false
+	if pe.flying:
+		fatigue(0.5)
+	if busy == "" and now - last_hurt > 5000.0:
+		P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.01)
+		P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + cap("powerlevel") * 0.005)
+		P["stam"] = maxf(0.0, float(P["stam"]) - 1.0)
+	P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel"))
+	P["ki"] = minf(float(P["ki"]), cap("ki"))
+
+
+# =================================================================== travel
+const TRAVEL := [7, 1, 2, 3, 4, 5, 6, 8, 9, 10]
+var _rec_levels := {}
+
+
+func recommended_level(z: int) -> float:
+	if _rec_levels.has(z):
+		return _rec_levels[z]
+	var lv: Array = []
+	for e in Data.map["entities"]:
+		if int(e[3]) != z:
+			continue
+		var p: String = Data.types[str(int(e[0]))]["path"]
+		if p.begins_with("/mob/Monster/"):
+			lv.append(_num(Data.mobs.get(p, {}).get("level", 0)))
+	lv.sort()
+	_rec_levels[z] = lv[lv.size() / 5] if not lv.is_empty() else 0.0
+	return _rec_levels[z]
+
+
+func travel_menu() -> void:
+	if busy != "":
+		stop_busy()
+	var opts: Array = []
+	for z in TRAVEL:
+		var rl := recommended_level(z)
+		opts.append("%s%s" % [zname(z), "  (monsters ~lvl %s)" % fmt(rl) if rl > 0 else "  (safe)"])
+	opts.append("Cancel")
+	ask("Space Pod", "Where do you wish to travel to?", opts, _on_travel)
+
+
+func _on_travel(_c: String, i: int) -> void:
+	if i < 0 or i >= TRAVEL.size():
+		return
+	var z: int = TRAVEL[i]
+	if z == pe.z and z != SPAWN.z:
+		msg("You are already here.", Color(0.8, 0.8, 0.8))
+		return
+	traveling = true
+	msg("Your space pod takes off...", Color(0.6, 0.85, 1))
+	after(1200, func(): _land(z))
+
+
+func _land(z: int) -> void:
+	traveling = false
+	if z == SPAWN.z:
+		teleport(SPAWN.x, SPAWN.y, SPAWN.z)
+		return
+	world.load_z(z)
+	var zi := Data.zinfo(z)
+	var cx := int(zi["w"]) / 2
+	var cy := int(zi["h"]) / 2
+	for r in range(0, 120):
+		for dx in range(-r, r + 1):
+			for dy in [-r, r]:
+				if _landable(cx + dx, cy + dy, z):
+					teleport(cx + dx, cy + dy, z)
+					return
+		for dy in range(-r + 1, r):
+			for dx in [-r, r]:
+				if _landable(cx + dx, cy + dy, z):
+					teleport(cx + dx, cy + dy, z)
+					return
+	teleport(cx, cy, z)
+
+
+func _landable(x: int, y: int, z: int) -> bool:
+	var t := Data.turf(x, y, z)
+	if t.is_empty() or int(t.get("dense", 0)) == 1 or not t.has("icon") or t.has("enter"):
+		return false
+	return world.can_enter(pe, x, y, z)
+
+
+# =================================================================== NPCs
+func interactables() -> Array:
+	var out: Array = []
+	for dx in range(-1, 2):
+		for dy in range(-1, 2):
+			for o in world.at(pe.x + dx, pe.y + dy, pe.z):
+				if o != pe and o.kind == "npc" and not o.dead and not o.invisible and o.icon >= 0:
+					out.append(o)
+	return out
+
+
+func interact(o: Mob = null) -> void:
+	if o == null:
+		var l := interactables()
+		if l.is_empty():
+			msg("There is no one here to talk to.", Color(0.6, 0.6, 0.6))
+			return
+		o = l[0]
+	var d: Dictionary = Data.mobs.get(o.path, {})
+	var talk: String = d.get("talk", "")
+	if talk == "":
+		talk = "Hello, %s. Keep training!" % P["name"]
+	var opts := ["Heal me", "OK"] if d.get("healer", false) else ["OK"]
+	ask(o.name, talk, opts, _on_talk)
+
+
+func _on_talk(c: String, _i: int) -> void:
+	if c == "Heal me":
+		P["powerlevel"] = cap("powerlevel")
+		P["ki"] = cap("ki")
+		P["stam"] = 0.0
+		msg("You feel fully restored.", Color(0.5, 1, 0.5))
+
+
+# =================================================================== saving
+func save() -> void:
+	if P.is_empty():
+		return
+	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(P))
+
+
+func load_save() -> Dictionary:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return {}
+	var v = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	return v if v is Dictionary else {}
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		save()

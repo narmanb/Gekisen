@@ -1,0 +1,4662 @@
+{
+ "races": {
+  "Android": {
+   "skills": {
+    "melee": 20,
+    "block": 20,
+    "dodge": 15,
+    "counter": 20,
+    "ki_control": 20,
+    "ki_power": 15
+   },
+   "icons": [],
+   "genes": [
+    "Mechanical",
+    "Bionic"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 5.0
+   },
+   "gene_multi": {},
+   "custom": true
+  },
+  "Bio Android": {
+   "skills": {
+    "melee": 20,
+    "block": 15,
+    "dodge": 20,
+    "counter": 20,
+    "durability": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "ki_use": 15
+   },
+   "icons": [
+    "bio android - form 1.dmi",
+    "bio android blue - form 1.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Perfect"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 3.0,
+    "strength": 5.0,
+    "defence": 5.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Bio Warrior": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "normal warior.dmi"
+   ],
+   "genes": [
+    "Primitive",
+    "Genetically Modified"
+   ],
+   "multi": {
+    "power": 3.0,
+    "ki": 5.0,
+    "strength": 5.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": true
+  },
+  "Changeling": {
+   "skills": {
+    "melee": 15,
+    "block": 15,
+    "dodge": 15,
+    "ki_control": 15,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "changling - form 1.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Rageful",
+    "Vindictive",
+    "Regalis"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 2.0
+   },
+   "gene_multi": {
+    "Pure Blooded": {
+     "strength": 1.0,
+     "defence": 1.0
+    },
+    "Rageful": {
+     "ki": 1.0,
+     "power": 1.0
+    },
+    "Vindictive": {
+     "power": 1.0,
+     "defence": 1.0
+    },
+    "Regalis": {
+     "power": 2.0,
+     "defence": 1.0
+    }
+   },
+   "custom": false
+  },
+  "Demon": {
+   "skills": {
+    "melee": 15,
+    "block": 15,
+    "dodge": 15,
+    "counter": 15,
+    "ki_control": 15,
+    "ki_power": 15,
+    "reflect": 15,
+    "weapon": 15
+   },
+   "icons": [
+    "demon - form 1.dmi"
+   ],
+   "genes": [
+    "Malevolent",
+    "Vile",
+    "Sinister",
+    "Fomhoire"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Dragon": {
+   "skills": {
+    "melee": 15,
+    "block": 20,
+    "dodge": 15,
+    "counter": 25,
+    "durability": 15,
+    "ki_control": 15,
+    "ki_power": 15,
+    "reflect": 15
+   },
+   "icons": [
+    "syn.dmi"
+   ],
+   "genes": [
+    "Fierce",
+    "Almighty",
+    "Desolate"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 3.0,
+    "strength": 4.0,
+    "defence": 6.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Half Saiyan": {
+   "skills": {
+    "melee": 15,
+    "block": 15,
+    "counter": 15,
+    "ki_control": 20,
+    "ki_power": 15,
+    "reflect": 15
+   },
+   "icons": [],
+   "genes": [
+    "Mystic",
+    "Legendary",
+    "Rageful"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 3.0,
+    "strength": 3.0,
+    "defence": 3.0
+   },
+   "gene_multi": {
+    "Mystic": {
+     "ki": 2.0
+    },
+    "Rageful": {
+     "ki": 1.0,
+     "strength": 1.0,
+     "power": 1.0
+    }
+   },
+   "custom": true
+  },
+  "Heran": {
+   "skills": {
+    "melee": 20,
+    "block": 15,
+    "counter": 20,
+    "durability": 15,
+    "ki_power": 20
+   },
+   "icons": [
+    "bojack.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Primal"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 3.0,
+    "strength": 4.0,
+    "defence": 4.0
+   },
+   "gene_multi": {
+    "Pure Blooded": {
+     "strength": 1.0,
+     "defence": 1.0
+    }
+   },
+   "custom": false
+  },
+  "Human": {
+   "skills": {
+    "melee": 15,
+    "block": 20,
+    "dodge": 15,
+    "counter": 15,
+    "ki_control": 15,
+    "ki_power": 15
+   },
+   "icons": [],
+   "genes": [
+    "Pure Blooded",
+    "Mystic",
+    "Majin Incarnate",
+    "Bloodthirsty",
+    "Roshi"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 4.0,
+    "strength": 3.0,
+    "defence": 3.0
+   },
+   "gene_multi": {
+    "Bloodthirsty": {
+     "strength": 2.0
+    }
+   },
+   "custom": true
+  },
+  "Kai": {
+   "skills": {
+    "melee": 20,
+    "dodge": 20,
+    "ki_control": 20,
+    "ki_power": 15
+   },
+   "icons": [
+    "supreme kai.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Zealot"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 5.0,
+    "strength": 2.0,
+    "defence": 2.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Konat": {
+   "skills": {
+    "melee": 20,
+    "block": 25,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15,
+    "weapon": 20
+   },
+   "icons": [
+    "konat - form 1.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Brave"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 3.0,
+    "strength": 5.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Majin": {
+   "skills": {
+    "melee": 25,
+    "dodge": 20,
+    "counter": 20,
+    "durability": 15,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "majin - form 0.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Malicious"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 3.0,
+    "strength": 3.0,
+    "defence": 4.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Majin Incarnate": {
+   "skills": {
+    "melee": 20,
+    "dodge": 20,
+    "counter": 20,
+    "ki_control": 15,
+    "ki_power": 25
+   },
+   "icons": [
+    "uub.dmi"
+   ],
+   "genes": [
+    "Fiendish",
+    "Diabolical"
+   ],
+   "multi": {
+    "power": 2.0,
+    "ki": 5.0,
+    "strength": 5.0,
+    "defence": 4.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Majin Wizard": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "babidi.dmi"
+   ],
+   "genes": [
+    "Fiendish",
+    "Diabolical"
+   ],
+   "multi": {
+    "power": 6.0,
+    "ki": 4.0,
+    "strength": 3.0,
+    "defence": 2.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Namekian": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "counter": 15,
+    "ki_control": 30,
+    "ki_power": 25
+   },
+   "icons": [
+    "namek - normal.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Descendant",
+    "Corrupted"
+   ],
+   "multi": {
+    "power": 6.0,
+    "ki": 4.0,
+    "strength": 2.0,
+    "defence": 6.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Saibaman": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "saibaman - form 1.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Virulent",
+    "Godly"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Saiyan": {
+   "skills": {
+    "melee": 20,
+    "block": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 15
+   },
+   "icons": [],
+   "genes": [
+    "Honourable",
+    "Prideful",
+    "Legendary",
+    "Godly"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 4.0,
+    "strength": 2.0,
+    "defence": 3.0
+   },
+   "gene_multi": {
+    "Honourable": {
+     "strength": 2.0
+    },
+    "Prideful": {
+     "ki": 2.0
+    }
+   },
+   "custom": true
+  },
+  "Tuffle": {
+   "skills": {
+    "melee": 20,
+    "block": 20,
+    "dodge": 20,
+    "ki_control": 25,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "bebi - form 1.dmi"
+   ],
+   "genes": [
+    "Pure Blooded",
+    "Virulent",
+    "Venerable"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 4.0
+   },
+   "gene_multi": {
+    "Venerable": {
+     "power": 2.0
+    }
+   },
+   "custom": false
+  },
+  "Feline": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [
+    "beeruschaotic.dmi",
+    "beerus.dmi"
+   ],
+   "genes": [
+    "Destructive",
+    "Godly"
+   ],
+   "multi": {
+    "power": 5.0,
+    "ki": 6.0,
+    "strength": 4.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": false
+  },
+  "Alien": {
+   "skills": {
+    "melee": 15,
+    "dodge": 15,
+    "ki_control": 20,
+    "ki_power": 20,
+    "reflect": 15
+   },
+   "icons": [],
+   "genes": [
+    "Hitman",
+    "Pride Trooper",
+    "Yardrat",
+    "Moro",
+    "Lycanthrope",
+    "Kamenian",
+    "Rebrianne"
+   ],
+   "multi": {
+    "power": 4.0,
+    "ki": 4.0,
+    "strength": 4.0,
+    "defence": 3.0
+   },
+   "gene_multi": {},
+   "custom": true
+  }
+ },
+ "learn": [
+  {
+   "tech": "TripleKiBlast",
+   "level": 0,
+   "req": "ki_control_mastered"
+  },
+  {
+   "tech": "TraceNuke",
+   "level": 100000
+  },
+  {
+   "tech": "SelfDestruct",
+   "level": 0,
+   "race": "Android"
+  },
+  {
+   "tech": "CandyRay",
+   "level": 16500,
+   "race": "Android",
+   "gene": "Gluttonous"
+  },
+  {
+   "tech": "UniversalScan",
+   "level": 5000,
+   "race": "Android"
+  },
+  {
+   "tech": "KiAbsorb",
+   "level": 7500,
+   "race": "Android"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Android"
+  },
+  {
+   "tech": "Dodonpa",
+   "level": 10000,
+   "race": "Android"
+  },
+  {
+   "tech": "Regenerate",
+   "level": 0,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "Absorb",
+   "level": 0,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "EnergyField",
+   "level": 24000,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "KienzanDisk",
+   "level": 0,
+   "race": "Changeling"
+  },
+  {
+   "tech": "ImprisonmentBall",
+   "level": 6500,
+   "race": "Changeling"
+  },
+  {
+   "tech": "DeathWave",
+   "level": 8000,
+   "race": "Changeling"
+  },
+  {
+   "tech": "SauzerBlade",
+   "level": 12000,
+   "race": "Changeling"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Changeling"
+  },
+  {
+   "tech": "Corrupt",
+   "level": 0,
+   "race": "Demon"
+  },
+  {
+   "tech": "DemonShackle",
+   "level": 6500,
+   "race": "Demon"
+  },
+  {
+   "tech": "DemonSword",
+   "level": 9500,
+   "race": "Demon"
+  },
+  {
+   "tech": "FlameShower",
+   "level": 15000,
+   "race": "Demon"
+  },
+  {
+   "tech": "DimensionSwordAttack",
+   "level": 40000,
+   "race": "Demon"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Dragon"
+  },
+  {
+   "tech": "KarmaBomb",
+   "level": 37500,
+   "race": "Dragon"
+  },
+  {
+   "tech": "OmegaBlast",
+   "level": 40000,
+   "race": "Dragon"
+  },
+  {
+   "tech": "FakeMoon",
+   "level": 2500,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "GalacticDonut",
+   "level": 6500,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "ShineMissile",
+   "level": 15000,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "FinalExplosion",
+   "level": 30000,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Heran"
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "race": "Human"
+  },
+  {
+   "tech": "Drain",
+   "level": 0,
+   "race": "Human",
+   "gene": "Bloodthirsty"
+  },
+  {
+   "tech": "Dodonpa",
+   "level": 10000,
+   "race": "Human"
+  },
+  {
+   "tech": "DistructoDisk",
+   "level": 0,
+   "race": "Human"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Human"
+  },
+  {
+   "tech": "CandyRay",
+   "level": 16500,
+   "race": "Human",
+   "gene": "Majin Incarnate"
+  },
+  {
+   "tech": "Kaioken",
+   "level": 0,
+   "race": "Kai"
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "HealField",
+   "level": 0,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "Sacrifice",
+   "level": 5000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "BuffDefense",
+   "level": 10000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "BuffStrength",
+   "level": 15000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "BuffKi",
+   "level": 20000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "BuffPowerlevel",
+   "level": 25000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "AdvancedTraining",
+   "level": 15000,
+   "race": "Kai",
+   "gene": "Pure Blooded"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Kai"
+  },
+  {
+   "tech": "GravityField",
+   "level": 17500,
+   "race": "Kai"
+  },
+  {
+   "tech": "Regenerate",
+   "level": 0,
+   "race": "Majin"
+  },
+  {
+   "tech": "FatWrap",
+   "level": 0,
+   "race": "Majin"
+  },
+  {
+   "tech": "CandyRay",
+   "level": 0,
+   "race": "Majin"
+  },
+  {
+   "tech": "AngryExplosion",
+   "level": 25000,
+   "race": "Majin"
+  },
+  {
+   "tech": "GenocideAttack",
+   "level": 30000,
+   "race": "Majin"
+  },
+  {
+   "tech": "MajinSorcery",
+   "level": 0,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "SlowField",
+   "level": 0,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "AdvancedTraining",
+   "level": 15000,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "Regenerate",
+   "level": 0,
+   "race": "Namekian"
+  },
+  {
+   "tech": "Corrupt",
+   "level": 0,
+   "race": "Namekian",
+   "gene": "Corrupted"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Namekian"
+  },
+  {
+   "tech": "HellZoneGrenade",
+   "level": 30000,
+   "race": "Namekian"
+  },
+  {
+   "tech": "Assasinate",
+   "level": 0,
+   "race": "Alien",
+   "gene": "Hitman"
+  },
+  {
+   "tech": "TimeSkip",
+   "level": 0,
+   "race": "Alien",
+   "gene": "Hitman"
+  },
+  {
+   "tech": "GravityField",
+   "level": 17500,
+   "race": "Alien"
+  },
+  {
+   "tech": "HellZoneGrenade",
+   "level": 30000,
+   "race": "Alien"
+  },
+  {
+   "tech": "Glare",
+   "level": 40000,
+   "race": "Alien"
+  },
+  {
+   "tech": "Infect",
+   "level": 0,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "AcidRain",
+   "level": 15000,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "BlowUp",
+   "level": 25000,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "FakeMoon",
+   "level": 2500,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "GalacticDonut",
+   "level": 6500,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "ShineMissile",
+   "level": 7500,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "FinalExplosion",
+   "level": 25000,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "SoulPunisher",
+   "level": 40000,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "Infect",
+   "level": 0,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "RevengeDeathBall",
+   "level": 37500,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "Dodonpa",
+   "level": 10000,
+   "race": "Feline"
+  },
+  {
+   "tech": "KiShower",
+   "level": 15000,
+   "race": "Feline"
+  },
+  {
+   "tech": "HellZoneGrenade",
+   "level": 23000,
+   "race": "Feline"
+  },
+  {
+   "tech": "RevengeDeathBall",
+   "level": 30000,
+   "race": "Feline"
+  },
+  {
+   "tech": "DimensionSwordAttack",
+   "level": 40000,
+   "race": "Feline"
+  },
+  {
+   "tech": "FurryBreaker",
+   "level": 20000,
+   "race": "Konat"
+  },
+  {
+   "tech": "KiNeedles",
+   "level": 20000,
+   "race": "Android"
+  },
+  {
+   "tech": "GigaDrop",
+   "level": 20000,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "AntiMatter",
+   "level": 20000,
+   "race": "Bio Warrior"
+  },
+  {
+   "tech": "FrostBite",
+   "level": 20000,
+   "race": "Changeling"
+  },
+  {
+   "tech": "ImmortalFlame",
+   "level": 20000,
+   "race": "Demon"
+  },
+  {
+   "tech": "BlackStorm",
+   "level": 20000,
+   "race": "Dragon"
+  },
+  {
+   "tech": "MysticSpirit",
+   "level": 20000,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "StoneToss",
+   "level": 20000,
+   "race": "Heran"
+  },
+  {
+   "tech": "KiSiege",
+   "level": 20000,
+   "race": "Human"
+  },
+  {
+   "tech": "GrandKiBlast",
+   "level": 20000,
+   "race": "Kai"
+  },
+  {
+   "tech": "CandyBomb",
+   "level": 20000,
+   "race": "Majin"
+  },
+  {
+   "tech": "MajinStriker",
+   "level": 20000,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "SoulPierce",
+   "level": 20000,
+   "race": "Namekian"
+  },
+  {
+   "tech": "BeamFurry",
+   "level": 20000,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "KiSoul",
+   "level": 20000,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "OrbitExplosion",
+   "level": 20000,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "DragonTempest",
+   "level": 20000,
+   "race": "Feline"
+  },
+  {
+   "tech": "VortexSkip",
+   "level": 20000,
+   "race": "Alien",
+   "gene": "Hitman"
+  },
+  {
+   "tech": "TrooperBomb",
+   "level": 20000,
+   "race": "Alien",
+   "gene": "Pride Trooper"
+  },
+  {
+   "tech": "Push",
+   "level": 25000
+  },
+  {
+   "tech": "shieldsmash",
+   "level": 30000
+  },
+  {
+   "tech": "KiPunch",
+   "level": 50000
+  },
+  {
+   "tech": "PowerDash",
+   "level": 75000
+  },
+  {
+   "tech": "KiBlast",
+   "level": 0
+  },
+  {
+   "tech": "Sense",
+   "level": 250
+  },
+  {
+   "tech": "Aura",
+   "level": 500
+  },
+  {
+   "tech": "Fly",
+   "level": 750
+  },
+  {
+   "tech": "PowerUp",
+   "level": 1000
+  },
+  {
+   "tech": "InstantTransmission",
+   "level": 1500
+  },
+  {
+   "tech": "UnleashRage",
+   "level": 2000
+  },
+  {
+   "tech": "RapidBlast",
+   "level": 2500
+  },
+  {
+   "tech": "Kamehameha",
+   "level": 3000
+  },
+  {
+   "tech": "ExplosiveWave",
+   "level": 3500
+  },
+  {
+   "tech": "Sword_Slash",
+   "level": 6500,
+   "req": "weapon"
+  },
+  {
+   "tech": "BurstRush",
+   "level": 10000
+  },
+  {
+   "tech": "StarBang",
+   "level": 15000
+  },
+  {
+   "tech": "BlazingBlast",
+   "level": 18000
+  },
+  {
+   "tech": "ElectricRain",
+   "level": 20000
+  },
+  {
+   "tech": "SuperExplosionWave",
+   "level": 17500
+  },
+  {
+   "tech": "ThousandSwordSlash",
+   "level": 30000,
+   "req": "weapon"
+  },
+  {
+   "tech": "ExecutionersStrike",
+   "level": 18000,
+   "req": "weapon"
+  },
+  {
+   "tech": "NovaBlast",
+   "level": 32000
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Kai",
+   "gene": "Ultimate"
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Demon",
+   "gene": "Vile"
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Human",
+   "gene": "Majin Incarnate"
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Saibaman",
+   "gene": "Virulent"
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "InvertPower",
+   "level": 20000,
+   "race": "Android",
+   "gene": "Bionic"
+  },
+  {
+   "tech": "TyrantBlaze",
+   "level": 80000,
+   "race": "Konat"
+  },
+  {
+   "tech": "AndroidBomb",
+   "level": 80000,
+   "race": "Android"
+  },
+  {
+   "tech": "GigaSpear",
+   "level": 80000,
+   "race": "Bio Android"
+  },
+  {
+   "tech": "NerfMissles",
+   "level": 80000,
+   "race": "Bio Warrior"
+  },
+  {
+   "tech": "DeathBomb",
+   "level": 80000,
+   "race": "Changeling"
+  },
+  {
+   "tech": "DesolateFlame",
+   "level": 80000,
+   "race": "Demon"
+  },
+  {
+   "tech": "ShenronsWrath",
+   "level": 80000,
+   "race": "Dragon"
+  },
+  {
+   "tech": "MasenkoBomb",
+   "level": 80000,
+   "race": "Half Saiyan"
+  },
+  {
+   "tech": "SealBraze",
+   "level": 80000,
+   "race": "Heran"
+  },
+  {
+   "tech": "SpiritWisp",
+   "level": 80000,
+   "race": "Human"
+  },
+  {
+   "tech": "LegacyKiDrop",
+   "level": 80000,
+   "race": "Kai"
+  },
+  {
+   "tech": "MajinRazor",
+   "level": 80000,
+   "race": "Majin"
+  },
+  {
+   "tech": "BibidiBlaze",
+   "level": 80000,
+   "race": "Majin Wizard"
+  },
+  {
+   "tech": "KamisWisdom",
+   "level": 80000,
+   "race": "Namekian"
+  },
+  {
+   "tech": "SaibaStake",
+   "level": 80000,
+   "race": "Saibaman"
+  },
+  {
+   "tech": "KiStone",
+   "level": 80000,
+   "race": "Saiyan"
+  },
+  {
+   "tech": "RageBall",
+   "level": 80000,
+   "race": "Tuffle"
+  },
+  {
+   "tech": "DestructiveBlast",
+   "level": 80000,
+   "race": "Feline"
+  },
+  {
+   "tech": "TimeSoul",
+   "level": 80000,
+   "race": "Alien",
+   "gene": "Hitman"
+  },
+  {
+   "tech": "PrideSpazm",
+   "level": 80000,
+   "race": "Alien",
+   "gene": "Pride Trooper"
+  },
+  {
+   "tech": "EnergyBarrier",
+   "level": 45000
+  },
+  {
+   "tech": "DamageField",
+   "level": 0,
+   "gene": "Kamenian"
+  },
+  {
+   "tech": "BuffDefense",
+   "level": 10000,
+   "gene": "Kamenian"
+  },
+  {
+   "tech": "BuffPowerlevel",
+   "level": 25000,
+   "gene": "Kamenian"
+  },
+  {
+   "tech": "AdvancedTraining",
+   "level": 15000,
+   "gene": "Kamenian"
+  },
+  {
+   "tech": "Regenerate",
+   "level": 100000,
+   "gene": "Kamenian"
+  },
+  {
+   "tech": "MouthBlast",
+   "level": 50000,
+   "gene": "Moro"
+  }
+ ],
+ "techniques": {
+  "Absorb": {
+   "name": "Absorb",
+   "kind": "heal",
+   "amount": 0.2,
+   "drain": 1
+  },
+  "AcidRain": {
+   "name": "Acid Rain",
+   "cd": 12.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 6,
+   "pow": 0.06
+  },
+  "AdvancedTraining": {
+   "name": "Advanced Training",
+   "kind": "buff",
+   "stat": "exp",
+   "mult": 2.0,
+   "secs": 120
+  },
+  "AfterImage": {
+   "name": "After Image",
+   "kind": "buff",
+   "stat": "dodge",
+   "mult": 1.5,
+   "secs": 15
+  },
+  "AndroidBomb": {
+   "name": "Android Bomb",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "AndroidBomb",
+   "icon": "blaststargen2.dmi",
+   "state": "Android Bomb",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "AngryExplosion": {
+   "name": "Angry Explosion",
+   "kind": "aoe",
+   "radius": 3,
+   "pow": 0.2,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "AntiMatter": {
+   "name": "Anti Matter",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "AntiMatter",
+   "icon": "blaststargen.dmi",
+   "state": "AntiMatter",
+   "coef": {
+    "powerlevel": 0.01,
+    "strength": 0.15
+   },
+   "scale": "melee",
+   "range": 6,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "Assasinate": {
+   "name": "Assassinate",
+   "kind": "strike",
+   "pow": 3.0,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "Aura": {
+   "name": "Aura",
+   "kind": "buff",
+   "stat": "aura",
+   "mult": 1.0,
+   "secs": 0,
+   "toggle": 1
+  },
+  "BeamFurry": {
+   "name": "Beam Furry",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "BeamFurry",
+   "icon": "blaststargen.dmi",
+   "state": "BeamFurry",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "BibidiBlaze": {
+   "name": "Bibidi Blaze",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "BibidiBlaze",
+   "icon": "blaststargen2.dmi",
+   "state": "Bibidi Blaze",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "BigBangAttack": {
+   "name": "Big Bang Attack",
+   "cost": [
+    0.02,
+    50000000
+   ],
+   "kind": "aoe",
+   "radius": 2,
+   "pow": 0.3
+  },
+  "BlackStorm": {
+   "name": "Black Storm",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "BlackStorm",
+   "icon": "blaststargen.dmi",
+   "state": "BlackStorm",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "BlasterShell": {
+   "name": "Blaster Shell",
+   "cost": [
+    0.02,
+    50000000
+   ],
+   "kind": "multi",
+   "shots": 4,
+   "pow": 0.12
+  },
+  "BlazingBlast": {
+   "name": "Blazing Blasts",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "BlazingBlast",
+   "icon": "blazing blast.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.07,
+    "ki": 0.15
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "BlowUp": {
+   "name": "Blow Up",
+   "kind": "aoe",
+   "radius": 3,
+   "pow": 0.5,
+   "selfcost": 0.9,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "BuffDefense": {
+   "name": "Buff Defense",
+   "kind": "buff",
+   "stat": "defence",
+   "mult": 1.25,
+   "secs": 60
+  },
+  "BuffKi": {
+   "name": "Buff Ki",
+   "kind": "buff",
+   "stat": "ki",
+   "mult": 1.25,
+   "secs": 60
+  },
+  "BuffPowerlevel": {
+   "name": "Buff Powerlevel",
+   "kind": "buff",
+   "stat": "powerlevel",
+   "mult": 1.25,
+   "secs": 60
+  },
+  "BuffStamina": {
+   "name": "Buff Stamina",
+   "kind": "buff",
+   "stat": "stamina",
+   "mult": 1.0,
+   "secs": 60
+  },
+  "BuffStrength": {
+   "name": "Buff Strength",
+   "kind": "buff",
+   "stat": "strength",
+   "mult": 1.25,
+   "secs": 60
+  },
+  "BurningAttack": {
+   "name": "Burning Attack",
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 3,
+   "pow": 0.1
+  },
+  "BurningStar": {
+   "name": "Burning Star",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "BurningStar",
+   "icon": "id techs.dmi",
+   "state": "8",
+   "coef": {
+    "powerlevel": 0.19,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "BurstRush": {
+   "name": "Burst Rush",
+   "kind": "strike",
+   "pow": 1.6,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "CandyBomb": {
+   "name": "Candy Bomb",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "CandyBomb",
+   "icon": "blaststargen.dmi",
+   "state": "CandyBomb",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "CandyRay": {
+   "name": "Candy Ray",
+   "cd": 1.0,
+   "cost": [
+    0.1,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "CandyRay",
+   "icon": "techs2.dmi",
+   "state": "candyray",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.2
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "Corrupt": {
+   "name": "Corrupt",
+   "kind": "strike",
+   "pow": 0.6,
+   "dot": 5,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "CustomAttack": {
+   "name": "Custom Technique",
+   "kind": "utility",
+   "what": "none"
+  },
+  "DamageField": {
+   "name": "Damage Field",
+   "cd": 22.0,
+   "cost": [
+    0.2,
+    10000
+   ],
+   "kind": "aoe",
+   "radius": 3,
+   "pow": 0.05
+  },
+  "DeathBeam": {
+   "name": "Death Beam",
+   "cd": 6.0,
+   "cost": [
+    0.2,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "DeathBeam",
+   "icon": "techs2.dmi",
+   "state": "deathbeam",
+   "coef": {
+    "powerlevel": 0.3,
+    "ki": 0.2
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "DeathBomb": {
+   "name": "Death Bomb",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "DeathBomb",
+   "icon": "blaststargen2.dmi",
+   "state": "Death Bomb",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "DeathWave": {
+   "name": "Death Wave",
+   "cd": 4.0,
+   "cost": [
+    0.1,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "DeathWave",
+   "icon": "techs.dmi",
+   "state": "deathwave",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.3
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 0,
+   "speed": 19
+  },
+  "DemonShackle": {
+   "name": "Demon Shackle",
+   "cd": 8.0,
+   "cost": [
+    0.23,
+    20000
+   ],
+   "kind": "bind",
+   "pow": 0.05,
+   "stun": 4
+  },
+  "DemonSword": {
+   "name": "Demon Sword",
+   "kind": "strike",
+   "pow": 1.8,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "DesolateFlame": {
+   "name": "Desolate Flame",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "DesolateFlame",
+   "icon": "blaststargen2.dmi",
+   "state": "Desolate Flame",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "DestructiveBlast": {
+   "name": "Destructive Blast",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "DestructiveBlast",
+   "icon": "blaststargen2.dmi",
+   "state": "Destructive Blast",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "DimensionSwordAttack": {
+   "name": "Dimension Sword Attack",
+   "cd": 2.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "strike",
+   "pow": 2.5
+  },
+  "DistructoDisk": {
+   "name": "Distructo Disk",
+   "cd": 7.0,
+   "cost": [
+    0.12,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "DestructoDisk",
+   "icon": "techs.dmi",
+   "state": "distructodisk",
+   "coef": {
+    "powerlevel": 0.24,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 10
+  },
+  "Dodonpa": {
+   "name": "Dodonpa",
+   "cd": 6.0,
+   "cost": [
+    0.35,
+    35000
+   ],
+   "kind": "blast",
+   "blast": "Dodonpa",
+   "icon": "techs2.dmi",
+   "state": "deathbeam",
+   "coef": {
+    "powerlevel": 0.3,
+    "ki": 0.05
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "DragonFist": {
+   "name": "Dragon Fist",
+   "cd": 6.0,
+   "cost": [
+    0.07,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "DragonFist",
+   "icon": "techs2.dmi",
+   "state": "dragonfist",
+   "coef": {
+    "powerlevel": 0.1,
+    "strength": 0.4
+   },
+   "scale": "melee",
+   "range": 10,
+   "splash": 0,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "DragonTempest": {
+   "name": "Dragon Tempest",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "DragonTempest",
+   "icon": "blaststargen.dmi",
+   "state": "DragonTempest",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "Drain": {
+   "name": "Drain",
+   "kind": "heal",
+   "amount": 0.15,
+   "drain": 1
+  },
+  "ElectricRain": {
+   "name": "Electric Rain",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "ElectricRain",
+   "icon": "er.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.15,
+    "ki": 0.25
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 28
+  },
+  "EnergyBarrier": {
+   "name": "Energy Barrier",
+   "kind": "buff",
+   "stat": "barrier",
+   "mult": 0.5,
+   "secs": 20
+  },
+  "EnergyCannon": {
+   "name": "Ki Cannon",
+   "cost": [
+    0.05,
+    15000
+   ],
+   "kind": "blast",
+   "blast": "EnergyCannon",
+   "icon": "spirit cannon.dmi",
+   "state": "Spirit Cannon",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "EnergyField": {
+   "name": "Energy Field",
+   "kind": "aoe",
+   "radius": 2,
+   "pow": 0.12,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "ExecutionersStrike": {
+   "name": "Executioners Strike",
+   "cd": 5.0,
+   "cost": [
+    0.025,
+    2500
+   ],
+   "kind": "strike",
+   "pow": 2.2
+  },
+  "ExplosiveWave": {
+   "name": "Explosive Wave",
+   "cd": 4.0,
+   "cost": [
+    0.02,
+    1000
+   ],
+   "kind": "aoe",
+   "radius": 2,
+   "pow": 0.08
+  },
+  "FakeMoon": {
+   "name": "Fake Moon",
+   "kind": "utility",
+   "what": "oozaru"
+  },
+  "FatWrap": {
+   "name": "Fat Wrap",
+   "cd": 8.0,
+   "cost": [
+    0.23,
+    20000
+   ],
+   "kind": "bind",
+   "pow": 0.05,
+   "stun": 4
+  },
+  "FinalExplosion": {
+   "name": "Final Explosion",
+   "kind": "aoe",
+   "radius": 4,
+   "pow": 0.6,
+   "selfcost": 0.9,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "FinalFlash": {
+   "name": "Final Flash",
+   "cd": 5.0,
+   "cost": [
+    0.25,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "FinalFlash",
+   "icon": "techs2.dmi",
+   "state": "finalflash",
+   "coef": {
+    "powerlevel": 0.05,
+    "ki": 0.4
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "FinalShine": {
+   "name": "Final Shine",
+   "cd": 4.0,
+   "cost": [
+    0.2,
+    40000
+   ],
+   "kind": "blast",
+   "blast": "FinalShine",
+   "icon": "techs2.dmi",
+   "state": "finalshine",
+   "coef": {
+    "powerlevel": 0.07,
+    "ki": 0.32
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "FinishBuster": {
+   "name": "Finish Buster",
+   "cd": 3.0,
+   "cost": [
+    0.08,
+    20000
+   ],
+   "kind": "blast",
+   "blast": "FinishBuster",
+   "icon": "techs2.dmi",
+   "state": "finishbuster",
+   "coef": {
+    "powerlevel": 0.27,
+    "ki": 0.06
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1,
+   "speed": 20
+  },
+  "FlameShower": {
+   "name": "Flame Shower",
+   "cd": 10.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 6,
+   "pow": 0.06
+  },
+  "Fly": {
+   "name": "Fly",
+   "kind": "utility",
+   "what": "fly"
+  },
+  "Freeze": {
+   "name": "Freeze",
+   "kind": "blast",
+   "blast": "Freeze",
+   "icon": "ice.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.0003,
+    "ki": 0.001
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "FrostBite": {
+   "name": "Frost Bite",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "FrostBite",
+   "icon": "blaststargen.dmi",
+   "state": "FrostBite",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "FurryBreaker": {
+   "name": "Furry Breaker",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "FurryBreaker",
+   "icon": "blaststargen.dmi",
+   "state": "FurryBreaker",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "GalacticDonut": {
+   "name": "Galactic Donut",
+   "cd": 8.0,
+   "cost": [
+    0.23,
+    20000
+   ],
+   "kind": "bind",
+   "pow": 0.05,
+   "stun": 4
+  },
+  "GalacticTyrant": {
+   "name": "Galactic Tyrant",
+   "kind": "aoe",
+   "radius": 2,
+   "pow": 0.25,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "GalickGun": {
+   "name": "Galick Gun",
+   "cd": 2.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "GalickGun",
+   "icon": "techs2.dmi",
+   "state": "galickgun",
+   "coef": {
+    "powerlevel": 0.08,
+    "ki": 0.3
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "GenocideAttack": {
+   "name": "Genocide Attack",
+   "cd": 12.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 10,
+   "pow": 0.07
+  },
+  "GigaDrop": {
+   "name": "Giga Drop",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "GigaDrop",
+   "icon": "blaststargen.dmi",
+   "state": "GigaDrop",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "GigaSpear": {
+   "name": "Giga Spear",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "GigaSpear",
+   "icon": "blaststargen2.dmi",
+   "state": "Giga Spear",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "Glare": {
+   "name": "Glare",
+   "kind": "bind",
+   "pow": 0.02,
+   "stun": 3,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "GodlyBlast": {
+   "name": "Godly Blast",
+   "cost": [
+    0.1,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "GodlyBlast",
+   "icon": "godly blast.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.15
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "GrandKiBlast": {
+   "name": "Grand Ki Bomb",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "GrandKiBlast",
+   "icon": "blaststargen.dmi",
+   "state": "GrandKiBlast",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "GravityField": {
+   "name": "Gravity Field",
+   "kind": "buff",
+   "stat": "exp",
+   "mult": 1.5,
+   "secs": 120
+  },
+  "HealField": {
+   "name": "Heal Field",
+   "cd": 22.0,
+   "cost": [
+    0.2,
+    10000
+   ],
+   "kind": "heal",
+   "amount": 0.25
+  },
+  "HellZoneGrenade": {
+   "name": "Hell Zone Grenade",
+   "cd": 12.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 8,
+   "pow": 0.08
+  },
+  "ImmortalFlame": {
+   "name": "Immortal Flame",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "ImmortalFlame",
+   "icon": "blaststargen.dmi",
+   "state": "ImmortalFlame",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "ImprisonmentBall": {
+   "name": "Imprisonment Ball",
+   "cd": 8.0,
+   "cost": [
+    0.23,
+    20000
+   ],
+   "kind": "bind",
+   "pow": 0.08,
+   "stun": 4
+  },
+  "Infect": {
+   "name": "Infect",
+   "kind": "strike",
+   "pow": 0.6,
+   "dot": 5,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "InstantTransmission": {
+   "name": "Instant Transmission",
+   "kind": "utility",
+   "what": "teleport"
+  },
+  "InvertPower": {
+   "name": "Invert Power",
+   "kind": "buff",
+   "stat": "ki",
+   "mult": 1.3,
+   "secs": 60
+  },
+  "Kaioken": {
+   "name": "Kaioken",
+   "kind": "buff",
+   "stat": "kaioken",
+   "mult": 1.5,
+   "secs": 0,
+   "toggle": 1,
+   "drain": 0.01
+  },
+  "Kamehameha": {
+   "name": "Kamehameha",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "Kamehameha",
+   "icon": "techs2.dmi",
+   "state": "kamehameha",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.15
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "KamisWisdom": {
+   "name": "Kamis Wisdom",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "KamisWisdom",
+   "icon": "blaststargen2.dmi",
+   "state": "Kamis Wisdom",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "KarmaBomb": {
+   "name": "Negative Karma Bomb",
+   "cd": 4.0,
+   "cost": [
+    0.08,
+    30000
+   ],
+   "kind": "blast",
+   "blast": "KarmaBomb",
+   "icon": "techs.dmi",
+   "state": "ssdeadlybomber",
+   "coef": {
+    "powerlevel": 0.17,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "KiAbsorb": {
+   "name": "KiAbsorb",
+   "kind": "heal",
+   "amount": 0.0,
+   "ki": 0.3
+  },
+  "KiBlast": {
+   "name": "Ki Blast",
+   "cost": [
+    0.01,
+    1000
+   ],
+   "kind": "blast",
+   "blast": "kiblast",
+   "icon": "techs.dmi",
+   "state": "blastr",
+   "coef": {
+    "powerlevel": 0.05,
+    "ki": 0.05
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.25,
+   "beam": 0,
+   "speed": 12
+  },
+  "KiNeedles": {
+   "name": "Ki Needles",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "KiNeedles",
+   "icon": "blaststargen.dmi",
+   "state": "KiNeedles",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "KiPunch": {
+   "name": "Iron Fist",
+   "cd": 0.3,
+   "cost": [
+    0.02,
+    500
+   ],
+   "kind": "blast",
+   "blast": "kipunch",
+   "icon": "blast.dmi",
+   "state": "kipunch",
+   "coef": {
+    "strength": 0.45
+   },
+   "scale": "melee",
+   "range": 4,
+   "splash": 0,
+   "splashk": 0.0,
+   "beam": 0
+  },
+  "KiShield": {
+   "name": "Ki Shield",
+   "kind": "buff",
+   "stat": "shield",
+   "mult": 0.65,
+   "secs": 0,
+   "toggle": 1,
+   "drain": 0.005
+  },
+  "KiShower": {
+   "name": "Ki Shower",
+   "cd": 10.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 6,
+   "pow": 0.06
+  },
+  "KiSiege": {
+   "name": "Ki Siege",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "KiSiege",
+   "icon": "blaststargen.dmi",
+   "state": "KiSiege",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "KiSoul": {
+   "name": "Ki Soul Blast",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "KiSoul",
+   "icon": "blaststargen.dmi",
+   "state": "KiSoul",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "KiStone": {
+   "name": "Ki Stone",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "KiStone",
+   "icon": "blaststargen2.dmi",
+   "state": "Ki Stone",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "KienzanDisk": {
+   "name": "Kienzan Disk",
+   "cd": 7.0,
+   "cost": [
+    0.09,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "KienzanDisk",
+   "icon": "techs.dmi",
+   "state": "kienzandisk",
+   "coef": {
+    "powerlevel": 0.25,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 8
+  },
+  "LegacyKiDrop": {
+   "name": "Legacy Ki Drop",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "LegacyKiDrop",
+   "icon": "blaststargen2.dmi",
+   "state": "Legacy Ki Drop",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "LightGrenade": {
+   "name": "Light Grenade",
+   "cd": 0.4,
+   "cost": [
+    0.05,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "LightGrenade",
+   "icon": "techs.dmi",
+   "state": "lightgrenade",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.15
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "MajinRazor": {
+   "name": "Majin Razor",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "MajinRazor",
+   "icon": "blaststargen2.dmi",
+   "state": "Majin Razor",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "MajinSorcery": {
+   "name": "Majin Sorcery",
+   "kind": "buff",
+   "stat": "strength",
+   "mult": 1.2,
+   "secs": 60
+  },
+  "MajinStriker": {
+   "name": "Majin Striker",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "MajinStriker",
+   "icon": "blaststargen.dmi",
+   "state": "MajinStriker",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "Masenko": {
+   "name": "Masenko",
+   "cost": [
+    0.05,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "Masenko",
+   "icon": "techs2.dmi",
+   "state": "masenko",
+   "coef": {
+    "powerlevel": 0.13,
+    "ki": 0.32
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "MasenkoBomb": {
+   "name": "Masenko Bomb",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "MasenkoBomb",
+   "icon": "blaststargen2.dmi",
+   "state": "Masenko Bomb",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "MouthBlast": {
+   "name": "Mouth Energy Wave",
+   "cd": 8.0,
+   "cost": [
+    0.1,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "MouthEnergyWave",
+   "icon": "techs2.dmi",
+   "state": "mouthenergywave",
+   "coef": {
+    "powerlevel": 0.12,
+    "ki": 0.35
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "MysticSpirit": {
+   "name": "Mystic Spirit",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "MysticSpirit",
+   "icon": "blaststargen.dmi",
+   "state": "MysticSpirit",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "NerfMissles": {
+   "name": "Nerf Missles",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "NerfMissles",
+   "icon": "blaststargen2.dmi",
+   "state": "Nerf Missles",
+   "coef": {
+    "powerlevel": 0.2,
+    "strength": 0.12
+   },
+   "scale": "ki_power",
+   "range": 7,
+   "splash": 1,
+   "splashk": 0.0,
+   "beam": 0
+  },
+  "NovaBlast": {
+   "name": "Nova Heat Blast",
+   "cost": [
+    0.09,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "NovaBlast",
+   "icon": "nova heat blast.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.15,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 18
+  },
+  "OmegaBlast": {
+   "name": "Omega Blast",
+   "cost": [
+    0.13,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "OmegaBlast",
+   "icon": "omega blast.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.2
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 2,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "OrbitExplosion": {
+   "name": "Orbit Explosion",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "OrbitExplosion",
+   "icon": "blaststargen.dmi",
+   "state": "OrbitExplosion",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "PhantomAttack": {
+   "name": "Phantom Burning Blast",
+   "cost": [
+    0.08,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "PhantomAttack",
+   "icon": "id techs.dmi",
+   "state": "8",
+   "coef": {
+    "powerlevel": 0.7,
+    "ki": 0.15
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "PowerDash": {
+   "name": "Power Dash",
+   "kind": "strike",
+   "pow": 1.4,
+   "dash": 3,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "PowerDown": {
+   "name": "Power Down",
+   "kind": "utility",
+   "what": "powerdown"
+  },
+  "PowerUp": {
+   "name": "Power Up",
+   "kind": "utility",
+   "what": "powerup"
+  },
+  "PrideSpazm": {
+   "name": "Pride Spazm",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "PrideSpazm",
+   "icon": "blaststargen2.dmi",
+   "state": "Pride Spazm",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "Push": {
+   "name": "Push",
+   "kind": "strike",
+   "pow": 0.8,
+   "knock": 3,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "RageBall": {
+   "name": "Rage Ball",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "RageBall",
+   "icon": "blaststargen2.dmi",
+   "state": "Rage Ball",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "RapidBlast": {
+   "name": "Rapid Blast",
+   "cd": 10.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 5,
+   "pow": 0.05
+  },
+  "Regenerate": {
+   "name": "Regenerate",
+   "kind": "heal",
+   "amount": 0.35
+  },
+  "RevengeDeathBall": {
+   "name": "Revenge Death Ball",
+   "cost": [
+    0.02,
+    50000000
+   ],
+   "kind": "aoe",
+   "radius": 3,
+   "pow": 0.35
+  },
+  "SSDeadlyBomber": {
+   "name": "SS Deadly Bomber",
+   "cd": 3.0,
+   "cost": [
+    0.1,
+    30000
+   ],
+   "kind": "blast",
+   "blast": "SSDeadlyBomber",
+   "icon": "techs.dmi",
+   "state": "ssdeadlybomber",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "Sacrifice": {
+   "name": "Sacrifice",
+   "kind": "heal",
+   "amount": 0.5
+  },
+  "SaibaStake": {
+   "name": "Saiba Stake",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "SaibaStake",
+   "icon": "blaststargen2.dmi",
+   "state": "Saiba Stake",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "SauzerBlade": {
+   "name": "Sauzer Blade",
+   "kind": "strike",
+   "pow": 1.8,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "SealBraze": {
+   "name": "Seal Braze",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "SealBraze",
+   "icon": "blaststargen2.dmi",
+   "state": "Seal Braze",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "SelfDestruct": {
+   "name": "Self Destruct",
+   "kind": "aoe",
+   "radius": 4,
+   "pow": 0.7,
+   "selfcost": 0.95,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "Sense": {
+   "name": "Sense",
+   "kind": "utility",
+   "what": "sense"
+  },
+  "ShenronsWrath": {
+   "name": "Shenrons Wrath",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "ShenronsWrath",
+   "icon": "blaststargen2.dmi",
+   "state": "Shenrons Wrath",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "ShineMissile": {
+   "name": "Shine Missile",
+   "cd": 10.0,
+   "cost": [
+    0.02,
+    50000
+   ],
+   "kind": "multi",
+   "shots": 6,
+   "pow": 0.07
+  },
+  "SlowField": {
+   "name": "Slow Field",
+   "cd": 22.0,
+   "cost": [
+    0.2,
+    10000
+   ],
+   "kind": "bind",
+   "pow": 0.02,
+   "stun": 2,
+   "radius": 3
+  },
+  "SolarFlare": {
+   "name": "Solar Flare",
+   "cd": 12.0,
+   "kind": "bind",
+   "pow": 0.0,
+   "stun": 4,
+   "radius": 3,
+   "cost": [
+    0.05,
+    1000
+   ]
+  },
+  "SoulPierce": {
+   "name": "Soul Pierce",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "SoulPierce",
+   "icon": "blaststargen.dmi",
+   "state": "SoulPierce",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "SoulPunisher": {
+   "name": "Soul Punisher",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "SoulPunisher",
+   "icon": "soul punisher.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.13
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "SpecialBeamCannon": {
+   "name": "Special Beam Cannon",
+   "cd": 4.0,
+   "cost": [
+    0.1,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "SpecialBeamCannon",
+   "icon": "techs2.dmi",
+   "state": "specialbeamcannon",
+   "coef": {
+    "powerlevel": 0.23,
+    "ki": 0.19
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 2,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "SpiritWisp": {
+   "name": "Spirit Wisp",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "SpiritWisp",
+   "icon": "blaststargen2.dmi",
+   "state": "Spirit Wisp",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "SplitForm": {
+   "name": "Split Form",
+   "kind": "utility",
+   "what": "none"
+  },
+  "StarBang": {
+   "name": "Star Bang",
+   "cost": [
+    0.06,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "StarBang",
+   "icon": "star bang.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.05,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "StoneToss": {
+   "name": "Stone Toss",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "StoneToss",
+   "icon": "blaststargen.dmi",
+   "state": "StoneToss",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "SuperExplosionWave": {
+   "name": "Super Explosion Wave",
+   "cd": 8.2,
+   "cost": [
+    0.1,
+    25000
+   ],
+   "kind": "aoe",
+   "radius": 3,
+   "pow": 0.15
+  },
+  "Sword_Slash": {
+   "name": "Sword Slash",
+   "cd": 2.0,
+   "cost": [
+    0.005,
+    500
+   ],
+   "kind": "blast",
+   "blast": "swordslash",
+   "icon": "techs.dmi",
+   "state": "swordslash",
+   "coef": {
+    "strength": 0.3
+   },
+   "scale": "weapon_power",
+   "range": 6,
+   "splash": 0,
+   "splashk": 0.0,
+   "beam": 0,
+   "pierce": 1
+  },
+  "ThousandSwordSlash": {
+   "name": "Thousand Swordslash",
+   "cd": 2.0,
+   "cost": [
+    0.05,
+    20000
+   ],
+   "kind": "strike",
+   "pow": 2.0,
+   "hits": 3
+  },
+  "TimeSkip": {
+   "name": "Time Skip",
+   "kind": "utility",
+   "what": "dash"
+  },
+  "TimeSoul": {
+   "name": "Time Soul",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "TimeSoul",
+   "icon": "blaststargen2.dmi",
+   "state": "Time Soul",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "TraceNuke": {
+   "name": "Trace Nuke",
+   "cd": 4.5,
+   "cost": [
+    0.15,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "tracenuke",
+   "icon": "tracenuke.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 2,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "TriBeam": {
+   "name": "Tri Beam",
+   "cost": [
+    0.2,
+    25000
+   ],
+   "kind": "blast",
+   "blast": "TriBeam",
+   "icon": "techs2.dmi",
+   "state": "tribeam",
+   "coef": {
+    "powerlevel": 0.12,
+    "ki": 0.08
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "TripleKiBlast": {
+   "name": "Triple Ki Blasts",
+   "cost": [
+    0.155,
+    10000
+   ],
+   "kind": "multi",
+   "shots": 3,
+   "pow": 0.08
+  },
+  "TrooperBomb": {
+   "name": "Trooper Bomb",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "TrooperBomb",
+   "icon": "blaststargen.dmi",
+   "state": "TrooperBomb",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "TyrantBlaze": {
+   "name": "Tyrant Blaze",
+   "cd": 4.0,
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "TyrantBlaze",
+   "icon": "blaststargen2.dmi",
+   "state": "Tyrant Blaze",
+   "coef": {
+    "powerlevel": 0.2,
+    "ki": 0.12
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 3,
+   "splashk": 0.5,
+   "beam": 0
+  },
+  "UniversalScan": {
+   "name": "Universal Scan",
+   "kind": "utility",
+   "what": "sense"
+  },
+  "UnleashRage": {
+   "name": "Unleash Rage",
+   "kind": "buff",
+   "stat": "strength",
+   "mult": 1.4,
+   "secs": 30
+  },
+  "VortexSkip": {
+   "name": "Vortex Skip",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "VortexSkip",
+   "icon": "blaststargen.dmi",
+   "state": "VortexSkip",
+   "coef": {
+    "powerlevel": 0.11,
+    "ki": 0.16
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 20
+  },
+  "WaterJet": {
+   "name": "Water Jet Blast",
+   "cost": [
+    0.09,
+    10000
+   ],
+   "kind": "blast",
+   "blast": "WaterJet",
+   "icon": "water jet blast.dmi",
+   "state": "",
+   "coef": {
+    "powerlevel": 0.17,
+    "ki": 0.09
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 0,
+   "splashk": 0.3,
+   "beam": 0
+  },
+  "X10_Kamehameha": {
+   "name": "KamehamehaX10",
+   "cd": 4.0,
+   "cost": [
+    0.1,
+    50000
+   ],
+   "kind": "blast",
+   "blast": "TenXKamehameha",
+   "icon": "techs2.dmi",
+   "state": "kamehameha10",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.35
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 2,
+   "splashk": 0.5,
+   "beam": 1
+  },
+  "Zanzoken": {
+   "name": "Zanzoken",
+   "kind": "buff",
+   "stat": "dodge",
+   "mult": 1.5,
+   "secs": 15
+  },
+  "ZapCannon": {
+   "name": "Zap Cannon",
+   "cost": [
+    0.05,
+    10000
+   ],
+   "kind": "multi",
+   "shots": 2,
+   "pow": 0.12
+  },
+  "shieldsmash": {
+   "name": "Shield Smash",
+   "cd": 0.6,
+   "kind": "blast",
+   "blast": "shieldsmash",
+   "icon": "blast.dmi",
+   "state": "shieldsmash",
+   "coef": {
+    "defence": 0.25
+   },
+   "scale": "durability",
+   "range": 4,
+   "splash": 0,
+   "splashk": 0.0,
+   "beam": 0
+  }
+ },
+ "forms": {
+  "Alien": {
+   "Moro": [
+    {
+     "form": 1,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "rebriannetrans.dmi"
+    },
+    {
+     "form": 2,
+     "level": 150000,
+     "pl": 65.0,
+     "ki": 65.0,
+     "str": 65.0,
+     "def": 65.0,
+     "icon": "rebriannetrans2.dmi"
+    }
+   ],
+   "Kamenian": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 30.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "rebriannetrans.dmi"
+    },
+    {
+     "form": 2,
+     "level": 60000,
+     "pl": 65.0,
+     "ki": 65.0,
+     "str": 65.0,
+     "def": 65.0,
+     "icon": "rebriannetrans2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 135000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    },
+    {
+     "form": 4,
+     "level": 200000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Pride Trooper": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 30.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "rebriannetrans.dmi"
+    },
+    {
+     "form": 2,
+     "level": 75000,
+     "pl": 65.0,
+     "ki": 65.0,
+     "str": 65.0,
+     "def": 65.0,
+     "icon": "rebriannetrans2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 135000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Rebrianne": [
+    {
+     "form": 1,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "rebriannetrans.dmi"
+    },
+    {
+     "form": 2,
+     "level": 150000,
+     "pl": 65.0,
+     "ki": 65.0,
+     "str": 65.0,
+     "def": 65.0,
+     "icon": "rebriannetrans2.dmi"
+    }
+   ],
+   "Hitman": [
+    {
+     "form": 1,
+     "level": 40000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5
+    },
+    {
+     "form": 2,
+     "level": 80000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8
+    }
+   ]
+  },
+  "Android": {
+   "Gluttonous": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    },
+    {
+     "form": 2,
+     "level": 100000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ]
+  },
+  "Majin Wizard": {
+   "*": [
+    {
+     "form": 1,
+     "level": 15000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0
+    },
+    {
+     "form": 2,
+     "level": 35000,
+     "pl": 22.0,
+     "ki": 22.0,
+     "str": 22.0,
+     "def": 22.0
+    },
+    {
+     "form": 3,
+     "level": 75000,
+     "pl": 33.0,
+     "ki": 33.0,
+     "str": 33.0,
+     "def": 33.0,
+     "icon": "babidi.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ]
+  },
+  "Bio Android": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 40000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "bio android - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 80000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8,
+     "icon": "bio android blue - form 2.dmi"
+    }
+   ],
+   "Perfect": [
+    {
+     "form": 1,
+     "level": 50000,
+     "pl": 4.0,
+     "ki": 4.0,
+     "str": 4.4,
+     "def": 4.4,
+     "icon": "bio android - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 100000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8,
+     "icon": "bio android - form 2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 120000,
+     "pl": 10,
+     "ki": 10,
+     "str": 11.0,
+     "def": 11.0,
+     "icon": "bio android blue - form 2.dmi"
+    }
+   ]
+  },
+  "Heran": {
+   "*": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "bojack rage.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ]
+  },
+  "Changeling": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 35.0,
+     "def": 35.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 45.0,
+     "ki": 47.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "changling - form 4 100.dmi"
+    }
+   ],
+   "Rageful": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 80000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 35.0,
+     "def": 35.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 47.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "changling - form 4 100.dmi"
+    },
+    {
+     "form": 5,
+     "level": 170000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Regalis": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 80000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 35.0,
+     "def": 35.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 47.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "changling - form 4 100.dmi"
+    },
+    {
+     "form": 5,
+     "level": 170000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Vindictive": [
+    {
+     "form": 1,
+     "level": 35000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 75000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "cooler - form 2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 130000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 35.0,
+     "def": 35.0,
+     "icon": "cooler - form 2.dmi"
+    }
+   ]
+  },
+  "Demon": {
+   "Malevolent": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "demon - form 7.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "demon race.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "demon - form 4.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Fomhoire": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5
+    },
+    {
+     "form": 2,
+     "level": 85000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8
+    },
+    {
+     "form": 3,
+     "level": 150000,
+     "pl": 10,
+     "ki": 10,
+     "str": 11.0,
+     "def": 11.0
+    }
+   ]
+  },
+  "Dragon": {
+   "Fierce": [
+    {
+     "form": 1,
+     "level": 150000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "omega.dmi"
+    }
+   ],
+   "Almighty": [
+    {
+     "form": 1,
+     "level": 150000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "omega.dmi"
+    }
+   ],
+   "Desolate": [
+    {
+     "form": 1,
+     "level": 150000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "desolate dragon.dmi"
+    }
+   ]
+  },
+  "Feline": {},
+  "Half Saiyan": {
+   "Mystic": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 12.0,
+     "def": 10.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 28.0,
+     "def": 25.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 38.0,
+     "def": 35.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 48.0,
+     "def": 45.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 58.0,
+     "def": 55.0,
+     "ssjhair": 1
+    }
+   ],
+   "Legendary": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 12.0,
+     "def": 10.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 28.0,
+     "def": 25.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 38.0,
+     "def": 35.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 48.0,
+     "def": 45.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 58.0,
+     "def": 55.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 6,
+     "level": 200000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Rageful": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 12.0,
+     "def": 10.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 28.0,
+     "def": 25.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 38.0,
+     "def": 35.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 48.0,
+     "def": 45.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 58.0,
+     "def": 55.0,
+     "ssjhair": 1
+    }
+   ]
+  },
+  "Human": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "roshi_trans dark.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 20.0,
+     "def": 20.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 40.0,
+     "ki": 40.0,
+     "str": 40.0,
+     "def": 40.0
+    }
+   ],
+   "Mystic": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "roshi_trans dark.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 20.0,
+     "def": 20.0
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 40.0,
+     "ki": 40.0,
+     "str": 40.0,
+     "def": 40.0
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0
+    },
+    {
+     "form": 6,
+     "level": 175000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0
+    },
+    {
+     "form": 7,
+     "level": 200000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Roshi": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5
+    },
+    {
+     "form": 2,
+     "level": 100000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8
+    }
+   ]
+  },
+  "Kai": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 15000,
+     "pl": 8.0,
+     "ki": 8.0,
+     "str": 8.0,
+     "def": 8.0
+    },
+    {
+     "form": 2,
+     "level": 35000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0
+    },
+    {
+     "form": 3,
+     "level": 75000,
+     "pl": 24.0,
+     "ki": 24.0,
+     "str": 24.0,
+     "def": 24.0
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ]
+  },
+  "Konat": {},
+  "Majin": {},
+  "Namekian": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 15000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "namek - super.dmi"
+    },
+    {
+     "form": 2,
+     "level": 20000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8
+    },
+    {
+     "form": 3,
+     "level": 25000,
+     "pl": 10,
+     "ki": 10,
+     "str": 11.0,
+     "def": 11.0
+    }
+   ],
+   "Descendant": [
+    {
+     "form": 1,
+     "level": 50000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "namek - super8.dmi"
+    }
+   ]
+  },
+  "Saibaman": {
+   "*": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "saibaman - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 23.0,
+     "ki": 23.0,
+     "str": 23.0,
+     "def": 23.0,
+     "icon": "saibaman - form 3.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 40.0,
+     "ki": 40.0,
+     "str": 40.0,
+     "def": 40.0,
+     "icon": "saibaman - form 4.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ],
+   "Godly": [
+    {
+     "form": 1,
+     "level": 60000,
+     "pl": 5,
+     "ki": 5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "saibaman - form 4.dmi"
+    },
+    {
+     "form": 2,
+     "level": 120000,
+     "pl": 8,
+     "ki": 8,
+     "str": 8.8,
+     "def": 8.8,
+     "icon": "saibaman - form 7.dmi"
+    }
+   ]
+  },
+  "Saiyan": {
+   "Honourable": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 12.0,
+     "def": 12.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 22.0,
+     "def": 22.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 40.0,
+     "ki": 40.0,
+     "str": 43.0,
+     "def": 43.0
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 47.0,
+     "ki": 47.0,
+     "str": 50.0,
+     "def": 50.0,
+     "icon": "male - ssj 4 dark.dmi"
+    },
+    {
+     "form": 6,
+     "level": 200000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0
+    }
+   ],
+   "Legendary": [
+    {
+     "form": 1,
+     "level": 30000,
+     "pl": 12.0,
+     "ki": 12.0,
+     "str": 15.0,
+     "def": 14.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 80000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 35.0,
+     "def": 35.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 150000,
+     "pl": 30.0,
+     "ki": 32.0,
+     "str": 30.0,
+     "def": 30.0,
+     "ssjhair": 1
+    }
+   ],
+   "Godly": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 12.0,
+     "ki": 12.0,
+     "str": 15.0,
+     "def": 14.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 35.0,
+     "def": 35.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 3,
+     "level": 50000,
+     "pl": 30.0,
+     "ki": 32.0,
+     "str": 30.0,
+     "def": 30.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 4,
+     "level": 100000,
+     "pl": 42.0,
+     "ki": 42.0,
+     "str": 42.0,
+     "def": 42.0,
+     "ssjhair": 1
+    },
+    {
+     "form": 5,
+     "level": 150000,
+     "pl": 53.0,
+     "ki": 53.0,
+     "str": 53.0,
+     "def": 53.0
+    },
+    {
+     "form": 6,
+     "level": 175000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0
+    },
+    {
+     "form": 7,
+     "level": 200000,
+     "pl": 2,
+     "ki": 2,
+     "str": 2,
+     "def": 2
+    }
+   ]
+  },
+  "Tuffle": {}
+ }
+}
