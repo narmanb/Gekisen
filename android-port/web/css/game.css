@@ -83,6 +83,7 @@ button:active { background: var(--btn-on); }
 .panel h2 { margin: 0 0 10px; font-size: 17px; color: #ffd27f; }
 .panel .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .panel .close { width: 100%; margin-top: 10px; }
+#dialog { z-index: 50; }
 #dlg-text { line-height: 1.45; white-space: pre-wrap; }
 #dlg-opts { display: flex; flex-direction: column; gap: 6px; }
 #fade { position: fixed; inset: 0; background: #000; z-index: 30; opacity: .9; }

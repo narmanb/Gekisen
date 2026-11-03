@@ -79,10 +79,17 @@ python3 android-port/tools/build_data.py     # .dm + map.dmp -> data/*.json, dat
 # 2. play in a browser
 cd android-port/web && python3 -m http.server 8000   # open http://localhost:8000
 
-# 3. build the APK (Android SDK + JDK 17)
+# 3a. build the APK with the Android SDK + JDK 17
 cd android-port/android && ./gradlew assembleRelease
 # -> app/build/outputs/apk/release/app-release.apk
+
+# 3b. ...or without the Android SDK (only a JDK + three jars from Maven Central:
+#     org.robolectric:android-all (saved as android-all.jar),
+#     com.jakewharton.android.repackaged:dalvik-dx, com.android.tools.build:apksig (as apksig.jar))
+python3 android-port/tools/build_apk_manual.py --libs path/to/jars --out Gekisen.apk
 ```
+
+The game needs Android 7.0 (API 24) or newer.
 
 ## Layout
 

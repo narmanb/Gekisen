@@ -25,8 +25,10 @@ const UI = {
     $('btn-continue').classList.toggle('hidden', !save);
     $('btn-continue').onclick = () => this.startGame(save);
     $('btn-new').onclick = () => {
-      if (save && !confirm('Start a new character? Your saved character will be overwritten.')) return;
-      this.showCreate();
+      if (!save) return this.showCreate();
+      this.dialog('New character', 'Start a new character? Your saved character (' + save.name + ', ' +
+        fmt(save.maxpowerlevel) + ' max PL) will be overwritten when you press Start.', ['Create new', 'Cancel'],
+      ch => { if (ch === 'Create new') this.showCreate(); });
     };
     Game.onLog = () => this.renderLog();
     Game.onDialog = (t, txt, opts, cb) => this.dialog(t, txt, opts, cb);
