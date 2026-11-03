@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Gekisen</title>
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="hud-name"><span id="h-name"></span> <span id="h-form" class="form"></span></div>
+  <div class="hud-pl">PL <b id="h-pl"></b> / <span id="h-mpl"></span></div>
+  <div class="bar hp"><i id="b-hp"></i><span>HP</span></div>
+  <div class="bar ki"><i id="b-ki"></i><span>Ki</span></div>
+  <div class="bar st"><i id="b-st"></i><span>Stamina</span></div>
+  <div class="hud-small"><span id="h-zenni"></span> zenni · <span id="h-area"></span></div>
+</div>
+<div id="log" class="hidden"></div>
+<button id="menu-btn" class="hidden" aria-label="Menu">&#9776;</button>
+
+<div id="controls" class="hidden">
+  <div id="stick"><div id="stick-knob"></div></div>
+  <div id="buttons">
+    <button class="act big" data-act="attack">Attack</button>
+    <button class="act" data-act="ki">Ki Blast</button>
+    <button class="act" data-act="use">Talk/Use</button>
+    <button class="act" data-act="power">Power Up</button>
+    <button class="act small" data-act="block">Block</button>
+  </div>
+</div>
+
+<div id="menu" class="panel hidden">
+  <h2>Menu</h2>
+  <div class="grid">
+    <button data-m="meditate">Meditate</button>
+    <button data-m="rest">Rest</button>
+    <button data-m="fly">Fly</button>
+    <button data-m="transform">Transform</button>
+    <button data-m="revert">Revert</button>
+    <button data-m="stats">Stats</button>
+    <button data-m="quest">Saga</button>
+    <button data-m="sound">Sound</button>
+    <button data-m="save">Save</button>
+    <button data-m="title">Title screen</button>
+  </div>
+  <button class="close" data-m="close">Close</button>
+</div>
+
+<div id="dialog" class="panel hidden">
+  <h2 id="dlg-title"></h2>
+  <p id="dlg-text"></p>
+  <div id="dlg-opts"></div>
+</div>
+
+<div id="fade" class="hidden"></div>
+
+<div id="title" class="screen">
+  <div class="logo">GEKISEN</div>
+  <div class="sub">single-player edition</div>
+  <div id="loading">Loading...</div>
+  <div id="title-btns" class="hidden">
+    <button id="btn-continue">Continue</button>
+    <button id="btn-new">New Character</button>
+  </div>
+  <div class="credits">Ported from the original BYOND game source.</div>
+</div>
+
+<div id="create" class="screen hidden">
+  <h2>Create your character</h2>
+  <div class="create-body">
+    <div class="preview-col"><canvas id="preview" width="96" height="96"></canvas>
+      <div class="dirs"><button id="rot">Rotate</button></div>
+    </div>
+    <div class="form-col">
+      <label>Name <input id="c-name" maxlength="24" value=""></label>
+      <label>Gender <select id="c-gender"><option>Male</option><option>Female</option></select></label>
+      <label>Race <select id="c-race"></select></label>
+      <label id="l-skin">Skin <select id="c-skin"></select></label>
+      <label id="l-hair">Hair style <select id="c-hair"></select></label>
+      <div id="l-hcol">Hair colour
+        <div class="rgb"><input type="range" id="c-r" min="0" max="255" value="0"><input type="range" id="c-g" min="0" max="255" value="0"><input type="range" id="c-b" min="0" max="255" value="0"></div>
+      </div>
+      <p id="c-info" class="info"></p>
+    </div>
+  </div>
+  <div class="create-btns"><button id="c-back">Back</button><button id="c-start" class="primary">Start</button></div>
+</div>
+
+<script src="js/tables.js"></script>
+<script src="js/assets.js"></script>
+<script src="js/world.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

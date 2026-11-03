@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Signing: CI can provide a private keystore through environment variables
+// (see .github/workflows/android.yml). Otherwise the bundled hobby keystore is
+// used so that every build has the same signature and can update in place
+// without losing the save game.
+def ksFile = System.getenv('GEKISEN_KEYSTORE') ?: "${rootDir}/gekisen-release.keystore"
+def ksPass = System.getenv('GEKISEN_KEYSTORE_PASSWORD') ?: 'gekisen'
+def ksAlias = System.getenv('GEKISEN_KEY_ALIAS') ?: 'gekisen'
+def ksKeyPass = System.getenv('GEKISEN_KEY_PASSWORD') ?: 'gekisen'
+
+android {
+    namespace 'com.gekisen.game'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gekisen.game'
+        minSdk 21
+        targetSdk 35
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
+        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(ksFile)
+            storePassword ksPass
+            keyAlias ksAlias
+            keyPassword ksKeyPass
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // The game itself is the web port in ../../web; it is packaged as app assets.
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../web']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}
