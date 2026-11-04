@@ -244,6 +244,11 @@ const GENE_ICONS := {
 		"Moro": "moro base.dmi", "Kamenian": "kamenian.dmi", "Rebrianne": "rebrianne1.dmi"},
 }
 const GENE_OVERLAYS := {"Hitman": "hit armour.dmi", "Pride Trooper": "pride trooper.dmi"}
+const DEMON_HAIR := {"Goku": "hair_-_goku_super_saiyan_-_ruination_dt.dmi", "Hercule": "hair_-_hercule_ssj_dt.dmi",
+	"Adult Gohan": "hair - adult gohan dt.dmi", "Teen Gohan": "banto_kid_gohan_hair_dt.dmi",
+	"Future Gohan": "hair - adult gohan dt.dmi", "Vegeta": "hair_-_vegeta_super_saiyan_-_ruination_dt.dmi",
+	"Trunks Long": "hair_-_trunks_long_dt.dmi", "Raditz": "hair_-_raditz_ssj_rose_dt.dmi",
+	"Female Long": "hair_femalelongssj_dt.dmi", "Female Ponytail": "hairfemaleponytail_ssj_dt.dmi"}
 const LYCANTHROPES := ["Basil", "Bergamo", "Lavender"]
 
 
@@ -263,7 +268,7 @@ func look_options(p: Dictionary) -> Array:
 	if r == "Demon" and g == "Fomhoire":
 		var hs: Array = HAIRS.keys()
 		hs.erase("Bald")
-		return [["Hair", "hair", hs]]
+		return [["Hair (3rd form)", "hair", hs]]
 	return []
 
 
@@ -281,7 +286,7 @@ func form_icon(p: Dictionary, f: Dictionary) -> String:
 
 
 func has_hair(p: Dictionary) -> bool:
-	return p["race"] in HUMAN_BASE or (p["race"] == "Demon" and p.get("gene", "") == "Fomhoire")
+	return p["race"] in HUMAN_BASE
 
 
 func base_icon(p: Dictionary) -> int:
@@ -326,6 +331,11 @@ func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 	var go: String = GENE_OVERLAYS.get(p.get("gene", ""), "")
 	if p["race"] == "Alien" and go != "" and Data.icon_id(go) >= 0:
 		e.overlays.append({"icon": Data.icon_id(go)})
+	# Fomhoire demons have no hair until their third form (DemonHair_Apply in Hair.dm)
+	if p["race"] == "Demon" and p.get("gene", "") == "Fomhoire" and int(p.get("form", 0)) >= 3:
+		var dt := Data.icon_id(DEMON_HAIR.get(p.get("hair", "Goku"), ""))
+		if dt >= 0:
+			e.overlays.append({"icon": dt})
 	if has_hair(p):
 		var base_hair: String = HAIRS.get(p.get("hair", "Bald"), "")
 		var hid := Data.icon_id(base_hair)

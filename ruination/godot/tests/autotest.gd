@@ -54,6 +54,11 @@ func gallery() -> void:
 					var q := p.duplicate()
 					q["variant"] = v
 					combos.append(q)
+			if r == "Demon" and g == "Fomhoire":
+				var q := p.duplicate()
+				q["form"] = 3
+				q["variant"] = "(form 3)"
+				combos.append(q)
 			if r == "Feline" and g == "Destructive":
 				var q := p.duplicate()
 				q["skin"] = "Chaotic"
