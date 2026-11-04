@@ -204,6 +204,7 @@ func new_player(o: Dictionary) -> Dictionary:
 	var p := {
 		"name": o.get("name", "Fighter"), "race": o["race"], "gene": o.get("gene", ""),
 		"gender": o.get("gender", "Male"), "skin": o.get("skin", "Tan"), "hair": o.get("hair", "Goku"),
+		"variant": o.get("variant", ""),
 		"level": 1, "exp": 0.0, "tnl": 20.0, "expup": 0.0, "moden": 1, "mode": "Beginner", "modes": 0,
 		"zenni": 500.0, "tp": 0.0,
 		"pl_bonus": 0.0, "powerlevel": 300.0, "ki": 300.0, "ki_max": 300.0,
@@ -230,28 +231,102 @@ func new_player(o: Dictionary) -> Dictionary:
 	return p
 
 
+# Appearance rules from New Login Crim.dm (Choose_Base, CreateChar, ApplyIconHair) and
+# Powerlevel_Birth.dm (the *_Multi procs that swap the icon for some genes).
+# Only these races use the human base with a skin and hair choice:
+const HUMAN_BASE := ["Human", "Saiyan", "Half Saiyan", "Android"]
+const GENE_ICONS := {
+	"Changeling": {"Vindictive": "cooler - form.dmi", "Regalis": "kc-form-1.dmi"},
+	"Kai": {"Zealot": "zealotkai.dmi"},
+	"Demon": {"Vile": "demon - janemba.dmi", "Fomhoire": "demon - form 4.dmi"},
+	"Tuffle": {"Venerable": "universe 2 tuffle - form 1.dmi"},
+	"Alien": {"Hitman": "hit.dmi", "Pride Trooper": "jiren.dmi", "Yardrat": "yardratbase.dmi",
+		"Moro": "moro base.dmi", "Kamenian": "kamenian.dmi", "Rebrianne": "rebrianne1.dmi"},
+}
+const GENE_OVERLAYS := {"Hitman": "hit armour.dmi", "Pride Trooper": "pride trooper.dmi"}
+const LYCANTHROPES := ["Basil", "Bergamo", "Lavender"]
+
+
+## Which appearance choices a race/gene has, as [title, key, values].
+func look_options(p: Dictionary) -> Array:
+	var r: String = p["race"]
+	var g: String = p.get("gene", "")
+	if r in HUMAN_BASE:
+		return [["Gender", "gender", ["Male", "Female"]], ["Skin", "skin", ["Tan", "White", "Dark"]],
+			["Hair", "hair", HAIRS.keys()]]
+	if r == "Bio Android":
+		return [["Colour", "skin", ["Green", "Blue"]]]
+	if r == "Feline":
+		return [["Type", "skin", ["Destructive", "Chaotic"]]]
+	if r == "Alien" and g == "Lycanthrope":
+		return [["Lycanthrope", "variant", LYCANTHROPES]]
+	if r == "Demon" and g == "Fomhoire":
+		var hs: Array = HAIRS.keys()
+		hs.erase("Bald")
+		return [["Hair", "hair", hs]]
+	return []
+
+
+## Form sprite; a few depend on skin or gender (HumanTransRoshi, Android21Trans).
+func form_icon(p: Dictionary, f: Dictionary) -> String:
+	if f.is_empty():
+		return ""
+	var n := int(f.get("form", 1))
+	var sk: String = {"Tan": "tan", "White": "white", "Dark": "dark"}.get(p.get("skin", "Tan"), "tan")
+	if p["race"] == "Human" and p.get("gene", "") == "Roshi":
+		return "roshi_trans %s.dmi" % sk if n == 1 else "male roshi false ui- %s.dmi" % sk
+	if p["race"] == "Android" and p.get("gene", "") == "Gluttonous" and p.get("gender", "Male") != "Female":
+		return "male - android 21 trans.dmi" if n == 1 else "a21malegood2.dmi"
+	return f.get("icon", "")
+
+
+func has_hair(p: Dictionary) -> bool:
+	return p["race"] in HUMAN_BASE or (p["race"] == "Demon" and p.get("gene", "") == "Fomhoire")
+
+
 func base_icon(p: Dictionary) -> int:
-	var rd: Dictionary = Data.rules["races"][p["race"]]
+	var r: String = p["race"]
+	var g: String = p.get("gene", "")
+	var rd: Dictionary = Data.rules["races"][r]
 	var icons: Array = rd.get("icons", [])
-	if rd.get("custom", false) or icons.is_empty():
-		var g := "female" if p.get("gender", "Male") == "Female" else "male"
+	if r in HUMAN_BASE:
+		var female: bool = p.get("gender", "Male") == "Female"
 		var sk: String = {"Tan": "tan", "White": "white", "Dark": "dark"}.get(p.get("skin", "Tan"), "tan")
-		return Data.icon_id("%s - %s.dmi" % [g, sk])
-	var idx := 0
-	if (p["race"] == "Bio Android" and p.get("skin", "") == "Blue") or (p["race"] == "Feline" and p.get("gene", "") == "Godly"):
-		idx = 1
-	return Data.icon_id(icons[mini(idx, icons.size() - 1)])
+		if r == "Android" and g == "Gluttonous":
+			if female:
+				return Data.icon_id("android 21 female - %s.dmi" % sk)
+			return Data.icon_id({"tan": "male - android 21 tan.dmi", "white": "male - android 21.dmi", "dark": "male - android 21 dark.dmi"}[sk])
+		if r == "Human" and g == "Roshi":
+			return Data.icon_id("male roshi - %s.dmi" % sk)
+		return Data.icon_id("%s - %s.dmi" % ["female" if female else "male", sk])
+	if r == "Bio Android" and p.get("skin", "") == "Blue" and icons.size() > 1:
+		return Data.icon_id(icons[1])
+	if r == "Feline":
+		return Data.icon_id("beeruschaotic.dmi" if p.get("skin", "") == "Chaotic" else "beerus.dmi")
+	if r == "Alien" and g == "Lycanthrope":
+		var v: String = p.get("variant", "")
+		return Data.icon_id((v if v in LYCANTHROPES else "Basil").to_lower() + ".dmi")
+	var gi: String = GENE_ICONS.get(r, {}).get(g, "")
+	if gi != "" and Data.icon_id(gi) >= 0:
+		return Data.icon_id(gi)
+	if icons.is_empty():
+		return Data.icon_id("male - tan.dmi")
+	return Data.icon_id(icons[0])
 
 
 func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 	var rd: Dictionary = Data.rules["races"][p["race"]]
 	var f := current_form(p)
 	e.icon = base_icon(p)
-	if not f.is_empty() and f.has("icon") and Data.icon_id(f["icon"]) >= 0:
-		e.icon = Data.icon_id(f["icon"])
+	var fi := form_icon(p, f)
+	if fi != "" and Data.icon_id(fi) >= 0:
+		e.icon = Data.icon_id(fi)
 	e.overlays = []
 	e.underlays = []
-	if rd.get("custom", false):
+	var go: String = GENE_OVERLAYS.get(p.get("gene", ""), "")
+	if p["race"] == "Alien" and go != "" and Data.icon_id(go) >= 0:
+		e.overlays.append({"icon": Data.icon_id(go)})
+	if has_hair(p):
 		var base_hair: String = HAIRS.get(p.get("hair", "Bald"), "")
 		var hid := Data.icon_id(base_hair)
 		if not f.is_empty() and int(f.get("ssjhair", 0)) == 1 and base_hair != "":
@@ -282,7 +357,7 @@ func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 			var ka := Data.icon_id("kaio aura.dmi")
 			if ka >= 0:
 				e.underlays.append({"icon": ka, "state": ""})
-	e.name = p["name"]
+	e.name = p.get("name", "")
 
 
 func start(p: Dictionary) -> void:

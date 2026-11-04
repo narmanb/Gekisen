@@ -16,6 +16,7 @@ redrawn by hand.
 | Races | `New Login Crim.dm`, `Powerlevel_Birth.dm` | 20 races. Each has its starting skills, stat multipliers and genes, plus the gene bonuses. |
 | Techniques | `Learn Skills.dm` (Skill_Gain), `Techniques*.dm`, `ProjectilesJustin.dm` | 149 techniques and a 159-entry race/gene/level learn table. Projectiles use the original damage coefficients, ki-cost formula and cooldowns. |
 | Transformations | `Transformations/*.dm` | Level requirements and stat multipliers for each race and gene. Super Saiyan hair and auras are shown. |
+| Appearance | `Choose_Base`, `CreateChar`, `ApplyIconHair`, the `*_Multi` procs | Only Humans, Saiyans, Half Saiyans and Androids pick a skin and hair on the human base; Androids can also be Gluttonous (Android 21). Every other race uses its own sprite, and genes swap it where the original does (Hitman, Pride Trooper, Yardrat, Moro, Kamenian, Rebrianne, the three Lycanthropes, Cooler/King Cold, Zealot Kai, Janemba, Fomhoire with hair, Universe 2 Tuffle, Roshi). Bio Android picks a colour, Feline picks Destructive or Chaotic. |
 | Rules | `AttackNormal`, `Monster AI`, `Self Train`, `Meditate_Gain`, `Rest_Gain`, `Level_Up`, `Exp_Check`, `calcmaxpl` | Melee damage with dodge, block, counter and crits. Skill levelling works like the original: 13 skills, each up to 100. Modes (Super Easy → Godly) raise the exp needed per level. Fatigue is in. Ki Control caps your usable power. |
 | Monsters and NPCs | `/mob/Monster/*`, `/mob/NPC/*` | Original stats and exp/zenni rewards. Monsters aggro within 12 tiles, respawn, and stay out of safe zones. NPCs say lines taken from their original dialogue. |
 
@@ -44,7 +45,7 @@ grouped into general behaviours: volleys, area blasts, binds, strikes, buffs, he
 utilities. The rest are faithful projectiles.
 
 ## How to play
-1. Make a character: pick a race, then a gene, then your look and name. You start in the
+1. Make a character: pick a race, then a gene, then your look (if that race has choices) and name. You start in the
    Capsule City hospital, which is a safe zone.
 2. **Self Train** to level up and **Rest** when your fatigue bar is full. **Training
    Focus** chooses which stat Self Train raises and which skill Meditate trains.

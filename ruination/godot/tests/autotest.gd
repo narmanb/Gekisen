@@ -35,12 +35,63 @@ func state() -> String:
 		Game.fmt(P["stam"]), Game.fmt(P["zenni"]), P["x"], P["y"], P["z"], Game.busy, P["form"], (P["learned"] as Array).size()]
 
 
+## One preview per race / gene (and per look option that changes the sprite).
+func gallery() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 50
+	add_child(layer)
+	var bg := ColorRect.new()
+	bg.color = Color(0.12, 0.13, 0.2)
+	bg.size = Vector2(1280, 720)
+	layer.add_child(bg)
+	var combos: Array = []
+	for r in Data.rules["races"]:
+		for g in Data.rules["races"][r]["genes"]:
+			var p := {"race": r, "gene": g, "gender": "Male", "skin": "Tan", "hair": "Goku", "variant": ""}
+			combos.append(p)
+			if r == "Alien" and g == "Lycanthrope":
+				for v in ["Bergamo", "Lavender"]:
+					var q := p.duplicate()
+					q["variant"] = v
+					combos.append(q)
+			if r == "Feline" and g == "Destructive":
+				var q := p.duplicate()
+				q["skin"] = "Chaotic"
+				combos.append(q)
+			if r == "Bio Android" and g == "Pure Blooded":
+				var q := p.duplicate()
+				q["skin"] = "Blue"
+				combos.append(q)
+	var i := 0
+	for p in combos:
+		var sv = ui.SpriteView.new()
+		sv.scale_k = 2.0
+		sv.size = Vector2(84, 76)
+		sv.position = Vector2((i % 15) * 85, int(i / 15) * 118)
+		var m := Mob.new()
+		m.dir = 2
+		Game.build_appearance(p, m)
+		sv.mob = m
+		layer.add_child(sv)
+		var l := Label.new()
+		l.text = "%s\n%s%s" % [p["race"], p["gene"], (" " + p["variant"]) if p["variant"] != "" else ""]
+		l.add_theme_font_size_override("font_size", 10)
+		l.position = sv.position + Vector2(0, 78)
+		layer.add_child(l)
+		i += 1
+	print("GALLERY ", combos.size())
+	await wait(0.5)
+	await shot("02b_gallery")
+	layer.queue_free()
+
+
 func run() -> void:
 	await wait(1.0)
 	await shot("01_title")
 	ui._start_creation()
 	await wait(0.5)
 	await shot("02_race")
+	await gallery()
 	ui.creation = {"race": "Saiyan", "gene": "Honourable", "gender": "Male", "skin": "Tan", "hair": "Vegeta", "name": "Tester"}
 	ui._look_step()
 	await wait(0.4)
@@ -178,5 +229,16 @@ func run() -> void:
 	print("GRAVITY AFTER LEAVING grav=", Game.grav)
 	Game.save()
 	print("SAVED ", FileAccess.file_exists(Game.SAVE_PATH))
+	# --- continue from the save after a window resize (the joystick must stay on screen)
+	Game.running = false
+	ui.set_game_ui(false)
+	ui.show_title()
+	DisplayServer.window_set_size(Vector2i(1100, 560))
+	await wait(0.6)
+	ui._begin(Game.load_save())
+	await wait(0.6)
+	var vr: Rect2 = ui.get_viewport().get_visible_rect()
+	print("STICK ", ui.stick.get_global_rect(), " in view ", vr.encloses(ui.stick.get_global_rect()), " ATTACK in view ", vr.encloses(ui.attack_btn.get_global_rect()))
+	await shot("14_continue_resized")
 	print("AUTOTEST OK")
 	get_tree().quit()

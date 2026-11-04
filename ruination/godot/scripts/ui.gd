@@ -107,6 +107,17 @@ func _label(text: String, size := 18, col := Color(0.95, 0.95, 0.97)) -> Label:
 	return l
 
 
+## Place an anchored control by its offsets from the anchor. Setting .position instead
+## depends on the parent's size at that moment, which is not final yet on some starts
+## (the joystick could end up off-screen when continuing a saved game).
+func _offs(c: Control, off: Vector2) -> void:
+	var s := c.size if c.size != Vector2.ZERO else c.custom_minimum_size
+	c.offset_left = off.x
+	c.offset_top = off.y
+	c.offset_right = off.x + s.x
+	c.offset_bottom = off.y + s.y
+
+
 func _button(text: String, cb: Callable, size := 18) -> Button:
 	var b := Button.new()
 	b.text = text
@@ -160,7 +171,7 @@ func _build_hud() -> void:
 	# top-right buttons
 	var tr := HBoxContainer.new()
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	tr.position = Vector2(-330, 10)
+	_offs(tr, Vector2(-330, 10))
 	tr.custom_minimum_size = Vector2(320, 56)
 	tr.alignment = BoxContainer.ALIGNMENT_END
 	tr.add_theme_constant_override("separation", 8)
@@ -170,7 +181,8 @@ func _build_hud() -> void:
 	tr.add_child(_button("Menu", func(): menu_panel.visible = not menu_panel.visible, 18))
 	assign_hint = _label("", 20, GOLD)
 	assign_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	assign_hint.position.y -= 150
+	assign_hint.offset_top -= 150
+	assign_hint.offset_bottom -= 150
 	assign_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	assign_hint.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	hud.add_child(assign_hint)
@@ -317,7 +329,7 @@ func _build_hotbar() -> void:
 	var w := SLOTS * 68 + 90
 	hotbar.custom_minimum_size = Vector2(w, 76)
 	hotbar.size = Vector2(w, 76)
-	hotbar.position = Vector2(-w / 2.0 + 40, -84)
+	_offs(hotbar, Vector2(-w / 2.0 + 40, -84))
 	hotbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(hotbar)
 	var bg := Panel.new()
@@ -348,7 +360,7 @@ func _build_hotbar() -> void:
 	attack_btn.ui = self
 	attack_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	attack_btn.size = Vector2(120, 120)
-	attack_btn.position = Vector2(-140, -140)
+	_offs(attack_btn, Vector2(-140, -140))
 	attack_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(attack_btn)
 	action_panel = Control.new()
@@ -456,7 +468,7 @@ func _build_stick() -> void:
 	stick = Stick.new()
 	stick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	stick.size = Vector2(190, 190)
-	stick.position = Vector2(24, -214)
+	_offs(stick, Vector2(24, -214))
 	stick.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(stick)
 
@@ -587,7 +599,7 @@ func _build_book() -> void:
 	book = PanelContainer.new()
 	book.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	book.custom_minimum_size = Vector2(760, 470)
-	book.position = Vector2(-380, -280)
+	_offs(book, Vector2(-380, -280))
 	book.visible = false
 	root.add_child(book)
 	var v := VBoxContainer.new()
@@ -683,7 +695,7 @@ func _build_stats() -> void:
 	stats_panel = PanelContainer.new()
 	stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	stats_panel.custom_minimum_size = Vector2(700, 470)
-	stats_panel.position = Vector2(-350, -280)
+	_offs(stats_panel, Vector2(-350, -280))
 	stats_panel.visible = false
 	root.add_child(stats_panel)
 	var v := VBoxContainer.new()
@@ -741,7 +753,7 @@ func _build_menu() -> void:
 	menu_panel = PanelContainer.new()
 	menu_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	menu_panel.custom_minimum_size = Vector2(380, 0)
-	menu_panel.position = Vector2(-190, -200)
+	_offs(menu_panel, Vector2(-190, -200))
 	menu_panel.visible = false
 	root.add_child(menu_panel)
 	var v := VBoxContainer.new()
@@ -771,7 +783,7 @@ func _show_dialog() -> void:
 	dialog_panel = PanelContainer.new()
 	dialog_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	dialog_panel.custom_minimum_size = Vector2(520, 0)
-	dialog_panel.position = Vector2(-260, -240)
+	_offs(dialog_panel, Vector2(-260, -240))
 	modal_layer.add_child(dialog_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
@@ -824,7 +836,7 @@ func show_title() -> void:
 	title_root = _fullscreen_bg()
 	var v := VBoxContainer.new()
 	v.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	v.position = Vector2(-300, -220)
+	_offs(v, Vector2(-300, -220))
 	v.custom_minimum_size = Vector2(600, 0)
 	v.add_theme_constant_override("separation", 14)
 	title_root.add_child(v)
@@ -877,7 +889,7 @@ func _start_creation() -> void:
 	if title_root:
 		title_root.queue_free()
 		title_root = null
-	creation = {"race": "Saiyan", "gene": "", "gender": "Male", "skin": "Tan", "hair": "Goku", "name": ""}
+	creation = {"race": "Saiyan", "gene": "", "gender": "Male", "skin": "Tan", "hair": "Goku", "variant": "", "name": ""}
 	create_root = _fullscreen_bg()
 	_race_step()
 
@@ -964,13 +976,7 @@ func _race_step() -> void:
 		b.text = r
 		b.custom_minimum_size = Vector2(170, 64)
 		b.clip_text = true
-		var icon_id := Game.base_icon({"race": r, "gender": "Male", "skin": "Tan"})
-		var fr := Data.frame(icon_id, "", 2, 0, false)
-		if not fr.is_empty():
-			var at := AtlasTexture.new()
-			at.atlas = fr[0]
-			at.region = Rect2(fr[1].position + Vector2(0, fr[1].size.y - 32), Vector2(32, 32))
-			b.icon = at
+		b.icon = _icon_tex(Game.base_icon({"race": r, "gene": Data.rules["races"][r]["genes"][0], "gender": "Male", "skin": "Tan"}))
 		b.pressed.connect(func(): select.call(r))
 		grid.add_child(b)
 	select.call(creation["race"])
@@ -980,6 +986,16 @@ func _race_step() -> void:
 	v.add_child(nav)
 	nav.add_child(_button("Back", func(): create_root.queue_free(); create_root = null; show_title(), 20))
 	nav.add_child(_button("Next: Gene", func(): _gene_step(), 20))
+
+
+func _icon_tex(icon_id: int) -> Texture2D:
+	var fr := Data.frame(icon_id, "", 2, 0, false)
+	if fr.is_empty():
+		return null
+	var at := AtlasTexture.new()
+	at.atlas = fr[0]
+	at.region = Rect2(fr[1].position + Vector2(0, fr[1].size.y - 32), Vector2(32, 32))
+	return at
 
 
 func _preview_mob() -> Mob:
@@ -1000,7 +1016,7 @@ func _gene_step() -> void:
 		var gm: Dictionary = rd.get("gene_multi", {}).get(g, {})
 		var bonus: Array = []
 		for k in gm:
-			bonus.append("%s +%s" % [k, gm[k]])
+			bonus.append("%s %s%s" % [k, "+" if float(gm[k]) >= 0 else "", gm[k]])
 		var p := {"race": r, "gene": g}
 		var fl := Game.forms_for(p)
 		var lv: Array = []
@@ -1014,6 +1030,9 @@ func _gene_step() -> void:
 			"; bonus " + ", ".join(bonus) if not bonus.is_empty() else "",
 			"; techniques: " + ", ".join(gtech) if not gtech.is_empty() else ""]
 		var b := _button(txt, _pick_gene.bind(g), 16)
+		var gp := creation.duplicate()
+		gp["gene"] = g
+		b.icon = _icon_tex(Game.base_icon(gp))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		v.add_child(b)
@@ -1025,8 +1044,7 @@ func _gene_step() -> void:
 
 func _pick_gene(g: String) -> void:
 	creation["gene"] = g
-	var rd: Dictionary = Data.rules["races"][creation["race"]]
-	if rd.get("custom", false) or creation["race"] in ["Bio Android", "Feline"]:
+	if not Game.look_options(creation).is_empty():
 		_look_step()
 	else:
 		_name_step()
@@ -1048,14 +1066,8 @@ func _look_step() -> void:
 	h.add_child(opts)
 	var refresh := func(): preview.mob = _preview_mob()
 	var rot := _button("Rotate", func(): preview.mob.dir = {2: 4, 4: 1, 1: 8, 8: 2}[preview.mob.dir])
-	if r == "Bio Android":
-		opts.add_child(_choice("Colour", ["Green", "Blue"], "skin", refresh))
-	elif r == "Feline":
-		opts.add_child(_label("Your appearance depends on your gene.", 16))
-	else:
-		opts.add_child(_choice("Gender", ["Male", "Female"], "gender", refresh))
-		opts.add_child(_choice("Skin", ["Tan", "White", "Dark"], "skin", refresh))
-		opts.add_child(_choice("Hair", Game.HAIRS.keys(), "hair", refresh))
+	for o in Game.look_options(creation):
+		opts.add_child(_choice(o[0], o[2], o[1], refresh))
 	opts.add_child(rot)
 	var nav := HBoxContainer.new()
 	nav.alignment = BoxContainer.ALIGNMENT_END

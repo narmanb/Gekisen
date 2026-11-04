@@ -236,7 +236,15 @@ def races(tree):
         res[race]['genes'] = genes or ['Pure Blooded']
         res[race]['multi'] = mult['base'] or {'power': 4, 'ki': 4, 'strength': 4, 'defence': 4}
         res[race]['gene_multi'] = mult['genes']
-        res[race]['custom'] = race in ('Human', 'Saiyan', 'Half Saiyan', 'Android', 'Alien', 'Bio Warrior')
+        # races that pick a skin + hair on the human base (Choose_Base / ApplyIconHair)
+        res[race]['custom'] = race in ('Human', 'Saiyan', 'Half Saiyan', 'Android')
+        if race == 'Android' and 'Android21' in multis:
+            # "Gluttonous (Android 21)": its own base multipliers, stored as a gene bonus
+            a21 = multis['Android21']['base']
+            res[race]['genes'].append('Gluttonous')
+            res[race]['gene_multi']['Gluttonous'] = {k: a21.get(k, 4) - res[race]['multi'].get(k, 4)
+                                                     for k in ('power', 'ki', 'strength', 'defence')
+                                                     if a21.get(k, 4) != res[race]['multi'].get(k, 4)}
     return res
 
 
@@ -244,16 +252,41 @@ def forms(tree):
     out = {}
     tdir = os.path.join(ROOT, 'DBFT Programming', 'Transformations')
     for fn in sorted(os.listdir(tdir)):
-        if not fn.endswith('Transformation.dm') or fn.startswith('Transform'):
+        if not (fn.endswith('Transformation.dm') or fn == 'BioWarrior Transform.dm') or fn.startswith('Transform'):
             continue
-        race = fn.replace(' Transformation.dm', '')
+        race = fn.replace(' Transformation.dm', '').replace(' Transform.dm', '')
         src = open(os.path.join(tdir, fn), encoding='latin-1').read()
         src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+        # Form procs (e.g. MoroTrans(form), PTForm(form)) are called from a per-gene
+        # dispatcher. Attribute each proc to the gene that calls it so its multipliers and
+        # icons don't get mixed with another gene's.
+        lines_all = src.split('\n')
+        procs = [(i, m.group(1)) for i, l in enumerate(lines_all)
+                 for m in [re.match(r'^\t{1,2}(\w+)\((?:form as num)?\)\s*$', l)] if m]
+        pnames = {n for _, n in procs}
+        proc_body = {}
+        for k, (i, n) in enumerate(procs):
+            j = procs[k + 1][0] if k + 1 < len(procs) else len(lines_all)
+            proc_body[n] = proc_body.get(n, '') + '\n'.join(lines_all[i:j])
+        proc_gene = {}
+        for g, region in gene_regions(src):
+            for n in re.findall(r'src\.(\w+)\(', region):
+                if n in pnames:
+                    proc_gene[n] = g if proc_gene.get(n, g) == g else '*'
+        proc_at = []
+        for i, n in procs:
+            proc_at.append((i, n))
         menus = {}
         stack = []
         cur = None
         seq = {}
-        for line in src.split('\n'):
+        curproc = None
+        pi = 0
+        for li, line in enumerate(src.split('\n')):
+            while pi < len(proc_at) and proc_at[pi][0] <= li:
+                curproc = proc_at[pi][1]
+                pi += 1
+            dflt = proc_gene.get(curproc, '*')
             s = line.strip()
             if not s or s.startswith('//'):
                 continue
@@ -271,10 +304,10 @@ def forms(tree):
             if m:
                 stack.append((ind, m.group(1)))
                 continue
-            m = re.match(r'var/(plg|kig|strg|defg)\s*=\s*([\d.]+)', s)
+            m = re.match(r'var/(plg|kig|strg|defg)\s*=\s*\(?([\d.]+)', s)
             if m:
                 g = next((re.search(r'gene\s*==\s*"([^"]+)"', c).group(1) for _, c in stack
-                          if re.search(r'gene\s*==\s*"([^"]+)"', c)), '*')
+                          if re.search(r'gene\s*==\s*"([^"]+)"', c)), dflt)
                 f = next((int(re.search(r'form\s*==\s*(\d+)', c).group(1)) for _, c in stack
                           if re.search(r'form\s*==\s*(\d+)', c)), None)
                 if f is None:
@@ -307,6 +340,9 @@ def forms(tree):
         for g, region in gene_regions(src):
             if g in race_forms and race_forms[g]:
                 continue
+            for n in re.findall(r'src\.(\w+)\(', region):
+                if n in proc_body and proc_gene.get(n) == g:
+                    region += '\n' + proc_body[n]
             levels = []
             for lv in re.findall(r'src\.level\s*>=\s*(\d+)', region):
                 lv = int(lv)
@@ -314,6 +350,28 @@ def forms(tree):
                     levels.append(lv)
             levels = sorted(levels)[:7]
             if not levels:
+                # forms gated on powerlevel/eats/chips (Majin, Android, Feline, Konat, Tuffle):
+                # read them in order, split at each "src.form_N = 1"
+                parts = re.split(r'src\.form_\d\s*=\s*1', region)
+                segs = parts[:-1]
+                star = race_forms.get('*') or []
+                lst = []
+                for k, seg in enumerate(segs[:7]):
+                    # the icon is set just before or just after the form flag
+                    after = parts[k + 1].split('if(')[0]
+                    mm = re.findall(r'var/plg\s*=\s*\(?([\d.]+)', seg) or \
+                        re.findall(r'src\.powerlevel_max\s*\*=\s*([\d.]+)', seg)
+                    mult = float(mm[-1]) if mm else DEFAULT_MULT[min(k, len(DEFAULT_MULT) - 1)]
+                    ic = re.findall(r"src\.icon\s*=\s*'([^']+)'", after) or \
+                        re.findall(r"src\.icon\s*=\s*'([^']+)'", seg.split('enrage')[-1])
+                    lvl = star[k]['level'] if k < len(star) else DEFAULT_LEVELS[min(k, len(DEFAULT_LEVELS) - 1)]
+                    f = {'form': k + 1, 'level': lvl,
+                         'pl': mult, 'ki': mult, 'str': mult, 'def': mult}
+                    if ic:
+                        f['icon'] = os.path.basename(ic[0]).lower()
+                    lst.append(f)
+                if lst:
+                    race_forms[g] = lst
                 continue
             mults = [float(x) for x in re.findall(r'var/plg\s*=\s*\(?([\d.]+)', region)]
             icons = [os.path.basename(i).lower() for i in re.findall(r"src\.icon\s*=\s*'([^']+)'", region)]
@@ -330,6 +388,7 @@ def forms(tree):
 
 
 DEFAULT_MULT = [5, 8, 10, 12, 15, 18, 22]
+DEFAULT_LEVELS = [20000, 50000, 100000, 150000, 200000, 250000, 300000]
 
 
 def gene_regions(src):
@@ -341,7 +400,8 @@ def gene_regions(src):
         if m:
             ind = len(m.group(1))
             j = i + 1
-            while j < len(lines) and (not lines[j].strip() or len(lines[j]) - len(lines[j].lstrip('\t')) > ind):
+            while j < len(lines) and (not lines[j].strip() or lines[j].strip().startswith('//')
+                                      or len(lines[j]) - len(lines[j].lstrip('\t')) > ind):
                 j += 1
             yield m.group(2), '\n'.join(lines[i:j])
             i = j

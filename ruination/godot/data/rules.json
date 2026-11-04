@@ -12,7 +12,8 @@
    "icons": [],
    "genes": [
     "Mechanical",
-    "Bionic"
+    "Bionic",
+    "Gluttonous"
    ],
    "multi": {
     "power": 5.0,
@@ -20,7 +21,12 @@
     "strength": 4.0,
     "defence": 5.0
    },
-   "gene_multi": {},
+   "gene_multi": {
+    "Gluttonous": {
+     "power": -1.0,
+     "defence": -3.0
+    }
+   },
    "custom": true
   },
   "Bio Android": {
@@ -73,7 +79,7 @@
     "defence": 3.0
    },
    "gene_multi": {},
-   "custom": true
+   "custom": false
   },
   "Changeling": {
    "skills": {
@@ -550,7 +556,7 @@
     "defence": 3.0
    },
    "gene_multi": {},
-   "custom": true
+   "custom": false
   }
  },
  "learn": [
@@ -3586,7 +3592,7 @@
      "ki": 25.0,
      "str": 25.0,
      "def": 25.0,
-     "icon": "rebriannetrans.dmi"
+     "icon": "morotrans.dmi"
     },
     {
      "form": 2,
@@ -3595,81 +3601,81 @@
      "ki": 65.0,
      "str": 65.0,
      "def": 65.0,
-     "icon": "rebriannetrans2.dmi"
+     "icon": "morotrans2.dmi"
     }
    ],
    "Kamenian": [
     {
      "form": 1,
      "level": 20000,
-     "pl": 30.0,
-     "ki": 25.0,
-     "str": 25.0,
-     "def": 25.0,
-     "icon": "rebriannetrans.dmi"
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "kameniantrans.dmi"
     },
     {
      "form": 2,
      "level": 60000,
-     "pl": 65.0,
-     "ki": 65.0,
-     "str": 65.0,
-     "def": 65.0,
-     "icon": "rebriannetrans2.dmi"
+     "pl": 23.0,
+     "ki": 23.0,
+     "str": 23.0,
+     "def": 23.0,
+     "icon": "kamform3.dmi"
     },
     {
      "form": 3,
      "level": 135000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 41.0,
+     "ki": 41.0,
+     "str": 41.0,
+     "def": 41.0,
+     "icon": "kamform4.dmi"
     },
     {
      "form": 4,
      "level": 200000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 60.0,
+     "ki": 61.0,
+     "str": 61.0,
+     "def": 61.0,
+     "icon": "kamform5.dmi"
     }
    ],
    "Pride Trooper": [
     {
      "form": 1,
      "level": 25000,
-     "pl": 30.0,
-     "ki": 25.0,
-     "str": 25.0,
-     "def": 25.0,
-     "icon": "rebriannetrans.dmi"
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
     },
     {
      "form": 2,
      "level": 75000,
-     "pl": 65.0,
-     "ki": 65.0,
-     "str": 65.0,
-     "def": 65.0,
-     "icon": "rebriannetrans2.dmi"
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0
     },
     {
      "form": 3,
      "level": 135000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0
     }
    ],
    "Rebrianne": [
     {
      "form": 1,
      "level": 50000,
-     "pl": 30.0,
-     "ki": 25.0,
-     "str": 25.0,
-     "def": 25.0,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 20.0,
+     "def": 20.0,
      "icon": "rebriannetrans.dmi"
     },
     {
@@ -3680,6 +3686,26 @@
      "str": 65.0,
      "def": 65.0,
      "icon": "rebriannetrans2.dmi"
+    }
+   ],
+   "Yardrat": [
+    {
+     "form": 1,
+     "level": 85000,
+     "pl": 50.0,
+     "ki": 50.0,
+     "str": 55.00000000000001,
+     "def": 55.00000000000001
+    }
+   ],
+   "Lycanthrope": [
+    {
+     "form": 1,
+     "level": 85000,
+     "pl": 62.0,
+     "ki": 62.0,
+     "str": 68.2,
+     "def": 68.2
     }
    ],
    "Hitman": [
@@ -3706,18 +3732,51 @@
     {
      "form": 1,
      "level": 25000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 24.0,
+     "ki": 24.0,
+     "str": 24.0,
+     "def": 24.0,
+     "icon": "android 21 female trans good.dmi"
     },
     {
      "form": 2,
      "level": 100000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 55.0,
+     "ki": 58.0,
+     "str": 58.0,
+     "def": 55.0,
+     "icon": "a21femalegood2.dmi"
+    }
+   ],
+   "Mechanical": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 6.0,
+     "ki": 6.0,
+     "str": 6.0,
+     "def": 6.0,
+     "icon": "androidform9.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 13.3,
+     "ki": 13.3,
+     "str": 13.3,
+     "def": 13.3,
+     "icon": "androidform5.dmi"
+    }
+   ],
+   "Bionic": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 85.0,
+     "ki": 85.0,
+     "str": 85.0,
+     "def": 85.0,
+     "icon": "androidform5.dmi"
     }
    ]
   },
@@ -3745,16 +3804,92 @@
      "pl": 33.0,
      "ki": 33.0,
      "str": 33.0,
-     "def": 33.0,
-     "icon": "babidi.dmi"
+     "def": 33.0
     },
     {
      "form": 4,
      "level": 120000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 45.0,
+     "ki": 48.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "babidi.dmi"
+    }
+   ],
+   "Fiendish": [
+    {
+     "form": 1,
+     "level": 15000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 2,
+     "level": 35000,
+     "pl": 22.0,
+     "ki": 22.0,
+     "str": 22.0,
+     "def": 22.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 3,
+     "level": 75000,
+     "pl": 33.0,
+     "ki": 33.0,
+     "str": 33.0,
+     "def": 33.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "babidi.dmi"
+    }
+   ],
+   "Diabolical": [
+    {
+     "form": 1,
+     "level": 15000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 2,
+     "level": 35000,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 20.0,
+     "def": 20.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 3,
+     "level": 75000,
+     "pl": 35.0,
+     "ki": 35.0,
+     "str": 35.0,
+     "def": 35.0,
+     "icon": "babidi form 1.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "babidi.dmi"
     }
    ]
   },
@@ -3809,6 +3944,149 @@
     }
    ]
   },
+  "Bio Warrior": {
+   "*": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "warrior1.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "warrior2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 80000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0,
+     "icon": "warrior3.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "warrior4.dmi"
+    },
+    {
+     "form": 5,
+     "level": 170000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 60.0,
+     "def": 55.0,
+     "icon": "warrior5.dmi"
+    }
+   ],
+   "Primitive": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "warrior1.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "warrior2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 80000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0,
+     "icon": "warrior3.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "warrior4.dmi"
+    },
+    {
+     "form": 5,
+     "level": 170000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0,
+     "icon": "warrior5.dmi"
+    }
+   ],
+   "Genetically Modified": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "warrior1.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 15.0,
+     "ki": 15.0,
+     "str": 15.0,
+     "def": 15.0,
+     "icon": "warrior2.dmi"
+    },
+    {
+     "form": 3,
+     "level": 80000,
+     "pl": 30.0,
+     "ki": 30.0,
+     "str": 30.0,
+     "def": 30.0,
+     "icon": "warrior3.dmi"
+    },
+    {
+     "form": 4,
+     "level": 120000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0,
+     "icon": "warrior4.dmi"
+    },
+    {
+     "form": 5,
+     "level": 170000,
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 60.0,
+     "def": 60.0,
+     "icon": "warrior5.dmi"
+    }
+   ]
+  },
   "Heran": {
    "*": [
     {
@@ -3833,16 +4111,86 @@
      "pl": 45.0,
      "ki": 45.0,
      "str": 45.0,
-     "def": 45.0,
-     "icon": "bojack rage.dmi"
+     "def": 45.0
     },
     {
      "form": 4,
      "level": 150000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 50.0,
+     "ki": 50.0,
+     "str": 50.0,
+     "def": 50.0,
+     "icon": "bojack rage.dmi"
+    }
+   ],
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 50.0,
+     "ki": 50.0,
+     "str": 50.0,
+     "def": 50.0,
+     "icon": "bojack rage.dmi"
+    }
+   ],
+   "Primal": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 12.0,
+     "ki": 12.0,
+     "str": 12.0,
+     "def": 12.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0,
+     "icon": "bojack rage.dmi"
     }
    ]
   },
@@ -3851,58 +4199,58 @@
     {
      "form": 1,
      "level": 20000,
-     "pl": 15.0,
-     "ki": 15.0,
-     "str": 15.0,
-     "def": 15.0,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 13.0,
+     "def": 13.0,
      "icon": "cooler - form 2.dmi"
     },
     {
      "form": 2,
      "level": 50000,
-     "pl": 45.0,
-     "ki": 45.0,
-     "str": 45.0,
-     "def": 45.0,
+     "pl": 20.0,
+     "ki": 20.0,
+     "str": 23.0,
+     "def": 23.0,
      "icon": "cooler - form 2.dmi"
     },
     {
      "form": 3,
      "level": 100000,
-     "pl": 35.0,
-     "ki": 35.0,
-     "str": 35.0,
-     "def": 35.0,
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 47.0,
+     "def": 47.0,
      "icon": "cooler - form 2.dmi"
     },
     {
      "form": 4,
      "level": 150000,
-     "pl": 45.0,
-     "ki": 47.0,
-     "str": 45.0,
-     "def": 45.0,
-     "icon": "changling - form 4 100.dmi"
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 63.0,
+     "def": 63.0,
+     "icon": "cooler - form 4.dmi"
     }
    ],
    "Rageful": [
     {
      "form": 1,
      "level": 20000,
-     "pl": 15.0,
-     "ki": 15.0,
-     "str": 15.0,
-     "def": 15.0,
-     "icon": "cooler - form 2.dmi"
+     "pl": 10.0,
+     "ki": 13.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "changling - form 2.dmi"
     },
     {
      "form": 2,
      "level": 50000,
-     "pl": 45.0,
-     "ki": 45.0,
-     "str": 45.0,
-     "def": 45.0,
-     "icon": "cooler - form 2.dmi"
+     "pl": 25.0,
+     "ki": 27.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "changling - form 3.dmi"
     },
     {
      "form": 3,
@@ -3911,7 +4259,7 @@
      "ki": 35.0,
      "str": 35.0,
      "def": 35.0,
-     "icon": "cooler - form 2.dmi"
+     "icon": "changling - form 4.dmi"
     },
     {
      "form": 4,
@@ -3925,30 +4273,31 @@
     {
      "form": 5,
      "level": 170000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 60.0,
+     "ki": 63.0,
+     "str": 60.0,
+     "def": 60.0,
+     "icon": "changling - golden form.dmi"
     }
    ],
    "Regalis": [
     {
      "form": 1,
      "level": 20000,
-     "pl": 15.0,
-     "ki": 15.0,
-     "str": 15.0,
-     "def": 15.0,
-     "icon": "cooler - form 2.dmi"
+     "pl": 13.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "kc-form-2.dmi"
     },
     {
      "form": 2,
      "level": 50000,
-     "pl": 45.0,
-     "ki": 45.0,
-     "str": 45.0,
-     "def": 45.0,
-     "icon": "cooler - form 2.dmi"
+     "pl": 27.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0,
+     "icon": "kc-form-3.dmi"
     },
     {
      "form": 3,
@@ -3957,7 +4306,7 @@
      "ki": 35.0,
      "str": 35.0,
      "def": 35.0,
-     "icon": "cooler - form 2.dmi"
+     "icon": "kc-form-4.dmi"
     },
     {
      "form": 4,
@@ -3966,15 +4315,16 @@
      "ki": 47.0,
      "str": 45.0,
      "def": 45.0,
-     "icon": "changling - form 4 100.dmi"
+     "icon": "kc-form-gold.dmi"
     },
     {
      "form": 5,
      "level": 170000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 63.0,
+     "ki": 60.0,
+     "str": 60.0,
+     "def": 60.0,
+     "icon": "kc-form-platinum.dmi"
     }
    ],
    "Vindictive": [
@@ -3994,16 +4344,16 @@
      "ki": 45.0,
      "str": 45.0,
      "def": 45.0,
-     "icon": "cooler - form 2.dmi"
+     "icon": "coolergolden.dmi"
     },
     {
      "form": 3,
      "level": 130000,
-     "pl": 35.0,
-     "ki": 35.0,
-     "str": 35.0,
-     "def": 35.0,
-     "icon": "cooler - form 2.dmi"
+     "pl": 63.0,
+     "ki": 63.0,
+     "str": 63.0,
+     "def": 63.0,
+     "icon": "coolerplatinum.dmi"
     }
    ]
   },
@@ -4016,7 +4366,7 @@
      "ki": 10.0,
      "str": 10.0,
      "def": 10.0,
-     "icon": "demon - form 7.dmi"
+     "icon": "demon - form 2.dmi"
     },
     {
      "form": 2,
@@ -4025,7 +4375,7 @@
      "ki": 25.0,
      "str": 25.0,
      "def": 25.0,
-     "icon": "demon race.dmi"
+     "icon": "demon - form 3.dmi"
     },
     {
      "form": 3,
@@ -4039,36 +4389,80 @@
     {
      "form": 4,
      "level": 150000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0,
+     "icon": "demon - form 5.dmi"
     }
    ],
    "Fomhoire": [
     {
      "form": 1,
      "level": 25000,
-     "pl": 5,
-     "ki": 5,
-     "str": 5.5,
-     "def": 5.5
+     "pl": 24.0,
+     "ki": 24.0,
+     "str": 26.400000000000002,
+     "def": 26.400000000000002,
+     "icon": "demon - form 7.dmi"
     },
     {
      "form": 2,
      "level": 85000,
-     "pl": 8,
-     "ki": 8,
-     "str": 8.8,
-     "def": 8.8
+     "pl": 40.0,
+     "ki": 40.0,
+     "str": 44.0,
+     "def": 44.0,
+     "icon": "demon race.dmi"
     },
     {
      "form": 3,
      "level": 150000,
-     "pl": 10,
-     "ki": 10,
-     "str": 11.0,
-     "def": 11.0
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 66.0,
+     "def": 66.0,
+     "icon": "demon race trans.dmi"
+    }
+   ],
+   "Vile": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 8.5,
+     "ki": 8.5,
+     "str": 8.5,
+     "def": 8.5,
+     "icon": "demon - form 3.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 3.75,
+     "ki": 3.75,
+     "str": 3.75,
+     "def": 3.75,
+     "icon": "demon - form 5.dmi"
+    }
+   ],
+   "Sinister": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 8.0,
+     "ki": 8.0,
+     "str": 8.0,
+     "def": 8.0,
+     "icon": "demon - form 3.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "demon - form 6.dmi"
     }
    ]
   },
@@ -4107,7 +4501,36 @@
     }
    ]
   },
-  "Feline": {},
+  "Feline": {
+   "Destructive": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 8.0,
+     "ki": 8.0,
+     "str": 8.0,
+     "def": 8.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    }
+   ],
+   "Godly": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 85.0,
+     "ki": 85.0,
+     "str": 85.0,
+     "def": 85.0
+    }
+   ]
+  },
   "Half Saiyan": {
    "Mystic": [
     {
@@ -4115,7 +4538,7 @@
      "level": 20000,
      "pl": 10.0,
      "ki": 10.0,
-     "str": 12.0,
+     "str": 10.0,
      "def": 10.0,
      "ssjhair": 1
     },
@@ -4124,36 +4547,35 @@
      "level": 50000,
      "pl": 25.0,
      "ki": 25.0,
-     "str": 28.0,
+     "str": 25.0,
      "def": 25.0,
      "ssjhair": 1
     },
     {
      "form": 3,
      "level": 50000,
-     "pl": 35.0,
-     "ki": 35.0,
-     "str": 38.0,
-     "def": 35.0,
+     "pl": 30.0,
+     "ki": 33.0,
+     "str": 30.0,
+     "def": 30.0,
      "ssjhair": 1
     },
     {
      "form": 4,
      "level": 100000,
      "pl": 45.0,
-     "ki": 45.0,
-     "str": 48.0,
+     "ki": 47.0,
+     "str": 45.0,
      "def": 45.0,
      "ssjhair": 1
     },
     {
      "form": 5,
      "level": 150000,
-     "pl": 55.0,
-     "ki": 55.0,
-     "str": 58.0,
-     "def": 55.0,
-     "ssjhair": 1
+     "pl": 60.0,
+     "ki": 63.0,
+     "str": 60.0,
+     "def": 60.0
     }
    ],
    "Legendary": [
@@ -4205,10 +4627,10 @@
     {
      "form": 6,
      "level": 200000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 65.0,
+     "ki": 65.0,
+     "str": 70.0,
+     "def": 65.0
     }
    ],
    "Rageful": [
@@ -4217,7 +4639,7 @@
      "level": 20000,
      "pl": 10.0,
      "ki": 10.0,
-     "str": 12.0,
+     "str": 10.0,
      "def": 10.0,
      "ssjhair": 1
     },
@@ -4226,35 +4648,35 @@
      "level": 50000,
      "pl": 25.0,
      "ki": 25.0,
-     "str": 28.0,
+     "str": 25.0,
      "def": 25.0,
      "ssjhair": 1
     },
     {
      "form": 3,
      "level": 50000,
-     "pl": 35.0,
-     "ki": 35.0,
-     "str": 38.0,
-     "def": 35.0,
+     "pl": 30.0,
+     "ki": 33.0,
+     "str": 30.0,
+     "def": 30.0,
      "ssjhair": 1
     },
     {
      "form": 4,
      "level": 100000,
      "pl": 45.0,
-     "ki": 45.0,
-     "str": 48.0,
+     "ki": 47.0,
+     "str": 45.0,
      "def": 45.0,
      "ssjhair": 1
     },
     {
      "form": 5,
      "level": 150000,
-     "pl": 55.0,
-     "ki": 55.0,
-     "str": 58.0,
-     "def": 55.0,
+     "pl": 67.0,
+     "ki": 65.0,
+     "str": 65.0,
+     "def": 65.0,
      "ssjhair": 1
     }
    ]
@@ -4267,32 +4689,31 @@
      "pl": 10.0,
      "ki": 10.0,
      "str": 10.0,
-     "def": 10.0,
-     "icon": "roshi_trans dark.dmi"
+     "def": 10.0
     },
     {
      "form": 2,
      "level": 50000,
-     "pl": 20.0,
-     "ki": 20.0,
-     "str": 20.0,
-     "def": 20.0
+     "pl": 25.0,
+     "ki": 25.0,
+     "str": 25.0,
+     "def": 25.0
     },
     {
      "form": 3,
      "level": 100000,
-     "pl": 30.0,
-     "ki": 30.0,
-     "str": 30.0,
-     "def": 30.0
-    },
-    {
-     "form": 4,
-     "level": 150000,
      "pl": 40.0,
      "ki": 40.0,
      "str": 40.0,
      "def": 40.0
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 60.0,
+     "def": 60.0
     }
    ],
    "Mystic": [
@@ -4302,8 +4723,7 @@
      "pl": 10.0,
      "ki": 10.0,
      "str": 10.0,
-     "def": 10.0,
-     "icon": "roshi_trans dark.dmi"
+     "def": 10.0
     },
     {
      "form": 2,
@@ -4348,28 +4768,66 @@
     {
      "form": 7,
      "level": 200000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 60.0,
+     "ki": 62.0,
+     "str": 60.0,
+     "def": 60.0
+    }
+   ],
+   "Majin Incarnate": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 3.0,
+     "ki": 3.0,
+     "str": 3.0,
+     "def": 3.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 4.0,
+     "ki": 4.0,
+     "str": 4.0,
+     "def": 4.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 1.0,
+     "ki": 1.0,
+     "str": 1.0,
+     "def": 1.0
+    }
+   ],
+   "Bloodthirsty": [
+    {
+     "form": 1,
+     "level": 85000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 60.50000000000001,
+     "def": 60.50000000000001
     }
    ],
    "Roshi": [
     {
      "form": 1,
      "level": 25000,
-     "pl": 5,
-     "ki": 5,
-     "str": 5.5,
-     "def": 5.5
+     "pl": 29.0,
+     "ki": 29.0,
+     "str": 31.900000000000002,
+     "def": 31.900000000000002,
+     "icon": "roshi_trans dark.dmi"
     },
     {
      "form": 2,
      "level": 100000,
-     "pl": 8,
-     "ki": 8,
-     "str": 8.8,
-     "def": 8.8
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 66.0,
+     "def": 66.0,
+     "icon": "roshi_trans white.dmi"
     }
    ]
   },
@@ -4402,15 +4860,130 @@
     {
      "form": 4,
      "level": 120000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 45.0,
+     "ki": 45.0,
+     "str": 45.0,
+     "def": 45.0
+    }
+   ],
+   "Zealot": [
+    {
+     "form": 1,
+     "level": 130000,
+     "pl": 70.0,
+     "ki": 70.0,
+     "str": 77.0,
+     "def": 77.0
     }
    ]
   },
-  "Konat": {},
-  "Majin": {},
+  "Konat": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 7.5,
+     "ki": 7.5,
+     "str": 7.5,
+     "def": 7.5
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    }
+   ],
+   "Brave": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 8.0,
+     "ki": 8.0,
+     "str": 8.0,
+     "def": 8.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    }
+   ]
+  },
+  "Majin": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "majin - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "majin - form 3.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "majin - form 4.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 10.63,
+     "ki": 10.63,
+     "str": 10.63,
+     "def": 10.63,
+     "icon": "majin - form 5.dmi"
+    }
+   ],
+   "Malicious": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "majin - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "majin - form 7.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "majin - form 10.dmi"
+    }
+   ]
+  },
   "Namekian": {
    "Pure Blooded": [
     {
@@ -4449,6 +5022,26 @@
      "def": 5.5,
      "icon": "namek - super8.dmi"
     }
+   ],
+   "Corrupted": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 7.0,
+     "ki": 7.0,
+     "str": 7.0,
+     "def": 7.0,
+     "icon": "namek - super5.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 5.5,
+     "ki": 5.5,
+     "str": 5.5,
+     "def": 5.5,
+     "icon": "namek - super2.dmi"
+    }
    ]
   },
   "Saibaman": {
@@ -4483,10 +5076,49 @@
     {
      "form": 4,
      "level": 150000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0,
+     "icon": "saibaman - form 5.dmi"
+    }
+   ],
+   "Virulent": [
+    {
+     "form": 1,
+     "level": 25000,
+     "pl": 2.5,
+     "ki": 2.5,
+     "str": 2.5,
+     "def": 2.5,
+     "icon": "saibaman - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 3.0,
+     "ki": 3.0,
+     "str": 3.0,
+     "def": 3.0,
+     "icon": "saibaman - form 3.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 3.0,
+     "ki": 3.0,
+     "str": 3.0,
+     "def": 3.0,
+     "icon": "saibaman - form 4.dmi"
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 3.5,
+     "ki": 3.5,
+     "str": 3.5,
+     "def": 3.5,
+     "icon": "saibaman - form 5.dmi"
     }
    ],
    "Godly": [
@@ -4553,16 +5185,16 @@
      "pl": 47.0,
      "ki": 47.0,
      "str": 50.0,
-     "def": 50.0,
-     "icon": "male - ssj 4 dark.dmi"
+     "def": 50.0
     },
     {
      "form": 6,
      "level": 200000,
      "pl": 55.0,
      "ki": 55.0,
-     "str": 55.0,
-     "def": 55.0
+     "str": 58.0,
+     "def": 58.0,
+     "icon": "male - ssj 4 dark.dmi"
     }
    ],
    "Legendary": [
@@ -4572,8 +5204,7 @@
      "pl": 12.0,
      "ki": 12.0,
      "str": 15.0,
-     "def": 14.0,
-     "ssjhair": 1
+     "def": 14.0
     },
     {
      "form": 2,
@@ -4587,10 +5218,10 @@
     {
      "form": 3,
      "level": 150000,
-     "pl": 30.0,
-     "ki": 32.0,
-     "str": 30.0,
-     "def": 30.0,
+     "pl": 60.0,
+     "ki": 60.0,
+     "str": 63.0,
+     "def": 63.0,
      "ssjhair": 1
     }
    ],
@@ -4598,19 +5229,19 @@
     {
      "form": 1,
      "level": 20000,
-     "pl": 12.0,
-     "ki": 12.0,
-     "str": 15.0,
-     "def": 14.0,
+     "pl": 10.0,
+     "ki": 11.0,
+     "str": 10.0,
+     "def": 10.0,
      "ssjhair": 1
     },
     {
      "form": 2,
      "level": 50000,
-     "pl": 30.0,
-     "ki": 30.0,
-     "str": 35.0,
-     "def": 35.0,
+     "pl": 20.0,
+     "ki": 22.0,
+     "str": 20.0,
+     "def": 20.0,
      "ssjhair": 1
     },
     {
@@ -4650,13 +5281,142 @@
     {
      "form": 7,
      "level": 200000,
-     "pl": 2,
-     "ki": 2,
-     "str": 2,
-     "def": 2
+     "pl": 60.0,
+     "ki": 63.0,
+     "str": 60.0,
+     "def": 60.0
+    }
+   ],
+   "Prideful": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 17.0,
+     "ki": 17.0,
+     "str": 17.0,
+     "def": 17.0
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 28.0,
+     "ki": 28.0,
+     "str": 28.0,
+     "def": 28.0
+    },
+    {
+     "form": 4,
+     "level": 150000,
+     "pl": 38.0,
+     "ki": 38.0,
+     "str": 38.0,
+     "def": 38.0
+    },
+    {
+     "form": 5,
+     "level": 200000,
+     "pl": 47.0,
+     "ki": 47.0,
+     "str": 47.0,
+     "def": 47.0
+    },
+    {
+     "form": 6,
+     "level": 250000,
+     "pl": 55.0,
+     "ki": 55.0,
+     "str": 55.0,
+     "def": 55.0,
+     "icon": "male - ssj 4 dark.dmi"
     }
    ]
   },
-  "Tuffle": {}
+  "Tuffle": {
+   "Pure Blooded": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 8.5,
+     "ki": 8.5,
+     "str": 8.5,
+     "def": 8.5,
+     "icon": "bebi - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 10.0,
+     "ki": 10.0,
+     "str": 10.0,
+     "def": 10.0,
+     "icon": "bebi - form 3.dmi"
+    }
+   ],
+   "Virulent": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "bebi - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "bebi - form 3.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 2.5,
+     "ki": 2.5,
+     "str": 2.5,
+     "def": 2.5
+    }
+   ],
+   "Venerable": [
+    {
+     "form": 1,
+     "level": 20000,
+     "pl": 2.0,
+     "ki": 2.0,
+     "str": 2.0,
+     "def": 2.0,
+     "icon": "universe 2 tuffle - form 2.dmi"
+    },
+    {
+     "form": 2,
+     "level": 50000,
+     "pl": 5.0,
+     "ki": 5.0,
+     "str": 5.0,
+     "def": 5.0,
+     "icon": "universe 2 tuffle - form 3.dmi"
+    },
+    {
+     "form": 3,
+     "level": 100000,
+     "pl": 2.5,
+     "ki": 2.5,
+     "str": 2.5,
+     "def": 2.5,
+     "icon": "universe 2 tuffle - form 4.dmi"
+    }
+   ]
+  }
  }
 }
