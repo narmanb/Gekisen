@@ -41,11 +41,11 @@ const RACE_DATA := {
 	"Changling": {"pl": 25, "ki": 50, "stam": 100, "icon": "changling.dmi", "forms": "transform",
 		"info": "Frieza's race, with five forms (Frieza teaches them)."},
 	"Buu": {"pl": 5000, "ki": 500, "stam": 75, "icon": "buu.dmi", "forms": "buu",
-		"skills": ["Fly", "KiAbsorb", "KiBlast", "KiBeam", "Focus", "Sense", "Zanzoken", "Enrage", "Regeneration"],
+		"skills": ["Fly", "KiAbsorb", "KiBlast", "KiBeam", "Focus", "Sense", "Zanzoken", "Enrage", "Regeneration", "ShapeShift"],
 		"info": "Majin Buu's kin: tough, regenerating, and grows from Fat Buu to Super Buu."},
 	"Wizard": {"pl": 25, "ki": 5000, "stam": 100, "icon": "wizard.dmi",
-		"skills": ["Fly", "KiAbsorb", "KiBlast", "KiBeam", "Focus", "Sense", "Zanzoken", "Regeneration"],
-		"info": "Babidi's kind: weak bodies but enormous Ki."},
+		"skills": ["Fly", "KiAbsorb", "KiBlast", "KiBeam", "Focus", "Sense", "Zanzoken", "Regeneration", "Immolation", "Blind", "FlameShield", "ShapeShift"],
+		"info": "Babidi's kind: weak bodies but enormous Ki, and spells (Immolation, Blind, Flame Shield, Shape Shift)."},
 }
 const HAIRS := {"Bald": "", "Long": "hair_black_long.dmi", "Spikey": "hair_black_spikey.dmi", "Short Spikey": "gtvegeta.dmi",
 	"Mohawk": "hair_mohawk.dmi", "Short": "hair_black_short.dmi", "Recoome": "hair_reccoom.dmi", "Goku": "hair_goku.dmi",
@@ -89,6 +89,14 @@ const TECHS := {
 	"KiAbsorb": {"name": "Ki Absorb", "kind": "utility", "glyph": "ABS", "learn": "Androids, Buu, Wizards", "desc": "Absorb Ki from attacks: blocks half the damage you take."},
 	"Regeneration": {"name": "Regeneration", "kind": "utility", "glyph": "RGN", "learn": "Namek, Buu, Wizard", "desc": "Regenerate your powerlevel quickly."},
 	"Grow": {"name": "Grow", "kind": "utility", "glyph": "GRW", "learn": "Namek", "desc": "Grow giant: +50% powerlevel for a while."},
+	"Reincarnation": {"name": "Reincarnation", "kind": "utility", "glyph": "UBU", "learn": "Babidi's Ship quest (Buu or Earthling, good)", "desc": "Transform into Ubuu: x5 powerlevel while it drains stamina."},
+	# objs.dm /obj/spells: need full stamina, use it all, then a cooldown before the next spell
+	"Immolation": {"name": "Immolation", "kind": "spell", "glyph": "IMM", "learn": "Wizards", "desc": "Burns the nearest enemy for 2.5x the Ki you charge.", "cd": 120},
+	"Blind": {"name": "Blind", "kind": "spell", "glyph": "BLD", "learn": "Wizards", "desc": "For 2.5% of your Ki, the nearest enemy is blinded for 10 seconds.", "cd": 40},
+	"FlameShield": {"name": "Flame Shield", "kind": "spell", "glyph": "FSH", "learn": "Wizards", "desc": "A quarter of your max Ki wraps you in flames for 30 s: attackers burn.", "cd": 80},
+	"Paralyze": {"name": "Paralyze", "kind": "spell", "glyph": "PAR", "learn": "Wizard (Wizard race, 35 SP, 35,000 max Ki)", "sp": 35, "ki": 35000, "teacher": "Wizard", "race": ["Wizard"], "desc": "For 2.5% of your max Ki, the nearest enemy can't move for 15 seconds.", "cd": 100},
+	"MindControl": {"name": "Mind Control", "kind": "spell", "glyph": "MND", "learn": "Wizard (Wizard race, 80 SP, 800,000 max PL and Ki)", "sp": 80, "pl": 800000, "ki": 800000, "teacher": "Wizard", "race": ["Wizard"], "desc": "A weaker enemy fights on your side for a minute.", "cd": 300},
+	"ShapeShift": {"name": "Shape Shift", "kind": "spell", "glyph": "SHP", "learn": "Wizards and Buus", "desc": "Take the shape of another race.", "cd": 50},
 }
 ## items/objs.dm /obj/transes: [name, required max powerlevel, powerlevel multiplier]
 const FORMS := {
@@ -131,6 +139,12 @@ var absorbing := false
 var regen := false
 var kaioken := 0
 var grown := 0.0
+var reinc := false
+var shield_until := 0.0
+var shield_dmg := 0.0
+var spell_ready := 0.0
+var travel_to := Vector3i.ZERO
+var travel_at := 0.0
 
 
 func _process(_d: float) -> void:
@@ -148,6 +162,11 @@ func _process(_d: float) -> void:
 		if m.z == pe.z and not m.dead and now >= m.next_think:
 			think(m)
 	update_projectiles()
+	if travel_at > 0.0 and now >= travel_at:
+		travel_at = 0.0
+		traveling = false
+		msg("System: You have arrived.", Color(0.6, 1, 0.6))
+		teleport(travel_to.x, travel_to.y, travel_to.z)
 	if grav > 0.0 and now >= grav_next:
 		gravity_pull()
 	if busy != "" and now >= busy_next:
@@ -193,7 +212,8 @@ func zname(z: int) -> String:
 
 # =================================================================== spawning
 const EQUIPMENT := ["/obj/Gravitron", "/obj/Gravitrontwo", "/obj/Gravitronthree", "/obj/Gravitronfour", "/obj/Gravitronx",
-	"/obj/CCGravitronx", "/obj/WeightTraining100", "/obj/WeightTraining1000", "/obj/pbag", "/obj/Machine", "/obj/heal"]
+	"/obj/CCGravitronx", "/obj/WeightTraining100", "/obj/WeightTraining1000", "/obj/pbag", "/obj/Machine", "/obj/heal",
+	"/obj/ccsp", "/obj/ccsspaceconsole", "/obj/spaceconsole", "/obj/timemachineproto", "/obj/timeconsole", "/obj/items/quest/BuuT"]
 
 
 func spawn_from_map(ti: int, x: int, y: int, z: int) -> void:
@@ -311,6 +331,10 @@ const FORM_ICONS := {"Form 2": "ChangeForm2.dmi", "Form 3": "ChangeForm3.dmi", "
 
 func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 	e.icon = base_icon(p)
+	if str(p.get("shape", "")) != "" and RACE_DATA.has(p["shape"]):
+		e.icon = Data.icon_id(RACE_DATA[p["shape"]]["icon"])
+	if e == pe and reinc and Data.icon_id("ubuu.dmi") >= 0:
+		e.icon = Data.icon_id("ubuu.dmi")
 	var fn: String = p.get("form_name", "Normal")
 	if int(p.get("form", 0)) > 0 and FORM_ICONS.has(fn) and Data.icon_id(FORM_ICONS[fn]) >= 0:
 		e.icon = Data.icon_id(FORM_ICONS[fn])
@@ -407,6 +431,8 @@ func cap(s: String) -> float:
 				c *= 2.0
 			if grown > now:
 				c *= 1.5
+			if reinc:
+				c *= 5.0
 			return c
 		"ki":
 			var c2 := float(P["maxki"])
@@ -611,6 +637,7 @@ func ability_info(id: String) -> Dictionary:
 			"blast": col = Color(0.75, 0.6, 0.2)
 			"bind": col = Color(0.6, 0.3, 0.7)
 			"utility": col = Color(0.3, 0.5, 0.4)
+			"spell": col = Color(0.55, 0.25, 0.6)
 		var d: String = t.get("desc", "")
 		if d == "" and t.get("kind", "") == "beam":
 			d = "Fires the Ki you charge (Ki Charge). Damage = Ki x %s x focus." % str(t.get("power", 1.0))
@@ -694,6 +721,8 @@ func facing_target(any_adjacent := true) -> Mob:
 
 ## Punch(): you can't hit monsters on your own side (both good or both evil)
 func _hostile(m: Mob) -> bool:
+	if m.charmed_until > now:
+		return false
 	var ap := int(P.get("ap", 0))
 	return not ((m.aggro and ap < 0) or (not m.aggro and ap >= 0))
 
@@ -757,6 +786,10 @@ func monster_attack(m: Mob) -> void:
 		stop_busy()
 	if absorbing:
 		dmg *= 0.5
+	if shield_until > now:
+		_hit_monster(m, shield_dmg, Color(1, 0.5, 0.1))
+		if m.dead:
+			return
 	P["pl"] = float(P["pl"]) - roundf(dmg)
 	if busy in ["train", "meditate", "rest", "powerup"]:
 		stop_busy()
@@ -792,6 +825,12 @@ func monster_die(m: Mob) -> void:
 	grow(plg, kig, 0)
 	gain_skexp(randi_range(int(d.get("skexpgivemin", 0)), int(d.get("skexpgivemax", 0))))
 	P["ap"] = clampi(int(P["ap"]) + (10 if m.aggro else -10), -1000, 1000)
+	if m.path == "/monster/friezasaga/frieza":
+		P["frieza_killed"] = true
+	if m.path.begins_with("/monster/quest/reincarnate/"):
+		_ship_boss_down(m)
+		monsters.erase(m)
+		return
 	var path := m.path
 	var home := m.home
 	monsters.erase(m)
@@ -892,6 +931,8 @@ func use_tech(key: String) -> void:
 			msg("%s! %d enemies can't move." % [t["name"], n], Color(0.9, 0.7, 1))
 		"utility":
 			utility(key)
+		"spell":
+			cast_spell(key, t)
 
 
 func _fire(t: Dictionary, dmg: float, d: int) -> void:
@@ -1035,6 +1076,79 @@ func utility(key: String) -> void:
 			ask("Sense", "\n".join(lst.slice(0, 14)) if not lst.is_empty() else "You sense nothing nearby.", ["OK"], func(_c: String, _i: int): pass)
 		"Enrage":
 			enrage()
+		"Reincarnation":
+			if reinc:
+				reinc = false
+				P["pl"] = minf(float(P["pl"]), cap("powerlevel"))
+				msg("You return to your normal body.", Color(0.8, 0.8, 0.8))
+			elif int(P.get("form", 0)) > 0 or kaioken > 0:
+				msg("Revert first.", Color(1, 0.5, 0.4))
+			else:
+				reinc = true
+				P["pl"] = cap("powerlevel")
+				msg("You are reborn as Ubuu!", Color(1, 0.7, 1))
+			build_appearance()
+
+
+## objs.dm /obj/spells/*
+func cast_spell(key: String, t: Dictionary) -> void:
+	if now < spell_ready:
+		msg("You can't cast another spell for %d more seconds." % int((spell_ready - now) / 1000.0), Color(1, 0.6, 0.4))
+		return
+	if float(P["stam"]) < float(P["maxstam"]) and key != "ShapeShift":
+		msg("You are not at full stamina to cast a spell.", Color(1, 0.6, 0.4))
+		return
+	var target := facing_target(false)
+	if target == null:
+		target = nearest_monster(6)
+	match key:
+		"Immolation":
+			if target == null:
+				msg("There is no target.", Color(0.7, 0.7, 0.7))
+				return
+			var amount := roundf(float(P["ki"]) * float(P.get("kicharge", 0.5)))
+			P["ki"] = float(P["ki"]) - amount
+			_hit_monster(target, amount * 2.5, Color(1, 0.45, 0.1))
+			msg("You cast Immolation on %s!" % target.name, Color(1, 0.6, 0.3))
+		"Blind", "Paralyze":
+			if target == null:
+				msg("There is no target.", Color(0.7, 0.7, 0.7))
+				return
+			var cost := (float(P["ki"]) if key == "Blind" else float(P["maxki"])) * 0.025
+			if float(P["ki"]) < cost:
+				msg("You do not have enough Ki to use this spell!", Color(1, 0.6, 0.4))
+				return
+			P["ki"] = float(P["ki"]) - cost
+			target.stun_until = now + (10000.0 if key == "Blind" else 15000.0)
+			target.target = null
+			world.floater(target.x, target.y, target.z, "Blinded!" if key == "Blind" else "Paralyzed!", Color(0.9, 0.8, 1))
+			msg("You have successfully cast %s on %s!" % [t["name"], target.name], Color(0.9, 0.8, 1))
+		"FlameShield":
+			var amt := float(P["maxki"]) * 0.25
+			if float(P["ki"]) < amt:
+				msg("You do not have enough Ki to use this spell!", Color(1, 0.6, 0.4))
+				return
+			P["ki"] = float(P["ki"]) - amt
+			shield_until = now + 30000.0
+			shield_dmg = roundf(amt * 0.1)
+			msg("Flames wrap around you!", Color(1, 0.55, 0.15))
+		"MindControl":
+			if target == null or target.powerlevel >= float(P["pl"]):
+				msg("You need a weaker enemy in front of you.", Color(1, 0.6, 0.4))
+				return
+			target.charmed_until = now + 60000.0
+			target.target = null
+			msg("%s is now under your control!" % target.name, Color(1, 0.4, 0.8))
+		"ShapeShift":
+			var opts: Array = ["Earthling", "Saiyan", "Namek", "Changling", "Android (Biological)", "Buu", "My own shape", "Cancel"]
+			ask("Shape Shift", "Which race do you wish to shape-shift into?", opts, func(c: String, _i: int):
+				if c == "Cancel":
+					return
+				P["shape"] = "" if c == "My own shape" else c
+				msg("You shape-shift." if P["shape"] != "" else "You return to your own shape.", Color(0.9, 0.8, 1))
+				build_appearance())
+	use_stamina(float(P["stam"]) if key != "ShapeShift" else 0.0)
+	spell_ready = now + float(t.get("cd", 60)) * 1000.0
 
 
 func toggle_fly() -> void:
@@ -1129,6 +1243,21 @@ func revert(quiet := false) -> void:
 func think(m: Mob) -> void:
 	m.next_think = now + 700.0
 	if now < m.stun_until:
+		return
+	if m.charmed_until > now:
+		var foe: Mob = null
+		for o in monsters:
+			if o != m and not o.dead and o.z == m.z and o.charmed_until <= now and maxi(absi(o.x - m.x), absi(o.y - m.y)) <= 6:
+				foe = o
+				break
+		if foe == null:
+			if maxi(absi(pe.x - m.x), absi(pe.y - m.y)) > 2:
+				_chase(m, pe.x - m.x, pe.y - m.y)
+		elif maxi(absi(foe.x - m.x), absi(foe.y - m.y)) <= 1:
+			m.do_flick("attack", now)
+			_hit_monster(foe, m.powerlevel * randf_range(5, 10) / 100.0, Color(1, 0.5, 0.9))
+		else:
+			_chase(m, foe.x - m.x, foe.y - m.y)
 		return
 	var dx := pe.x - m.x
 	var dy := pe.y - m.y
@@ -1321,6 +1450,21 @@ func use_equipment(o: Mob) -> void:
 			["Off", "10x", "25x", "50x", "100x", "200x", "300x", "Cancel"], _on_grav)
 		return
 	match o.path:
+		"/obj/ccsp":
+			# objs.dm /obj/ccsp Enter_SP: one of four pods in the space port
+			var pods := [Vector3i(22, 131, 4), Vector3i(129, 131, 4), Vector3i(22, 19, 4), Vector3i(129, 19, 4)]
+			var pod: Vector3i = pods[randi() % 4]
+			teleport(pod.x, pod.y, pod.z)
+			msg("You enter the Space Pod. Use the console to set a destination.", Color(1, 0.9, 0.4))
+		"/obj/ccsspaceconsole", "/obj/spaceconsole":
+			if traveling:
+				msg("System: Already flying.", Color(0.8, 0.8, 0.8))
+				return
+			ask("Computer Pilot", "System: Select a destination.", ["Earth", "Namek", "Yardrat", "New Vegeta", "Leave the pod", "Cancel"], _on_space_dest)
+		"/obj/timemachineproto", "/obj/timeconsole":
+			ask("Time Machine", "System: Select a timeline.", ["Present Timeline", "Trunks's Timeline", "Cell's Timeline", "Cancel"], _on_time_dest)
+		"/obj/items/quest/BuuT":
+			_ship_transporter()
 		"/obj/WeightTraining100", "/obj/WeightTraining1000":
 			if cooldown_left("lift") > 0:
 				return
@@ -1351,6 +1495,138 @@ func use_equipment(o: Mob) -> void:
 			P["pl"] = maxf(float(P["pl"]), float(P["maxpl"]))
 			P["stam"] = float(P["maxstam"])
 			msg("You feel healed.", Color(0.6, 1, 0.6))
+
+
+## mob spacetravel(): a 10 second flight
+const SPACE_DEST := {"Earth": Vector3i(73, 79, 1), "Namek": Vector3i(40, 90, 5), "Yardrat": Vector3i(39, 30, 16), "New Vegeta": Vector3i(133, 20, 17)}
+
+
+func _on_space_dest(c: String, _i: int) -> void:
+	if c == "Leave the pod":
+		teleport(36, 30, 23)
+		return
+	if not SPACE_DEST.has(c):
+		return
+	travel_to = SPACE_DEST[c]
+	travel_at = now + 10000.0
+	traveling = true
+	move_dir = 0
+	msg("System: Destination set to %s. Now flying to %s..." % [c, c], Color(1, 0.9, 0.4))
+
+
+## Bulma's time machine. The original only had the present working ("Destination unavailable at
+## the moment"); here Trunks's timeline leads to the Cell Games and Cell's timeline to Cell's arena.
+func _on_time_dest(c: String, _i: int) -> void:
+	var to := Vector3i.ZERO
+	match c:
+		"Present Timeline":
+			to = Vector3i(int(P["hx"]), int(P["hy"]), int(P["hz"]))
+		"Trunks's Timeline":
+			to = _entity_pos("/monster/cellsaga/celljr", Vector3i(75, 75, 18))
+		"Cell's Timeline":
+			to = _entity_pos("/monster/cellsaga/cell", Vector3i(75, 75, 13))
+		_:
+			return
+	travel_to = to
+	travel_at = now + 6000.0
+	traveling = true
+	move_dir = 0
+	msg("The time machine whirs... travelling to %s." % c, Color(0.8, 0.7, 1))
+
+
+func _entity_pos(path: String, fallback: Vector3i) -> Vector3i:
+	for e in Data.map["entities"]:
+		if Data.types[str(int(e[0]))]["path"] == path:
+			return Vector3i(int(e[1]), int(e[2]) - 2, int(e[3]))
+	return fallback
+
+
+# =================================================================== quests
+## quest.dm Babidi's Ship: a floor per boss; the transporter takes you down once the floor is clear
+const SHIP_FLOORS := [["/monster/quest/reincarnate/PuiPui", Vector3i(115, 127, 20), Vector3i(109, 126, 20)],
+	["/monster/quest/reincarnate/Yakon", Vector3i(115, 113, 20), Vector3i(108, 113, 20)],
+	["/monster/quest/reincarnate/Dabura", Vector3i(115, 100, 20), Vector3i(108, 100, 20)],
+	["/monster/quest/reincarnate/MVegeta", Vector3i(115, 85, 20), Vector3i(110, 85, 20)],
+	["/monster/quest/reincarnate/Babidi", Vector3i(115, 71, 20), Vector3i(109, 71, 20)],
+	["/monster/quest/reincarnate/Buu", Vector3i(115, 56, 20), Vector3i(109, 56, 20)]]
+
+
+func _ship_transporter() -> void:
+	var floor := int(P.get("ship_floor", 0))
+	var cleared := bool(P.get("ship_cleared", false))
+	if floor >= SHIP_FLOORS.size():
+		ask("Transporter", "Babidi's Ship is quiet now.", ["Leave", "Cancel"], func(c: String, _i: int):
+			if c == "Leave":
+				_leave_ship())
+		return
+	var opts: Array = ["Go down to the next level", "Leave", "Cancel"]
+	ask("Transporter", "Floor %d of %d.%s" % [floor + 1, SHIP_FLOORS.size(), " The floor is clear." if cleared else ""], opts, _on_transporter)
+
+
+func _on_transporter(c: String, _i: int) -> void:
+	var floor := int(P.get("ship_floor", 0))
+	if c == "Leave":
+		_leave_ship()
+		return
+	if c != "Go down to the next level":
+		return
+	if bool(P.get("ship_cleared", false)):
+		P["ship_floor"] = floor + 1
+		P["ship_cleared"] = false
+		if floor + 1 >= SHIP_FLOORS.size():
+			_ship_reward()
+		else:
+			var arrive: Vector3i = SHIP_FLOORS[floor + 1][2]
+			teleport(arrive.x, arrive.y, arrive.z)
+			msg("You go down!", Color(0.8, 0.8, 1))
+		return
+	var b: Array = SHIP_FLOORS[floor]
+	for m in monsters:
+		if m.path == b[0] and not m.dead:
+			msg("%s is still standing in your way!" % m.name, Color(1, 0.5, 0.4))
+			return
+	var boss := spawn_monster(b[0], b[1].x, b[1].y, b[1].z)
+	boss.respawn = false
+	boss.target = pe
+	msg("%s: Not so fast! You won't reach Master Babidi!" % boss.name, Color(1, 0.4, 0.4))
+
+
+func _ship_boss_down(m: Mob) -> void:
+	P["ship_cleared"] = true
+	msg("The way down is clear. Use the transporter.", Color(0.6, 1, 0.6))
+
+
+func _ship_reward() -> void:
+	if P["race"] in ["Buu", "Earthling"] and int(P["ap"]) >= 100:
+		_learn("Reincarnation", "You have gotten the Transformation: Reincarnation!")
+	else:
+		msg("You tried to go down but it seems you can't. (Reincarnation needs a pure-hearted Buu or Earthling.)", Color(1, 0.7, 0.4))
+	P["quest_ship"] = "done"
+	_leave_ship()
+
+
+func _leave_ship() -> void:
+	P["ship_floor"] = 0
+	P["ship_cleared"] = false
+	teleport(int(P["hx"]), int(P["hy"]), int(P["hz"]))
+	msg("You have left Babidi's Ship!", Color(0.8, 0.8, 0.8))
+
+
+## Quest log for the Menu
+func quest_log() -> String:
+	var lines: Array = []
+	var g := int(P.get("guru", 0))
+	lines.append("[b]Guru's Request[/b] (Namek): " + ["Talk to Guru on Namek.", "Find Nail and Dende and tell Guru they're okay. Nail: %s, Dende: %s." % ["found" if P.get("nail", false) else "missing", "found" if P.get("dende_q", false) else "missing"], "Done. Guru can unlock your potential once Frieza is defeated."][mini(g, 2)])
+	var sf := int(P.get("ship_floor", 0))
+	if P.get("quest_ship", "") == "done":
+		lines.append("[b]Babidi's Ship[/b]: Done.")
+	elif sf > 0 or P.get("quest_ship", "") == "found":
+		lines.append("[b]Babidi's Ship[/b]: Floor %d of 6 (Pui Pui, Yakon, Dabura, Majin Vegeta, Babidi, Buu)." % (sf + 1))
+	else:
+		lines.append("[b]Babidi's Ship[/b]: Rumour has it a mysterious ship landed in the wasteland (level 22)...")
+	lines.append("[b]King Kai's Training[/b]: " + ("done" if P.get("bubbles", false) and P.get("gregory", false) else ("catch Bubbles%s" % (" and Gregory" if not P.get("gregory", false) else "") if int(P.get("kaistart", 0)) > 0 else "talk to King Kai")))
+	lines.append("[b]Frieza[/b]: " + ("defeated" if P.get("frieza_killed", false) else "still terrorising Namek"))
+	return "\n".join(lines)
 
 
 func _on_grav(c: String, _i: int) -> void:
@@ -1414,6 +1690,10 @@ func second_tick() -> void:
 		P["pl"] = minf(float(P["maxpl"]), float(P["pl"]) + float(P["maxpl"]) * 0.02)
 		if float(P["pl"]) >= float(P["maxpl"]):
 			regen = false
+	if reinc:
+		use_stamina(maxf(0.2, float(P["maxstam"]) * 0.004))
+		if float(P["stam"]) <= 0:
+			utility("Reincarnation")
 	if int(P.get("form", 0)) > 0:
 		use_stamina(maxf(0.2, float(P["maxstam"]) * 0.004))
 		if float(P["stam"]) <= 0:
@@ -1436,9 +1716,11 @@ func interactables() -> Array:
 					out.append(o)
 	# King Yemma sits behind a huge desk: the original let you double-click him from afar
 	if out.is_empty():
-		var y := _near("/mob/other/yemma", 6)
-		if y != null:
-			out.append(y)
+		for big in ["/mob/other/yemma", "/mob/HBQe"]:
+			var y := _near(big, 8)
+			if y != null:
+				out.append(y)
+				break
 	out.sort_custom(func(a, b): return (0 if a.kind == "npc" else 1) * 10 + absi(a.x - pe.x) + absi(a.y - pe.y) < (0 if b.kind == "npc" else 1) * 10 + absi(b.x - pe.x) + absi(b.y - pe.y))
 	return out
 
@@ -1473,6 +1755,19 @@ func interact(o: Mob = null) -> void:
 					build_appearance())
 		"Ki_Trainer1", "Ki_Trainer2":
 			_ki_trainer(o)
+		"HBQe":
+			msg("Something catches your attention about the ship. It's Babidi's Ship! You would think they would've learned to be more secretive!", Color(1, 0.6, 1))
+			P["quest_ship"] = "found"
+			P["ship_floor"] = 0
+			P["ship_cleared"] = false
+			teleport(109, 126, 20)
+		"Guru":
+			_guru()
+		"Nail":
+			P["nail"] = true
+			ask("Nail", "Argh! I am badly hurt and I fear I won't make it... please tell Guru that I had tried to protect the dragonballs with all my strength.", ["OK"], none)
+		"Wizard":
+			_teacher(o, "Wizard", [], "")
 		"yemma":
 			_yemma()
 		"kingkai":
@@ -1499,6 +1794,9 @@ func interact(o: Mob = null) -> void:
 						msg("Kame-sennin unlocks your hidden power: you can transform to Super Human!", Color(1, 0.85, 0.3))
 					else:
 						msg("You need to be stronger.", Color(1, 0.6, 0.4)))
+		"Dende" when o.path == "/mob/quest/Dende":
+			P["dende_q"] = true
+			ask("Dende", "Thank you for rescuing me. Please tell Guru that I am okay.", ["OK"], none)
 		"dende":
 			if P["race"] == "Namek" and P.get("formset", "") == "" and float(P["maxpl"]) >= 1200000:
 				P["formset"] = "snj"
@@ -1563,6 +1861,42 @@ func _teacher(o: Mob, teacher: String, extra: Array, form_set: String) -> void:
 				else:
 					P["skpts"] = int(P["skpts"]) - int(t2.get("sp", 0))
 					_learn(k, "%s teaches you %s!" % [o.name, t2["name"]]))
+
+
+func _guru() -> void:
+	var g := int(P.get("guru", 0))
+	var none := func(_c: String, _i: int): pass
+	if g == 0:
+		P["guru"] = 1
+		ask("Guru", "Greetings, I am Guru. Please help me by finding Nail and Dende. If you do, I shall reward you.", ["OK"], none)
+	elif g == 1 and P.get("nail", false) and P.get("dende_q", false):
+		P["guru"] = 2
+		var t := "Thank you for finding them."
+		if P["race"] == "Namek":
+			P["maxpl"] = float(P["maxpl"]) * 1.0625
+			P["maxki"] = float(P["maxki"]) * 1.0625
+			t += " Nail fused his power with you before he passed on. (+6.25% max PL and Ki)"
+		else:
+			P["skpts"] = int(P["skpts"]) + 10
+			t += " Take this knowledge. (+10 skill points)"
+		ask("Guru", t, ["OK"], none)
+	elif g == 1:
+		ask("Guru", "Please find Nail and Dende.", ["OK"], none)
+	elif not P.get("unlock", false):
+		ask("Guru", "I can unlock your potential, if you allow me to.", ["Yes", "No"], func(c: String, _i: int):
+			if c != "Yes":
+				return
+			if not P.get("frieza_killed", false):
+				msg("Guru: You haven't killed Frieza yet!", Color(1, 0.6, 0.4))
+				return
+			P["unlock"] = true
+			P["maxpl"] = float(P["maxpl"]) * 2.0
+			P["maxki"] = float(P["maxki"]) * 2.0
+			P["pl"] = float(P["maxpl"])
+			P["ki"] = float(P["maxki"])
+			msg("Guru: Your power has been unlocked!", Color(1, 0.85, 0.3)))
+	else:
+		ask("Guru", "Your power has already been unlocked.", ["OK"], none)
 
 
 func _ki_trainer(o: Mob) -> void:

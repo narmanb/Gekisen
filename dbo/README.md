@@ -17,6 +17,9 @@ source was blanked out.
 | Monsters | `monsters.dm` | All 89 monster types, from thugs and saibamen to the Saiyan, Frieza, Cell and Buu sagas, with their powerlevel, Ki and rewards (max PL, max Ki, skill exp, zenni). Evil ones hunt good players; the Z fighters hunt evil ones. |
 | Techniques | `skills.dm`, teachers' `Learn` verbs | 28 techniques. Beams deal Ki × power × focus. Teachers (Kame, Piccolo, Vegeta, Tenshinhan, Yamcha, Trunks, Frieza, Guldo, Brolly, Goku, Yardrat, King Kai) charge the original skill points and requirements. |
 | Transformations | `/obj/transes`, `SSJ()` | Super Saiyan (awakened by Enrage at 1.2M PL / 500K Ki) → USSJ → SSJ2 → SSJ3, Changeling forms 2–5 (Frieza), Cell forms, Buu forms, Super Human (Kame), Super Namek (Dende) and Super Android (Gero), with the original powerlevel requirements and multipliers. |
+| Spells | `/obj/spells` | Wizards start with Immolation, Blind and Flame Shield; the Wizard NPC teaches Paralyze and Mind Control; Wizards and Buus can Shape Shift. Spells need full stamina, use it all, and have a cooldown, as in the original. Mind-controlled monsters fight for you for a minute. |
+| Quests | `quests/quest.dm`, Guru, Nail, Dende | Guru's request (find Nail and Dende) and Unlock Potential once Frieza is beaten; Babidi's Ship, a floor per boss (Pui Pui, Yakon, Dabura, Majin Vegeta, Babidi, Buu) with the Reincarnation transformation at the bottom. Menu → Quests shows your progress. |
+| Travel | `/obj/ccsp`, space consoles, `spacetravel`, time machine | Capsule Corp's space pods fly to Earth, Namek, Yardrat or New Vegeta. Bulma's time machine goes to the present, Trunks's timeline (the Cell Games) or Cell's timeline. (The original only had the present working; the other two timelines are my addition.) |
 | Afterlife | `Die`, King Yemma, King Kai, Bubbles, Gregory | Dying takes you to the Other World. Yemma sends you to Snake Way, Hell or Heaven by alignment. King Kai's training (catch Bubbles and Gregory) brings you back to life. |
 
 ### Added for this version
@@ -26,8 +29,9 @@ source was blanked out.
   next to him (the original used double-click).
 
 ### Left out
-PvP, guilds, mail, tournaments, quests, dragon balls, fusion, absorbing other players,
-custom attacks, spells, the bank and the space/time machines.
+PvP, guilds, mail, tournaments, dragon balls, fusion, absorbing other players, custom
+attacks, the bank and the HFIL (Goz and Mez) quest. Babidi's Ship stays where the map
+puts it instead of wandering.
 
 ## Building
 

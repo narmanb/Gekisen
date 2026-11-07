@@ -459,9 +459,12 @@ class Stick extends Control:
 	var knob := Vector2.ZERO
 	func _draw() -> void:
 		var c := size / 2
-		draw_circle(c, size.x / 2, Color(1, 1, 1, 0.08))
-		draw_arc(c, size.x / 2 - 1, 0, TAU, 48, Color(1, 1, 1, 0.25), 2)
-		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.3))
+		# dark backing + light rim so the stick shows on snow, sand and grass alike
+		draw_circle(c, size.x / 2, Color(0, 0, 0, 0.28))
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(0, 0, 0, 0.55), 5)
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(1, 1, 1, 0.75), 2)
+		draw_circle(c + knob, size.x / 5 + 3, Color(0, 0, 0, 0.5))
+		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.65))
 
 
 func _build_stick() -> void:
@@ -616,6 +619,7 @@ func _build_book() -> void:
 	book_info = _label("Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it.", 15, Color(0.8, 0.82, 0.9))
 	book_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	book_info.custom_minimum_size = Vector2(720, 60)
+	book_info.max_lines_visible = 3
 	v.add_child(book_info)
 	var sc := ScrollContainer.new()
 	sc.custom_minimum_size = Vector2(720, 340)
@@ -675,12 +679,8 @@ func _refresh_book() -> void:
 		var sb2 := _button("Senzu Bean (%d)" % int(Game.P["items"]["senzu"]), func(): _pick("senzu"), 15)
 		sb2.custom_minimum_size = Vector2(174, 54)
 		book_grid.add_child(sb2)
-	var todo: Array = []
-	for k in Game.TECHS:
-		if not k in Game.P["learned"]:
-			todo.append("%s (%s)" % [Game.TECHS[k]["name"], Game.TECHS[k]["learn"]])
-	if not todo.is_empty() and assign_id == "":
-		book_info.text = "Tap something to put it on the hotbar.\nStill to learn: " + "; ".join(todo)
+	if assign_id == "":
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it. Hold a hotbar slot to clear it.\n(Menu → Techniques to Learn lists where to learn the rest.)"
 
 
 func _pick(id: String) -> void:
@@ -710,6 +710,7 @@ func _build_stats() -> void:
 	stats_label = RichTextLabel.new()
 	stats_label.bbcode_enabled = true
 	stats_label.custom_minimum_size = Vector2(660, 330)
+	stats_label.scroll_active = true
 	stats_label.add_theme_font_size_override("normal_font_size", 16)
 	v.add_child(stats_label)
 	var row := HBoxContainer.new()
@@ -751,25 +752,49 @@ func toggle_stats() -> void:
 func _refresh_stats() -> void:
 	var P := Game.P
 	var f := Game.fmt
-	var s := "[b]%s[/b] — %s · %s (alignment %d) · from %s\n" % [P["name"], P["race"], P["alignment"], int(P["ap"]), P["hometown"]]
-	s += "Powerlevel %s / %s (max %s)\n" % [f.call(P["pl"]), f.call(Game.cap("powerlevel")), f.call(P["maxpl"])]
-	s += "Ki %s / %s · Stamina %s / %s · Focus %d\n" % [f.call(P["ki"]), f.call(Game.cap("ki")), f.call(P["stam"]), f.call(P["maxstam"]), int(P["focus"])]
-	s += "Skill exp %d / %d · Skill points %d · Zenni %s\n" % [int(P["skexp"]), int(P["maxskexp"]), int(P["skpts"]), f.call(P["zenni"])]
-	s += "Stance: %s · Anger %d/10 · Kills %d · Deaths %d%s\n" % [P["stance"], int(P["anger"]), int(P["kills"]), int(P["deaths"]), " · Dead (halo)" if P.get("dead", false) and not P.get("newb", false) else ""]
+	var st: Array = Game.STANCE.get(P.get("stance", "Basic Stance"), Game.STANCE["Basic Stance"])
+	var s := "[b]%s[/b] — %s · from %s\n" % [P["name"], P["race"], P["hometown"]]
+	s += "Alignment: %s (%d points) · %s\n" % [P["alignment"], int(P["ap"]), "Dead (halo)" if P.get("dead", false) and not P.get("newb", false) else ("Newbie (immortal)" if P.get("newb", false) else "Alive")]
+	s += "\n[b]Power[/b]\n"
+	s += "Powerlevel %s / %s   (base max %s)\n" % [f.call(P["pl"]), f.call(Game.cap("powerlevel")), f.call(P["maxpl"])]
+	s += "Ki %s / %s   (base max %s)\n" % [f.call(P["ki"]), f.call(Game.cap("ki")), f.call(P["maxki"])]
+	s += "Stamina %s / %s · Focus %d / 1,000 · Anger %d / 10\n" % [f.call(P["stam"]), f.call(P["maxstam"]), int(P["focus"]), int(P["anger"])]
+	s += "Combat stance: %s (%s–%s%% of powerlevel per hit, %s%% critical)\n" % [P["stance"], st[0], st[1], st[2]]
+	s += "Beam Ki charge: %d%% · Beam focus bonus: x%s\n" % [int(float(P.get("kicharge", 0.5)) * 100), str(snappedf(float(P["focus"]) * 2.0 / 1000.0, 0.01))]
+	s += "\n[b]Progress[/b]\n"
+	s += "Skill exp %d / %d · Skill points %d\n" % [int(P["skexp"]), int(P["maxskexp"]), int(P["skpts"])]
+	s += "Zenni %s · Kills %d · Deaths %d · Senzu Beans %d%s\n" % [f.call(P["zenni"]), int(P["kills"]), int(P["deaths"]), int(P["items"].get("senzu", 0)), " · Weighted clothing x%d" % int(P["weight"]) if int(P.get("weight", 0)) > 0 else ""]
 	var kn: Array = []
 	for l in Game.KI_LESSONS:
 		if P["know"].get(l[0], 0) == 1:
 			kn.append(l[1])
 	s += "Ki lessons: %s\n" % (", ".join(kn) if not kn.is_empty() else "none yet (Ki Trainers)")
+	s += "Techniques known: %d of %d · Potential unlocked: %s · King Kai's training: %s\n" % [(P["learned"] as Array).size(), Game.TECHS.size(), "yes" if P.get("unlock", false) else "no",
+		"done" if P.get("bubbles", false) and P.get("gregory", false) else "not done"]
+	var act: Array = []
+	if int(P.get("form", 0)) > 0:
+		act.append(str(P["form_name"]))
+	if Game.kaioken > 0: act.append("Kaioken")
+	if Game.reinc: act.append("Reincarnation")
+	if Game.zanzoken: act.append("Zanzoken")
+	if Game.absorbing: act.append("Ki Absorb")
+	if Game.regen: act.append("Regenerating")
+	if Game.grown > Game.now: act.append("Giant")
+	if Game.shield_until > Game.now: act.append("Flame Shield")
+	if Game.grav > 0: act.append("%dx gravity" % int(Game.grav))
+	if str(P.get("shape", "")) != "": act.append("Shape: " + str(P["shape"]))
+	s += "Active: %s\n" % (", ".join(act) if not act.is_empty() else "nothing")
+	if Game.spell_ready > Game.now:
+		s += "Next spell in %d s\n" % int((Game.spell_ready - Game.now) / 1000.0)
 	var fl := Game.forms_for()
 	if not fl.is_empty():
 		s += "\n[b]Transformations[/b]\n"
 		var i := 0
 		for fm in fl:
 			i += 1
-			s += "%s — %s max powerlevel, x%s%s\n" % [fm[0], f.call(fm[1]), str(fm[2]), "  [color=yellow](current)[/color]" if int(P["form"]) == i else ""]
+			s += "%s — %s max powerlevel, x%s%s\n" % [fm[0], f.call(fm[1]), str(fm[2]), "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if float(P["maxpl"]) >= float(fm[1]) else "")]
 	var mins := int(float(P["playtime"]) / 60.0)
-	s += "\nPlay time %dh %dm" % [mins / 60, mins % 60]
+	s += "\nLocation: %s (%d, %d) · Play time %dh %dm" % [Game.zname(int(P["z"])), int(P["x"]), int(P["y"]), mins / 60, mins % 60]
 	stats_label.text = s
 	bp_label.text = "Senzu Beans: %d " % int(P["items"].get("senzu", 0))
 
@@ -787,10 +812,57 @@ func _build_menu() -> void:
 	menu_panel.add_child(v)
 	v.add_child(_label("Menu", 22, GOLD))
 	v.add_child(_button("Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()))
+	v.add_child(_button("Techniques to Learn", func(): menu_panel.visible = false; show_info("Techniques to Learn", _todo_text())))
+	v.add_child(_button("Quests", func(): menu_panel.visible = false; show_info("Quests", Game.quest_log())))
+
 	v.add_child(_button("Character Stats", func(): menu_panel.visible = false; toggle_stats()))
 	v.add_child(_button("Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))))
 	v.add_child(_button("Save & Quit to Title", func(): Game.save(); get_tree().reload_current_scene()))
 	v.add_child(_button("Close", func(): menu_panel.visible = false))
+
+
+# =================================================================== info panel
+var info_panel: PanelContainer
+var info_text: RichTextLabel
+
+
+func show_info(title: String, bbcode: String) -> void:
+	if info_panel == null:
+		info_panel = PanelContainer.new()
+		info_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		info_panel.custom_minimum_size = Vector2(760, 440)
+		_offs(info_panel, Vector2(-380, -250))
+		root.add_child(info_panel)
+		var v := VBoxContainer.new()
+		info_panel.add_child(v)
+		var h := HBoxContainer.new()
+		v.add_child(h)
+		var t := _label("", 22, GOLD)
+		t.name = "Title"
+		t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(t)
+		h.add_child(_button("Close", func(): info_panel.visible = false))
+		info_text = RichTextLabel.new()
+		info_text.bbcode_enabled = true
+		info_text.scroll_active = true
+		info_text.custom_minimum_size = Vector2(720, 370)
+		info_text.add_theme_font_size_override("normal_font_size", 16)
+		info_text.add_theme_font_size_override("bold_font_size", 16)
+		v.add_child(info_text)
+	(info_panel.find_child("Title", true, false) as Label).text = title
+	info_text.text = bbcode
+	info_text.scroll_to_line(0)
+	book.visible = false
+	stats_panel.visible = false
+	info_panel.visible = true
+
+
+func _todo_text() -> String:
+	var lines: Array = []
+	for k in Game.TECHS:
+		if not k in Game.P["learned"]:
+			lines.append("[b]%s[/b] — %s" % [Game.TECHS[k]["name"], Game.TECHS[k]["learn"]])
+	return "\n".join(lines) if not lines.is_empty() else "You know every technique!"
 
 
 # =================================================================== dialogs

@@ -460,9 +460,12 @@ class Stick extends Control:
 	var knob := Vector2.ZERO
 	func _draw() -> void:
 		var c := size / 2
-		draw_circle(c, size.x / 2, Color(1, 1, 1, 0.08))
-		draw_arc(c, size.x / 2 - 1, 0, TAU, 48, Color(1, 1, 1, 0.25), 2)
-		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.3))
+		# dark backing + light rim so the stick shows on snow, sand and grass alike
+		draw_circle(c, size.x / 2, Color(0, 0, 0, 0.28))
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(0, 0, 0, 0.55), 5)
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(1, 1, 1, 0.75), 2)
+		draw_circle(c + knob, size.x / 5 + 3, Color(0, 0, 0, 0.5))
+		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.65))
 
 
 func _build_stick() -> void:
@@ -617,6 +620,7 @@ func _build_book() -> void:
 	book_info = _label("Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it.", 15, Color(0.8, 0.82, 0.9))
 	book_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	book_info.custom_minimum_size = Vector2(720, 60)
+	book_info.max_lines_visible = 3
 	v.add_child(book_info)
 	var sc := ScrollContainer.new()
 	sc.custom_minimum_size = Vector2(720, 340)
@@ -676,12 +680,8 @@ func _refresh_book() -> void:
 		var sb2 := _button("Senzu Bean (%d)" % int(Game.P["items"]["senzu"]), func(): _pick("senzu"), 15)
 		sb2.custom_minimum_size = Vector2(174, 54)
 		book_grid.add_child(sb2)
-	var todo: Array = []
-	for k in Game.TECHS:
-		if not k in Game.P["learned"]:
-			todo.append("%s (%s)" % [Game.TECHS[k]["name"], Game.TECHS[k]["learn"]])
-	if not todo.is_empty() and assign_id == "":
-		book_info.text = "Tap something to put it on the hotbar.\nStill to learn: " + "; ".join(todo)
+	if assign_id == "":
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it. Hold a hotbar slot to clear it.\n(Menu → Techniques to Learn lists where to learn the rest.)"
 
 
 func _pick(id: String) -> void:
@@ -779,10 +779,56 @@ func _build_menu() -> void:
 	menu_panel.add_child(v)
 	v.add_child(_label("Menu", 22, GOLD))
 	v.add_child(_button("Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()))
+	v.add_child(_button("Techniques to Learn", func(): menu_panel.visible = false; show_info("Techniques to Learn", _todo_text())))
+
 	v.add_child(_button("Character Stats", func(): menu_panel.visible = false; toggle_stats()))
 	v.add_child(_button("Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))))
 	v.add_child(_button("Save & Quit to Title", func(): Game.save(); get_tree().reload_current_scene()))
 	v.add_child(_button("Close", func(): menu_panel.visible = false))
+
+
+# =================================================================== info panel
+var info_panel: PanelContainer
+var info_text: RichTextLabel
+
+
+func show_info(title: String, bbcode: String) -> void:
+	if info_panel == null:
+		info_panel = PanelContainer.new()
+		info_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		info_panel.custom_minimum_size = Vector2(760, 440)
+		_offs(info_panel, Vector2(-380, -250))
+		root.add_child(info_panel)
+		var v := VBoxContainer.new()
+		info_panel.add_child(v)
+		var h := HBoxContainer.new()
+		v.add_child(h)
+		var t := _label("", 22, GOLD)
+		t.name = "Title"
+		t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(t)
+		h.add_child(_button("Close", func(): info_panel.visible = false))
+		info_text = RichTextLabel.new()
+		info_text.bbcode_enabled = true
+		info_text.scroll_active = true
+		info_text.custom_minimum_size = Vector2(720, 370)
+		info_text.add_theme_font_size_override("normal_font_size", 16)
+		info_text.add_theme_font_size_override("bold_font_size", 16)
+		v.add_child(info_text)
+	(info_panel.find_child("Title", true, false) as Label).text = title
+	info_text.text = bbcode
+	info_text.scroll_to_line(0)
+	book.visible = false
+	stats_panel.visible = false
+	info_panel.visible = true
+
+
+func _todo_text() -> String:
+	var lines: Array = []
+	for k in Game.TECHS:
+		if not k in Game.P["learned"]:
+			lines.append("[b]%s[/b] — %s" % [Game.TECHS[k]["name"], Game.TECHS[k]["learn"]])
+	return "\n".join(lines) if not lines.is_empty() else "You know every technique!"
 
 
 # =================================================================== dialogs

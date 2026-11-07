@@ -459,9 +459,12 @@ class Stick extends Control:
 	var knob := Vector2.ZERO
 	func _draw() -> void:
 		var c := size / 2
-		draw_circle(c, size.x / 2, Color(1, 1, 1, 0.08))
-		draw_arc(c, size.x / 2 - 1, 0, TAU, 48, Color(1, 1, 1, 0.25), 2)
-		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.3))
+		# dark backing + light rim so the stick shows on snow, sand and grass alike
+		draw_circle(c, size.x / 2, Color(0, 0, 0, 0.28))
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(0, 0, 0, 0.55), 5)
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(1, 1, 1, 0.75), 2)
+		draw_circle(c + knob, size.x / 5 + 3, Color(0, 0, 0, 0.5))
+		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.65))
 
 
 func _build_stick() -> void:

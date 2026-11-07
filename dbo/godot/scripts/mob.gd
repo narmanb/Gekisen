@@ -51,6 +51,7 @@ var target: Mob = null
 var next_think := 0.0
 var next_attack := 0.0
 var stun_until := 0.0
+var charmed_until := 0.0     # under the player's Mind Control
 var dot_until := 0.0
 var dot_amount := 0.0
 var respawn := false

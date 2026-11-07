@@ -264,6 +264,92 @@ func run() -> void:
 		await wait(0.1)
 	print("GRAVITY ", Game.grav, " ", state())
 	Game.gravity_off()
+	# --- spells (normally the Wizard race's)
+	for k in ["Immolation", "Blind", "FlameShield"]:
+		Game._learn(k, "")
+	var foe: Mob = null
+	for m in Game.monsters:
+		if m.path == "/monster/evil/thug" and not m.dead:
+			foe = m
+	if foe:
+		Game.teleport(foe.x, foe.y - 1, foe.z)
+		Game.P["stam"] = Game.P["maxstam"]
+		print("SPELL dist ", maxi(absi(foe.x - Game.pe.x), absi(foe.y - Game.pe.y)), " z ", foe.z, "/", Game.pe.z, " hostile ", Game._hostile(foe), " near ", Game.nearest_monster(6))
+		Game.log_msg.connect(func(t, _c): print("  MSG ", t))
+		Game.use_ability("t:Blind")
+		print("SPELL blind stunned=", foe.stun_until > Game.now)
+		Game.spell_ready = 0
+		Game.P["stam"] = Game.P["maxstam"]
+		Game.use_ability("t:Immolation")
+		print("SPELL immolation dead=", foe.dead)
+		Game.spell_ready = 0
+		Game.P["stam"] = Game.P["maxstam"]
+		Game.use_ability("t:FlameShield")
+		print("SPELL shield=", Game.shield_until > Game.now)
+	# --- Guru's request
+	close_dialogs()
+	var guru := go_near("/mob/other/Guru")
+	Game.interact(guru)
+	close_dialogs()
+	Game.interact(go_near("/mob/quest/Nail"))
+	close_dialogs()
+	Game.interact(go_near("/mob/quest/Dende"))
+	close_dialogs()
+	Game.interact(go_near("/mob/other/Guru"))
+	close_dialogs()
+	print("GURU stage=", Game.P.get("guru"), " sp=", Game.P["skpts"])
+	# --- space pod: Capsule Corp hangar -> pod -> Namek
+	var ccsp := go_near("/obj/ccsp", -1, 23)
+	Game.interact(ccsp)
+	await wait(0.3)
+	print("POD at ", Game.P["x"], ",", Game.P["y"], ",", Game.P["z"])
+	var con := Game._near("/obj/ccsspaceconsole", 8)
+	if con:
+		Game.teleport(con.x, con.y - 1, con.z)
+		Game.interact(Game._near("/obj/ccsspaceconsole", 2))
+		await wait(0.2)
+		await shot("16a_spacepod")
+		pick("Namek")
+		Game.travel_at = Game.now + 100
+		await wait(0.5)
+	print("SPACE TRAVEL ", Game.P["x"], ",", Game.P["y"], ",", Game.P["z"])
+	# --- time machine
+	close_dialogs()
+	var tm := go_near("/obj/timemachineproto", -1, 11)
+	Game.interact(Game._near("/obj/timemachineproto", 2))
+	pick("Cell's Timeline")
+	Game.travel_at = Game.now + 100
+	await wait(0.5)
+	print("TIME TRAVEL ", Game.P["x"], ",", Game.P["y"], ",", Game.P["z"])
+	# --- Babidi's Ship
+	close_dialogs()
+	go_near("/mob/HBQe", -2)
+	Game.interact()
+	await wait(0.3)
+	print("SHIP at ", Game.P["x"], ",", Game.P["y"], ",", Game.P["z"])
+	Game.interact(Game._near("/obj/items/quest/BuuT", 3))
+	pick("Go down to the next level")
+	await wait(0.3)
+	await shot("16b_ship")
+	var boss: Mob = null
+	for m in Game.monsters:
+		if m.path.begins_with("/monster/quest/reincarnate/PuiPui") and not m.dead:
+			boss = m
+	if boss:
+		Game.monster_die(boss)
+	Game.interact(Game._near("/obj/items/quest/BuuT", 3))
+	pick("Go down to the next level")
+	await wait(0.3)
+	print("SHIP floor=", Game.P.get("ship_floor"), " pos ", Game.P["x"], ",", Game.P["y"])
+	close_dialogs()
+	ui.show_info("Quests", Game.quest_log())
+	await wait(0.3)
+	await shot("16c_quests")
+	ui.info_panel.visible = false
+	ui.show_info("Techniques to Learn", ui._todo_text())
+	await wait(0.3)
+	await shot("16d_todo")
+	ui.info_panel.visible = false
 	ui.toggle_book()
 	await wait(0.4)
 	await shot("16_skills")
