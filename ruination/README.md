@@ -28,6 +28,14 @@ redrawn by hand.
 * **Action panel.** The round buttons above the Attack button hold Talk, Self Train,
   Meditate, Rest, Transform and Revert, plus Fly, Power Up, Sense and Instant Transmission
   once you learn them. A button lights up while it is active.
+* **Message window.** Training stat ticks (Powerlevel +X, Ki +X, Strength +X, Training
+  points, skill exp) are listed like the original's second output pane: red when boosted.
+  Drag it by its title bar, resize it from the corner, minimise it, and switch between a dark
+  panel, a clear (no background) look and the old fading overlay. Tabs: All, Ticks, Combat
+  and Gains (what you've gained this session, with rates per hour). It remembers its layout.
+* **Minimap.** Tap it to enlarge; Menu turns it on or off.
+* **Full stats screen.** Every stat, all 13 skills with their exp, multipliers, active
+  effects and transformations.
 * **Touch controls.** There's a joystick, a big Attack button and the hotbar. On a
   keyboard: arrows/WASD to move, 1–0 for slots, Space to attack, Tab to change bar,
   K for skills, C for stats.

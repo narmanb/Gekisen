@@ -8,7 +8,8 @@ const PANEL_BG := Color(0.06, 0.07, 0.13, 0.94)
 
 var root: Control
 var hud: Control
-var log_box: VBoxContainer
+var logwin: Control
+var minimap: Control
 var bars := {}
 var hud_labels := {}
 var hotbar: Control
@@ -162,12 +163,11 @@ func _build_hud() -> void:
 		v.add_child(_bar(b[0], b[1], b[2]))
 	hud_labels["info"] = _label("", 13, Color(0.75, 0.78, 0.9))
 	v.add_child(hud_labels["info"])
-	log_box = VBoxContainer.new()
-	log_box.position = Vector2(10, 250)
-	log_box.custom_minimum_size = Vector2(560, 0)
-	log_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	log_box.add_theme_constant_override("separation", 0)
-	hud.add_child(log_box)
+	logwin = preload("res://scripts/logwindow.gd").new()
+	hud.add_child(logwin)
+	minimap = preload("res://scripts/minimap.gd").new()
+	hud.add_child(minimap)
+	minimap.visible = bool(logwin._prefs().get("minimap", true))
 	# top-right buttons
 	var tr := HBoxContainer.new()
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -235,25 +235,22 @@ func _process(_d: float) -> void:
 		_refresh_actions()
 	for b in action_buttons:
 		b.queue_redraw()
-	# fade old log lines
-	var t := Time.get_ticks_msec()
-	for l in log_box.get_children():
-		var age: float = t - float(l.get_meta("t"))
-		l.modulate.a = clampf(1.0 - (age - 9000.0) / 1500.0, 0.0, 1.0)
 	if stats_panel.visible and Engine.get_process_frames() % 20 == 0:
 		_refresh_stats()
 
 
-func _on_log(text: String, col: Color) -> void:
-	var l := _label(text, 15, col)
-	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size = Vector2(560, 0)
-	l.set_meta("t", Time.get_ticks_msec())
-	log_box.add_child(l)
-	while log_box.get_child_count() > 6:
-		var c := log_box.get_child(0)
-		log_box.remove_child(c)
-		c.queue_free()
+func _on_log(text: String, col: Color, cat := "general") -> void:
+	logwin.add_entry(text, col, cat)
+
+
+func _toggle_minimap() -> void:
+	minimap.visible = not minimap.visible
+	var d: Dictionary = logwin._prefs()
+	d["minimap"] = minimap.visible
+	var f := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(d))
+	logwin._save()
 
 
 # =================================================================== hotbar
@@ -488,6 +485,8 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			if _modal_open() or book.visible and Rect2(book.global_position, book.size).has_point(p):
 				return
+			if logwin.contains(p) or (minimap.visible and Rect2(minimap.global_position, minimap.size).has_point(p)):
+				return
 			if Rect2(stick.global_position, stick.size).has_point(p):
 				touches[event.index] = {"kind": "stick"}
 				_stick_move(p)
@@ -712,6 +711,7 @@ func _build_stats() -> void:
 	stats_label = RichTextLabel.new()
 	stats_label.bbcode_enabled = true
 	stats_label.custom_minimum_size = Vector2(660, 400)
+	stats_label.scroll_active = true
 	stats_label.add_theme_font_size_override("normal_font_size", 16)
 	v.add_child(stats_label)
 
@@ -726,29 +726,48 @@ func toggle_stats() -> void:
 func _refresh_stats() -> void:
 	var P := Game.P
 	var f := Game.fmt
-	var s := "[b]%s[/b] — %s %s (%s)\n" % [P["name"], P["gene"], P["race"], P["gender"]]
-	s += "Level %s (%s Mode) · Exp %s / %s\n" % [f.call(P["level"]), P["mode"], f.call(P["exp"]), f.call(P["tnl"])]
-	s += "Powerlevel %s / %s   (max %s)\n" % [f.call(P["powerlevel"]), f.call(Game.cap("powerlevel")), f.call(Game.pl_max())]
-	s += "Ki %s / %s   (max %s)\n" % [f.call(P["ki"]), f.call(Game.cap("ki")), f.call(P["ki_max"])]
-	s += "Strength %s (max %s) · Defence %s (max %s)\n" % [f.call(Game.cap("strength")), f.call(P["strength_max"]), f.call(Game.cap("defence")), f.call(P["defence_max"])]
-	s += "Multipliers: Power %s · Ki %s · Str %s · Def %s\n" % [P["power_multi"], P["ki_multi"], P["strength_multi"], P["defence_multi"]]
-	s += "Fatigue %s / %s · Zenni %s · Kills %s\n" % [f.call(P["stam"]), f.call(P["stam_max"]), f.call(P["zenni"]), P["kills"]]
-	s += "Training focus: %s · Meditation: %s\n\n[b]Skills[/b]\n" % [P["focus"], Game.SKILL_NAMES[P["med_focus"]]]
-	var col := 0
+	var keep := stats_label.get_v_scroll_bar().value
+	var s := "[b]%s[/b] — %s %s (%s) · %s Mode (level %d of the mode ladder)\n" % [P["name"], P["gene"], P["race"], P["gender"], P["mode"], int(P["modes"])]
+	s += "Level %s · Exp %s / %s · Training points %s · Zenni %s\n" % [f.call(P["level"]), f.call(P["exp"]), f.call(P["tnl"]), f.call(P["tp"]), f.call(P["zenni"])]
+	s += "\n[b]Power[/b]\n"
+	s += "Powerlevel %s / %s   (usable cap; raw max %s, PL bonus from training %s)\n" % [f.call(P["powerlevel"]), f.call(Game.cap("powerlevel")), f.call(Game.pl_max()), f.call(P["pl_bonus"])]
+	s += "Ki %s / %s   (base max %s)\n" % [f.call(P["ki"]), f.call(Game.cap("ki")), f.call(P["ki_max"])]
+	s += "Strength %s   (base %s) · Defence %s   (base %s)\n" % [f.call(Game.cap("strength")), f.call(P["strength_max"]), f.call(Game.cap("defence")), f.call(P["defence_max"])]
+	s += "Ki Control lets you use %d%% of your power\n" % int(Game.kc() * 100)
+	s += "Multipliers: Power x%s · Ki x%s · Strength x%s · Defence x%s\n" % [P["power_multi"], P["ki_multi"], P["strength_multi"], P["defence_multi"]]
+	s += "Fatigue %s / %s%s\n" % [f.call(P["stam"]), f.call(P["stam_max"]), "  [color=#f88](too tired)[/color]" if Game.tired() else ""]
+	var act: Array = []
+	var cf: Dictionary = Game.current_form()
+	if not cf.is_empty():
+		act.append("Form %d" % int(P["form"]))
+	for k in Game.buffs:
+		act.append("%s x%s" % [k, str(Game.buffs[k]["mult"])])
+	for k in Game.toggles:
+		if Game.toggles[k]:
+			act.append(k.capitalize())
+	if Game.grav > 0:
+		act.append("%dx gravity" % int(Game.grav))
+	if Game.busy != "":
+		act.append(Game.busy)
+	s += "Active: %s\n" % (", ".join(act) if not act.is_empty() else "nothing")
+	s += "\n[b]Skills[/b]  (level out of 100, exp toward the next level)\n[table=3]"
 	for k in Game.SKILLS:
 		var sk: Array = P["skills"][k]
-		s += "%-14s %3d  " % [Game.SKILL_NAMES[k], int(sk[0])]
-		col += 1
-		if col % 3 == 0:
-			s += "\n"
-	s += "\n\n[b]Transformations[/b] (%s gene)\n" % P["gene"]
+		var full := int(sk[0]) >= 100
+		s += "[cell]%s     [/cell][cell][b]%d[/b]     [/cell][cell]%s[/cell]" % [Game.SKILL_NAMES[k], int(sk[0]), "[color=#fd6]max[/color]" if full else "%s / %s exp" % [f.call(sk[1]), f.call(sk[2])]]
+	s += "[/table]\n"
+	s += "\n[b]Training[/b]\n"
+	s += "Self Train focus: %s · Meditate focus: %s\n" % [P["focus"], Game.SKILL_NAMES[P["med_focus"]]]
+	s += "Techniques known: %d · Kills: %s\n" % [(P["learned"] as Array).size(), f.call(P["kills"])]
+	s += "\n[b]Transformations[/b] (%s gene)\n" % P["gene"]
 	var i := 0
 	for fm in Game.forms_for():
 		i += 1
-		s += "Form %d — level %s, power x%s%s\n" % [i, f.call(fm["level"]), str(fm["pl"]), "  [color=yellow](current)[/color]" if int(P["form"]) == i else ""]
+		s += "Form %d — level %s, power x%s%s\n" % [i, f.call(fm["level"]), str(fm["pl"]), "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if int(P["level"]) >= int(fm["level"]) else "")]
 	var mins := int(float(P["playtime"]) / 60.0)
-	s += "\nPlay time %dh %dm" % [mins / 60, mins % 60]
+	s += "\nLocation: %s (%d, %d) · Play time %dh %dm" % [Game.zname(int(P["z"])), int(P["x"]), int(P["y"]), mins / 60, mins % 60]
 	stats_label.text = s
+	stats_label.get_v_scroll_bar().value = keep
 
 
 # =================================================================== menu
@@ -766,6 +785,15 @@ func _build_menu() -> void:
 	v.add_child(_button("Training Focus", func(): menu_panel.visible = false; Game.choose_focus()))
 	v.add_child(_button("Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()))
 	v.add_child(_button("Character Stats", func(): menu_panel.visible = false; toggle_stats()))
+	var hw := HBoxContainer.new()
+	hw.add_theme_constant_override("separation", 6)
+	v.add_child(hw)
+	hw.add_child(_label("Messages:", 15))
+	hw.add_child(_button("Panel", func(): logwin.set_look("panel"), 14))
+	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
+	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
+	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
+	v.add_child(_button("Minimap On / Off", func(): menu_panel.visible = false; _toggle_minimap()))
 	v.add_child(_button("Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))))
 	v.add_child(_button("Save & Quit to Title", func(): Game.save(); get_tree().reload_current_scene()))
 	v.add_child(_button("Close", func(): menu_panel.visible = false))

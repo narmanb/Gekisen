@@ -3,7 +3,7 @@ extends Node
 ## (AttackNormal, Monster AI Attack2, ProjectilesJustin dmg, Self Train, Meditate_Gain,
 ##  Rest_Gain, Level_Up, Exp_Check, Skill_Gain, transformations.)
 
-signal log_msg(text: String, color: Color)
+signal log_msg(text: String, color: Color, cat: String)
 signal dialog(title: String, text: String, options: Array, cb: Callable)
 
 const SAVE_PATH := "user://ruination_save.json"
@@ -50,6 +50,7 @@ var last_hurt := 0.0
 var timers: Array = []
 var traveling := false
 var running := false
+var session := {}           # baseline for the Gains tab
 var grav := 0.0             # active gravity machine strength (0 = off)
 var grav_machine: Mob = null
 var grav_next := 0.0
@@ -87,8 +88,13 @@ func after(ms: float, f: Callable) -> void:
 	timers.append([now + ms, f])
 
 
-func msg(t: String, c := Color.WHITE) -> void:
-	log_msg.emit(t, c)
+func msg(t: String, c := Color.WHITE, cat := "general") -> void:
+	log_msg.emit(t, c, cat)
+
+
+## Stat ticks, like the original's "output2" pane: white normally, red when boosted.
+func tick(t: String, boosted := false) -> void:
+	log_msg.emit(t, Color(1, 0.4, 0.35) if boosted else Color(0.92, 0.92, 0.95), "tick")
 
 
 func ask(title: String, text: String, opts: Array, cb: Callable) -> void:
@@ -371,6 +377,8 @@ func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 
 
 func start(p: Dictionary) -> void:
+	session = {}
+	call_deferred("_snapshot_session")
 	P = p
 	for s in SKILLS:
 		if not P["skills"].has(s):
@@ -800,7 +808,7 @@ func monster_die(m: Mob) -> void:
 		e *= float(buffs["exp"]["mult"])
 	P["exp"] = float(P["exp"]) + e
 	P["zenni"] = float(P["zenni"]) + z
-	msg("You defeated %s! +%s exp, +%s zenni" % [m.name, fmt(e), fmt(z)], Color(0.5, 1, 0.5))
+	msg("You defeated %s! +%s exp, +%s zenni" % [m.name, fmt(e), fmt(z)], Color(0.5, 1, 0.5), "combat")
 	level_up()
 	var path := m.path
 	var home := m.home
@@ -813,7 +821,7 @@ func player_ko(by: Mob, reason := "") -> void:
 	revert(true)
 	stop_busy()
 	gravity_off()
-	msg(reason if reason != "" else "%s knocked you out!" % (by.name if by else "Someone"), Color(1, 0.35, 0.35))
+	msg(reason if reason != "" else "%s knocked you out!" % (by.name if by else "Someone"), Color(1, 0.35, 0.35), "combat")
 	msg("You wake up in the hospital.", Color(0.8, 0.8, 0.8))
 	for m in monsters:
 		if m.target == pe:
@@ -1272,6 +1280,8 @@ func busy_tick() -> void:
 			if gravtrain > 0.0:
 				se *= 2
 			_skill_exp(P["med_focus"], se)
+			var skm: Array = P["skills"][P["med_focus"]]
+			tick("%s exp +%d (%d / %d, level %d)" % [SKILL_NAMES[P["med_focus"]], se, int(skm[1]), int(skm[2]), int(skm[0])], gravtrain > 0.0)
 			P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.05)
 			fatigue(4)
 			world.floater(pe.x, pe.y, pe.z, "+%d %s" % [se, SKILL_NAMES[P["med_focus"]]], Color(0.6, 0.8, 1))
@@ -1304,30 +1314,44 @@ func self_train_tick() -> void:
 	var lg := minf(lvl, 200000.0)
 	lg = randf_range(lg * 0.3, lg * 0.5)
 	var focus: String = P["focus"]
+	var boosted := gravtrain > 0.0 or buffs.has("exp")
 	if randf() < 0.66 and randf() < 0.25:
+		var g := 0.0
 		match focus:
 			"Powerlevel":
-				P["pl_bonus"] = float(P["pl_bonus"]) + maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				g = maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				P["pl_bonus"] = float(P["pl_bonus"]) + g
+				tick("Powerlevel +%s" % fmt(g), boosted)
 			"Ki":
-				P["ki_max"] = float(P["ki_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				P["ki_max"] = float(P["ki_max"]) + g
+				tick("Ki +%s" % fmt(g), boosted)
 			"Strength":
-				P["strength_max"] = float(P["strength_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				P["strength_max"] = float(P["strength_max"]) + g
+				tick("Strength +%s" % fmt(g), boosted)
 			"Defense":
-				P["defence_max"] = float(P["defence_max"]) + maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
+				P["defence_max"] = float(P["defence_max"]) + g
+				tick("Defense +%s" % fmt(g), boosted)
 			"Exp":
 				expgain *= 1.5
 	if randf() < 1.0 / 12.0:
 		var k: String = ["ki_max", "strength_max", "defence_max"][randi() % 3]
 		P[k] = float(P[k]) + 4.0
+		tick("%s +4" % {"ki_max": "Ki", "strength_max": "Strength", "defence_max": "Defense"}[k])
 	if buffs.has("exp"):
 		expgain *= float(buffs["exp"]["mult"])
 	if gravtrain > 0.0:
 		expgain += expgain * gravtrain
 	P["exp"] = float(P["exp"]) + expgain
 	if randf() < 0.05:
-		P["tp"] = float(P["tp"]) + roundf((randi_range(3, 12) + int(moden * 2)) * (1.0 + gravtrain))
+		var tpg := roundf((randi_range(3, 12) + int(moden * 2)) * (1.0 + gravtrain))
+		P["tp"] = float(P["tp"]) + tpg
+		tick("Training points +%s" % fmt(tpg), boosted)
 	if randf() < 0.15:
 		P["zenni"] = float(P["zenni"]) + zen
+		tick("Zenni +%s" % fmt(zen))
 	fatigue(2)
 	level_up()
 
@@ -1363,8 +1387,7 @@ func _skill_exp(s: String, amount: float) -> void:
 		sk[1] -= sk[2]
 		sk[2] = roundf(sk[2] * 1.1)
 		sk[0] += 1
-		if int(sk[0]) % 5 == 0:
-			msg("%s increased to %d!" % [SKILL_NAMES[s], int(sk[0])], Color(0.7, 0.8, 1))
+		tick("%s increased to %d!" % [SKILL_NAMES[s], int(sk[0])], true)
 		if s == "ki_control" and sk[0] >= 100:
 			skill_gain(false)
 
@@ -1623,6 +1646,45 @@ func gravity_pull() -> void:
 		player_ko(null, "The gravity crushed you!")
 	elif float(P["powerlevel"]) < cap("powerlevel") * 0.25:
 		msg("You feel extremely weak from gravity pushing down on you!", Color(1, 0.4, 0.4))
+
+
+# =================================================================== session gains
+func _snapshot_session() -> void:
+	if P.is_empty():
+		return
+	var sk := {}
+	for k in SKILLS:
+		sk[k] = float(P["skills"][k][0])
+	session = {"t": Time.get_ticks_msec(), "level": float(P["level"]), "pl": cap("powerlevel"), "ki": cap("ki"),
+		"str": cap("strength"), "def": cap("defence"), "tp": float(P["tp"]), "zenni": float(P["zenni"]),
+		"kills": int(P["kills"]), "skills": sk, "learned": (P["learned"] as Array).size()}
+
+
+## The Gains tab of the message window: what you've gained since you started playing this time
+func session_report() -> String:
+	if session.is_empty():
+		return "Gains will show here once you start training."
+	var mins := maxf(1.0 / 60.0, (Time.get_ticks_msec() - float(session["t"])) / 60000.0)
+	var hr := 60.0 / mins
+	var rows := [["Levels", float(P["level"]) - float(session["level"])], ["Powerlevel", cap("powerlevel") - float(session["pl"])],
+		["Ki", cap("ki") - float(session["ki"])], ["Strength", cap("strength") - float(session["str"])],
+		["Defense", cap("defence") - float(session["def"])], ["Training points", float(P["tp"]) - float(session["tp"])],
+		["Zenni", float(P["zenni"]) - float(session["zenni"])], ["Kills", float(int(P["kills"]) - int(session["kills"]))]]
+	var s := "[b]This session[/b] — %dm %ds\n" % [int(mins), int(mins * 60) % 60]
+	for r in rows:
+		if r[1] != 0:
+			s += "%s  +%s   [color=#9ab](%s / hour)[/color]\n" % [r[0], fmt(r[1]), fmt(r[1] * hr)]
+	var sk := ""
+	for k in SKILLS:
+		var d := float(P["skills"][k][0]) - float(session["skills"].get(k, P["skills"][k][0]))
+		if d > 0:
+			sk += "%s +%d  " % [SKILL_NAMES[k], int(d)]
+	if sk != "":
+		s += "Skills: " + sk + "\n"
+	var nt := (P["learned"] as Array).size() - int(session["learned"])
+	if nt > 0:
+		s += "New techniques: %d\n" % nt
+	return s
 
 
 # =================================================================== saving
