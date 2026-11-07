@@ -27,7 +27,7 @@ func _apply_size() -> void:
 	size = Vector2(s, s)
 	custom_minimum_size = size
 	var vs := get_viewport_rect().size
-	position = Vector2(vs.x - 345 - s, 8)        # between the HUD and the top-right buttons
+	position = Vector2(vs.x - 435 - s, 8)        # between the HUD and the top-right buttons
 	queue_redraw()
 
 
@@ -38,7 +38,7 @@ func _process(_d: float) -> void:
 	if t - last > 250:
 		last = t
 		var vs := get_viewport_rect().size
-		position.x = vs.x - 345 - size.x
+		position.x = vs.x - 435 - size.x
 		queue_redraw()
 
 

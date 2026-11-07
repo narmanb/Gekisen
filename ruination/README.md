@@ -36,6 +36,11 @@ redrawn by hand.
 * **Minimap.** Tap it to enlarge; Menu turns it on or off.
 * **Full stats screen.** Every stat, all 13 skills with their exp, multipliers, active
   effects and transformations.
+* **Dragon hotbar.** A Shenron-themed bar with 9 slots per page (3 pages); tap the dragon
+  ball on its back to switch pages. Side buttons are dragon balls and only appear once you
+  have that ability (Transform when a form is unlocked, Revert while transformed, Fly,
+  Power Up, Power Down, Sense, Instant Transmission). The **Train** button at the top opens
+  Self Train, Meditate, Rest and Training Focus.
 * **Touch controls.** There's a joystick, a big Attack button and the hotbar. On a
   keyboard: arrows/WASD to move, 1–0 for slots, Space to attack, Tab to change bar,
   K for skills, C for stats.

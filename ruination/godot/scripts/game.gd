@@ -18,7 +18,8 @@ const PK_LEVEL := 2000
 const BASE_ACTIONS := ["attack", "talk", "selftrain", "meditate", "rest", "transform", "revert", "focus"]
 ## Techniques that are actions rather than attacks: they live in the action panel, not on the hotbar by default.
 const UTILITY_KINDS := ["utility"]
-const HOTBAR_VERSION := 2
+const HOTBAR_VERSION := 3
+const HOTBAR_SLOTS := 27          # 3 pages of 9 (the dragon hotbar has 9 slots)
 const ZNAMES := {1: "Earth", 2: "Namek", 3: "Planet Vegeta", 4: "Realm of the Gods", 5: "Buildings",
 	6: "The Lookout", 7: "Other World", 8: "Dr. Gero's Lab", 9: "Whis' Planet", 10: "Beerus' Planet",
 	11: "Space", 12: "Space"}
@@ -389,12 +390,31 @@ func start(p: Dictionary) -> void:
 		for i in hb.size():
 			if hb[i] in BASE_ACTIONS or hb[i] == "travel" or (str(hb[i]).begins_with("t:") and _is_utility(str(hb[i]).substr(2))):
 				hb[i] = ""
+		P["hotbar_v"] = 2
+	if int(P.get("hotbar_v", 2)) < 3:
+		# pages of 10 -> pages of 9: keep each page's first 9 slots, move the 10th into a free slot
+		var old := hb.duplicate()
+		var spare: Array = []
+		hb.clear()
+		for pg in 3:
+			for i in 10:
+				var v: String = str(old[pg * 10 + i]) if pg * 10 + i < old.size() else ""
+				if i < 9:
+					hb.append(v)
+				elif v != "":
+					spare.append(v)
+		for v in spare:
+			var e := hb.find("")
+			if e >= 0:
+				hb[e] = v
 		P["hotbar_v"] = HOTBAR_VERSION
 	for i in hb.size():
 		if hb[i] == "travel":
 			hb[i] = ""
-	while hb.size() < 30:
+	while hb.size() < HOTBAR_SLOTS:
 		hb.append("")
+	if "PowerUp" in P["learned"] and not "PowerDown" in P["learned"]:
+		(P["learned"] as Array).append("PowerDown")
 	pe = Mob.new()
 	pe.kind = "player"
 	pe.x = int(P["x"])
@@ -1020,8 +1040,16 @@ func utility(t: Dictionary, key: String) -> void:
 		"powerup":
 			toggle_busy("power")
 		"powerdown":
-			P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel") * 0.1)
-			msg("You lower your power.", Color(0.8, 0.8, 0.8))
+			# Power Down.dm: "What percentage do you wish to power down to?"
+			if busy == "power":
+				stop_busy()
+			ask("Power Down", "What percentage do you wish to power down to?", ["75%", "50%", "25%", "10%", "Cancel"], func(c: String, _i: int):
+				if c == "Cancel":
+					return
+				var pct := float(c.trim_suffix("%")) / 100.0
+				P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel") * pct)
+				P["ki"] = minf(float(P["ki"]), cap("ki") * pct)
+				msg("You power down to %s." % c, Color(0.8, 0.8, 0.8)))
 		_:
 			msg("%s isn't available in this version yet." % t.get("name", key), Color(0.8, 0.8, 0.8))
 
@@ -1444,6 +1472,8 @@ func skill_gain(silent: bool) -> void:
 		if Data.tech(tkey).is_empty():
 			continue
 		learned.append(tkey)
+		if tkey == "PowerUp" and not "PowerDown" in learned:
+			learned.append("PowerDown")
 		if not silent:
 			msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
 		if not _is_utility(tkey):
@@ -1455,12 +1485,19 @@ func _is_utility(key: String) -> bool:
 
 
 ## Actions shown in the on-screen action panel (base actions + learned utility techniques).
+## The round (dragon ball) buttons: only what you can actually do right now.
+## Training actions live behind the Train button at the top.
 func panel_actions() -> Array:
-	var out: Array = ["talk", "selftrain", "meditate", "rest"]
-	for k in ["PowerUp", "Fly", "Sense", "InstantTransmission"]:
+	var out: Array = ["talk"]
+	for k in ["Fly", "PowerUp", "PowerDown", "Sense", "InstantTransmission"]:
 		if k in P.get("learned", []):
 			out.append("t:" + k)
-	out.append_array(["transform", "revert"])
+	var fl := forms_for()
+	var cur := int(P.get("form", 0))
+	if cur < fl.size() and int(P["level"]) >= int(fl[cur]["level"]):
+		out.append("transform")
+	if cur > 0:
+		out.append("revert")
 	return out
 
 

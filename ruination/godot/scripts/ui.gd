@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## All UI: title, character creation, HUD, log, joystick, hotbar, skills book, stats, dialogs.
 
-const SLOTS := 10
+const SLOTS := 9
 const PAGES := 3
 const GOLD := Color(1, 0.72, 0.18)
 const PANEL_BG := Color(0.06, 0.07, 0.13, 0.94)
@@ -15,7 +15,7 @@ var hud_labels := {}
 var hotbar: Control
 var slots: Array = []
 var page := 0
-var page_label: Button
+var page_label: Control
 var stick: Control
 var attack_btn: Control
 var action_panel: Control
@@ -171,11 +171,12 @@ func _build_hud() -> void:
 	# top-right buttons
 	var tr := HBoxContainer.new()
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_offs(tr, Vector2(-330, 10))
-	tr.custom_minimum_size = Vector2(320, 56)
+	_offs(tr, Vector2(-420, 10))
+	tr.custom_minimum_size = Vector2(410, 56)
 	tr.alignment = BoxContainer.ALIGNMENT_END
 	tr.add_theme_constant_override("separation", 8)
 	hud.add_child(tr)
+	tr.add_child(_button("Train", func(): _train_menu(), 18))
 	tr.add_child(_button("Skills", func(): toggle_book(), 18))
 	tr.add_child(_button("Stats", func(): toggle_stats(), 18))
 	tr.add_child(_button("Menu", func(): menu_panel.visible = not menu_panel.visible, 18))
@@ -243,6 +244,27 @@ func _on_log(text: String, col: Color, cat := "general") -> void:
 	logwin.add_entry(text, col, cat)
 
 
+## Training options behind the Train button (replaces the Self Train / Meditate / Rest side buttons)
+func _train_menu() -> void:
+	var busy: String = Game.busy
+	var opts: Array = []
+	opts.append("■ Stop Self Train" if busy == "selftrain" else "Self Train")
+	opts.append("■ Stop Meditating" if busy == "meditate" else "Meditate")
+	opts.append("■ Stop Resting" if busy == "rest" else "Rest")
+	opts.append("Training Focus")
+	opts.append("Cancel")
+	var info := "Self Train focus: %s · Meditate focus: %s\nFatigue %s / %s" % [Game.P["focus"], Game.SKILL_NAMES[Game.P["med_focus"]], Game.fmt(Game.P["stam"]), Game.fmt(Game.P["stam_max"])]
+	Game.ask("Training", info, opts, func(c: String, _i: int):
+		if c.find("Self Train") >= 0:
+			Game.use_ability("selftrain")
+		elif c.find("Meditat") >= 0:
+			Game.use_ability("meditate")
+		elif c.find("Rest") >= 0:
+			Game.use_ability("rest")
+		elif c == "Training Focus":
+			Game.choose_focus())
+
+
 func _toggle_minimap() -> void:
 	minimap.visible = not minimap.visible
 	var d: Dictionary = logwin._prefs()
@@ -260,11 +282,9 @@ class HotSlot extends Control:
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
 		var id: String = ui.slot_id(idx)
-		var bg := Color(0.08, 0.09, 0.15, 0.85)
-		draw_rect(r, bg)
 		if id != "":
 			var info: Dictionary = Game.ability_info(id)
-			draw_rect(r.grow(-3), Color(info["color"], 0.55))
+			draw_rect(r.grow(-4), Color(info["color"].darkened(0.25), 0.85))
 			var drew := false
 			if info.has("icon"):
 				var fr := Data.frame(int(info["icon"]), info.get("state", ""), 4, Game.now, true)
@@ -295,9 +315,10 @@ class HotSlot extends Control:
 			if (id == "selftrain" and Game.busy == "selftrain") or (id == "meditate" and Game.busy == "meditate") or (id == "rest" and Game.busy == "rest"):
 				draw_rect(r, Color(1, 0.8, 0.3), false, 3)
 		var hl: bool = ui.assign_id != ""
-		draw_rect(r, GOLD if hl else Color(1, 1, 1, 0.25), false, 2 if hl else 1)
-		var key := str((idx + 1) % 10)
-		draw_string(ThemeDB.fallback_font, Vector2(4, 13), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.7))
+		if hl:
+			draw_rect(r, Color(1, 1, 0.6), false, 3)
+		var key := str(idx + 1)
+		draw_string(ThemeDB.fallback_font, Vector2(5, 15), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.35, 0.12, 0, 0.9))
 
 
 class BigButton extends Control:
@@ -320,37 +341,59 @@ func slot_id(i: int) -> String:
 	return hb[k] if k < hb.size() else ""
 
 
+## The Shenron hotbar (ui/hotbar_dragon.png): the slots sit on the dragon's nine orange tiles.
+const BAR_IMG_W := 2147.0
+const BAR_SLOT_X := [392, 565, 738, 911, 1085, 1259, 1433, 1607, 1780]
+const BAR_SLOT_Y := 250.0
+const BAR_SLOT_W := 145.0
+const BAR_SLOT_H := 148.0
+const BAR_W := 905.0
+
+
+class PageBall extends Control:
+	## A little dragon ball on the dragon's back: its stars show the hotbar page; tap to switch.
+	var ui
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		gui_input.connect(func(e: InputEvent):
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				ui._page(1)
+				accept_event())
+	func _draw() -> void:
+		ui.draw_dragon_ball(self, size / 2, size.x / 2, ui.page + 1, false)
+
+
 func _build_hotbar() -> void:
 	hotbar = Control.new()
-	hotbar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	var w := SLOTS * 68 + 90
-	hotbar.custom_minimum_size = Vector2(w, 76)
-	hotbar.size = Vector2(w, 76)
-	_offs(hotbar, Vector2(-w / 2.0 + 40, -84))
+	hotbar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	var k := BAR_W / BAR_IMG_W
+	var h := 554.0 * k
+	hotbar.custom_minimum_size = Vector2(BAR_W, h)
+	hotbar.size = Vector2(BAR_W, h)
+	_offs(hotbar, Vector2(212, -h + 20))       # just right of the joystick
 	hotbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(hotbar)
-	var bg := Panel.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0.5)
-	sb.set_corner_radius_all(10)
-	bg.add_theme_stylebox_override("panel", sb)
-	bg.position = Vector2(-6, -4)
-	bg.size = Vector2(w + 12, 80)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hotbar.add_child(bg)
+	var art := TextureRect.new()
+	art.texture = load("res://ui/hotbar_dragon.png")
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_SCALE
+	art.size = Vector2(BAR_W, h)
+	art.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hotbar.add_child(art)
 	for i in SLOTS:
-		var s := HotSlot.new()
-		s.ui = self
-		s.idx = i
-		s.position = Vector2(i * 68, 4)
-		s.size = Vector2(64, 64)
-		s.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		hotbar.add_child(s)
-		slots.append(s)
-	var pg := _button("Bar 1\n▶", func(): _page(1), 15)
-	pg.position = Vector2(SLOTS * 68 + 4, 4)
-	pg.custom_minimum_size = Vector2(78, 64)
-	pg.size = Vector2(78, 64)
+		var sl := HotSlot.new()
+		sl.ui = self
+		sl.idx = i
+		sl.position = Vector2(BAR_SLOT_X[i] * k, BAR_SLOT_Y * k)
+		sl.size = Vector2(BAR_SLOT_W * k, BAR_SLOT_H * k)
+		sl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hotbar.add_child(sl)
+		slots.append(sl)
+	var pg := PageBall.new()
+	pg.ui = self
+	pg.size = Vector2(44, 44)
+	pg.position = Vector2(1975 * k - 22, 150 * k - 22)
 	hotbar.add_child(pg)
 	page_label = pg
 	attack_btn = BigButton.new()
@@ -370,19 +413,51 @@ func _build_hotbar() -> void:
 ## fly, power up, transform...). They can also be placed on the hotbar from the Skills book.
 class ActionButton extends Control:
 	var id := ""
+	var ui
+	var stars := 1
 	func _draw() -> void:
 		var info: Dictionary = Game.ability_info(id)
-		var c := size / 2
 		var on: bool = Game.is_active(id)
-		draw_circle(c, size.x / 2, Color(info["color"], 0.9) if on else Color(0.08, 0.09, 0.15, 0.78))
-		draw_arc(c, size.x / 2 - 1, 0, TAU, 40, GOLD if on else Color(info["color"].lightened(0.3), 0.9), 3 if on else 2)
+		var c := Vector2(size.x / 2, size.x / 2)
+		ui.draw_dragon_ball(self, c, size.x / 2 - 2, stars, on)
 		var font := ThemeDB.fallback_font
 		var g: String = info["glyph"]
-		var w := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
-		draw_string(font, Vector2(c.x - w / 2, c.y + 2), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color.WHITE)
-		var nm: String = info["name"].replace("Instant Transmission", "Teleport")
-		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
-		draw_string(font, Vector2(c.x - nw / 2, c.y + 15), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1, 1, 1, 0.85))
+		var w := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
+		draw_string_outline(font, Vector2(c.x - w / 2, c.y + 15), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, 4, Color(0.25, 0.05, 0, 0.9))
+		draw_string(font, Vector2(c.x - w / 2, c.y + 15), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1, 0.97, 0.85))
+		var nm: String = info["name"].replace("Instant Transmission", "Teleport").replace(" (Fly)", "")
+		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+		draw_string_outline(font, Vector2(c.x - nw / 2, size.x + 9), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 4, Color(0, 0, 0, 0.85))
+		draw_string(font, Vector2(c.x - nw / 2, size.x + 9), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color.WHITE)
+
+
+## A dragon ball: orange sphere, shine, and 1-7 red stars. Used by the side buttons and the page ball.
+func draw_dragon_ball(ci: CanvasItem, c: Vector2, r: float, stars: int, glow: bool) -> void:
+	if glow:
+		ci.draw_circle(c, r + 5, Color(1, 0.95, 0.4, 0.55))
+	ci.draw_circle(c, r, Color(0.55, 0.22, 0.0, 0.95))
+	ci.draw_circle(c, r - 2, Color(0.98, 0.52, 0.05))
+	ci.draw_circle(c + Vector2(r * 0.12, r * 0.12), r * 0.78, Color(1.0, 0.62, 0.12))
+	ci.draw_circle(c - Vector2(r * 0.12, r * 0.18), r * 0.5, Color(1.0, 0.72, 0.25))
+	ci.draw_circle(c - Vector2(r * 0.38, r * 0.42), r * 0.2, Color(1, 1, 0.92, 0.85))
+	var layouts := {1: [Vector2(0, 0)], 2: [Vector2(-0.22, 0), Vector2(0.22, 0)], 3: [Vector2(0, -0.2), Vector2(-0.22, 0.14), Vector2(0.22, 0.14)],
+		4: [Vector2(-0.2, -0.2), Vector2(0.2, -0.2), Vector2(-0.2, 0.2), Vector2(0.2, 0.2)],
+		5: [Vector2(0, -0.28), Vector2(-0.27, -0.06), Vector2(0.27, -0.06), Vector2(-0.16, 0.26), Vector2(0.16, 0.26)],
+		6: [Vector2(-0.22, -0.26), Vector2(0.22, -0.26), Vector2(-0.3, 0.02), Vector2(0.3, 0.02), Vector2(-0.14, 0.28), Vector2(0.14, 0.28)],
+		7: [Vector2(0, 0), Vector2(0, -0.32), Vector2(-0.28, -0.16), Vector2(0.28, -0.16), Vector2(-0.28, 0.16), Vector2(0.28, 0.16), Vector2(0, 0.32)]}
+	var n := clampi(stars, 1, 7)
+	var sr := r * (0.26 if n == 1 else (0.18 if n <= 4 else 0.13))
+	for o in layouts[n]:
+		_star(ci, c + o * r - Vector2(0, r * 0.12), sr)
+
+
+func _star(ci: CanvasItem, c: Vector2, r: float) -> void:
+	var pts := PackedVector2Array()
+	for i in 10:
+		var a := -PI / 2 + i * PI / 5
+		var rr := r if i % 2 == 0 else r * 0.45
+		pts.append(c + Vector2(cos(a), sin(a)) * rr)
+	ci.draw_colored_polygon(pts, Color(0.85, 0.08, 0.05))
 
 
 func _refresh_actions() -> void:
@@ -401,10 +476,12 @@ func _refresh_actions() -> void:
 	for i in ids.size():
 		var b := ActionButton.new()
 		b.id = ids[i]
+		b.ui = self
+		b.stars = (i % 7) + 1
 		b.size = Vector2(56, 56)
 		var col := i % 2
 		var row := i / 2
-		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 220 - row * d)
+		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 230 - row * (d + 8))
 		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		action_panel.add_child(b)
 		action_buttons.append(b)
@@ -419,7 +496,8 @@ func _action_at(p: Vector2) -> String:
 
 func _page(d: int) -> void:
 	page = (page + d + PAGES) % PAGES
-	page_label.text = "Bar %d\n▶" % (page + 1)
+	page_label.queue_redraw()
+	Game.msg("Hotbar page %d" % (page + 1), Color(1, 0.75, 0.3))
 
 
 func _slot_at(p: Vector2) -> int:
@@ -679,9 +757,10 @@ func _refresh_book() -> void:
 				and not e.has("req") and int(e["level"]) > int(Game.P["level"]) and not e["tech"] in Game.P["learned"]:
 			if nxt == "" or int(e["level"]) < int(nxt.get_slice("|", 0)):
 				nxt = "%d|%s" % [int(e["level"]), Data.tech(e["tech"]).get("name", e["tech"])]
-	if nxt != "":
-		var l := _label("Next technique: %s at level %s" % [nxt.get_slice("|", 1), Game.fmt(int(nxt.get_slice("|", 0)))], 14, Color(0.7, 0.8, 1))
-		book_grid.add_child(l)
+	if assign_id == "":
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it."
+		if nxt != "":
+			book_info.text += "\nNext technique: %s at level %s" % [nxt.get_slice("|", 1), Game.fmt(int(nxt.get_slice("|", 0)))]
 
 
 func _pick(id: String) -> void:
