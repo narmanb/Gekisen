@@ -166,16 +166,18 @@ func _build_hud() -> void:
 	logwin = preload("res://scripts/logwindow.gd").new()
 	hud.add_child(logwin)
 	minimap = preload("res://scripts/minimap.gd").new()
+	minimap.ui = self
 	hud.add_child(minimap)
 	minimap.visible = bool(logwin._prefs().get("minimap", true))
 	# top-right buttons
 	var tr := HBoxContainer.new()
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_offs(tr, Vector2(-420, 10))
-	tr.custom_minimum_size = Vector2(410, 56)
+	_offs(tr, Vector2(-510, 10))
+	tr.custom_minimum_size = Vector2(500, 56)
 	tr.alignment = BoxContainer.ALIGNMENT_END
 	tr.add_theme_constant_override("separation", 8)
 	hud.add_child(tr)
+	tr.add_child(_button("Test", func(): _test_menu(), 18))
 	tr.add_child(_button("Train", func(): _train_menu(), 18))
 	tr.add_child(_button("Skills", func(): toggle_book(), 18))
 	tr.add_child(_button("Stats", func(): toggle_stats(), 18))
@@ -263,6 +265,132 @@ func _train_menu() -> void:
 			Game.use_ability("rest")
 		elif c == "Training Focus":
 			Game.choose_focus())
+
+
+## Test menu (top-right "Test" button): quick levels, refills and teleporting for trying things out.
+func _test_menu() -> void:
+	var info := "Level %d · %s · %s (%d,%d)" % [int(Game.P["level"]), Game.P["mode"], Game.zname(Game.pe.z), Game.pe.x, Game.pe.y]
+	Game.ask("Test Menu", info, ["Level Up…", "Teleport…", "Learn All Techniques", "Full Restore", "Close"], _on_test_pick)
+
+
+func _on_test_pick(c: String, _i: int) -> void:
+	match c:
+		"Level Up…":
+			Game.ask("Level Up", "How many levels? (Level %d now.)" % int(Game.P["level"]),
+				["1", "10", "50", "100", "500", "1,000", "5,000", "Back"], _on_test_levels)
+		"Teleport…":
+			Game.ask("Teleport", "Where to?", ["To an NPC", "To an Enemy", "To Coordinates", "Back"], _on_test_tp)
+		"Learn All Techniques":
+			Game.test_learn_all()
+		"Full Restore":
+			Game.test_restore()
+
+
+func _on_test_levels(c: String, _i: int) -> void:
+	if c == "Back":
+		_test_menu()
+		return
+	Game.test_level_up(int(c.replace(",", "")))
+
+
+var _tp_rows: Array = []
+
+
+func _on_test_tp(c: String, _i: int) -> void:
+	match c:
+		"To an NPC", "To an Enemy":
+			var kind := "npc" if c == "To an NPC" else "monster"
+			_tp_rows = Game.test_targets(kind)
+			var opts: Array = []
+			for r in _tp_rows:
+				opts.append("%s — %s (%d,%d)%s" % [r[0], Game.zname(r[3]), r[1], r[2], (" ×%d" % r[4]) if r[4] > 1 else ""])
+			opts.append("Back")
+			Game.ask("Teleport to an NPC" if kind == "npc" else "Teleport to an Enemy", "%d places. Pick one:" % _tp_rows.size(), opts, _on_test_tp_target)
+		"To Coordinates":
+			_coord_dialog()
+		"Back":
+			_test_menu()
+
+
+func _on_test_tp_target(_c: String, i: int) -> void:
+	if i >= _tp_rows.size():
+		_on_test_pick("Teleport…", 0)
+		return
+	var r: Array = _tp_rows[i]
+	Game.test_teleport(r[1], r[2], r[3])
+
+
+var coord_panel: PanelContainer
+
+
+func _coord_dialog() -> void:
+	Game.set_move_dir(0)
+	coord_panel = PanelContainer.new()
+	coord_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	coord_panel.custom_minimum_size = Vector2(520, 0)
+	_offs(coord_panel, Vector2(-260, -200))
+	modal_layer.add_child(coord_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	coord_panel.add_child(v)
+	v.add_child(_label("Teleport to Coordinates", 22, GOLD))
+	var area := OptionButton.new()
+	area.add_theme_font_size_override("font_size", 18)
+	area.custom_minimum_size = Vector2(0, 46)
+	var zs: Array = Game.ZNAMES.keys()
+	zs.sort()
+	for z in zs:
+		area.add_item("%s (z %d)" % [Game.ZNAMES[z], z], z)
+		if z == Game.pe.z:
+			area.select(area.item_count - 1)
+	v.add_child(area)
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 10)
+	v.add_child(h)
+	var edits: Array = []
+	for pair in [["X", Game.pe.x], ["Y", Game.pe.y]]:
+		h.add_child(_label(pair[0], 20))
+		var le := LineEdit.new()
+		le.text = str(pair[1])
+		le.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
+		le.custom_minimum_size = Vector2(150, 46)
+		le.add_theme_font_size_override("font_size", 20)
+		le.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(le)
+		edits.append(le)
+	var err := _label("", 15, Color(1, 0.5, 0.4))
+	v.add_child(err)
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	nav.add_theme_constant_override("separation", 12)
+	v.add_child(nav)
+	nav.add_child(_button("Cancel", func(): _close_coord(), 18))
+	nav.add_child(_button("Go", func(): _coord_go(area, edits, err), 20))
+
+
+func _close_coord() -> void:
+	if coord_panel != null and is_instance_valid(coord_panel):
+		coord_panel.queue_free()
+	coord_panel = null
+
+
+func _coord_go(area: OptionButton, edits: Array, err: Label) -> void:
+	var z := area.get_item_id(area.selected)
+	var zi: Dictionary = Data.zinfo(z)
+	var w := int(zi.get("w", 500))
+	var hgt := int(zi.get("h", 500))
+	var xs: String = (edits[0] as LineEdit).text.strip_edges()
+	var ys: String = (edits[1] as LineEdit).text.strip_edges()
+	if not xs.is_valid_int() or not ys.is_valid_int():
+		err.text = "Enter whole numbers for X and Y."
+		return
+	var x := int(xs)
+	var y := int(ys)
+	if x < 1 or y < 1 or x > w or y > hgt:
+		err.text = "%s is %d × %d: X 1–%d, Y 1–%d." % [Game.zname(z), w, hgt, w, hgt]
+		return
+	_close_coord()
+	Game.test_teleport(x, y, z)
 
 
 func _toggle_minimap() -> void:
@@ -562,7 +690,8 @@ func _build_stick() -> void:
 
 
 func _modal_open() -> bool:
-	return dialog_panel != null and is_instance_valid(dialog_panel) or create_root != null or title_root != null
+	return dialog_panel != null and is_instance_valid(dialog_panel) or create_root != null or title_root != null \
+		or coord_panel != null and is_instance_valid(coord_panel)
 
 
 func _input(event: InputEvent) -> void:
@@ -882,7 +1011,12 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
-	v.add_child(_button("Minimap On / Off", func(): menu_panel.visible = false; _toggle_minimap()))
+	var hm := HBoxContainer.new()
+	hm.add_theme_constant_override("separation", 6)
+	v.add_child(hm)
+	hm.add_child(_label("Minimap:", 15))
+	hm.add_child(_button("On / Off", func(): menu_panel.visible = false; _toggle_minimap(), 14))
+	hm.add_child(_button("Reset", func(): minimap.reset_layout(), 14))
 	v.add_child(_button("Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))))
 	v.add_child(_button("Save & Quit to Title", func(): Game.save(); get_tree().reload_current_scene()))
 	v.add_child(_button("Close", func(): menu_panel.visible = false))
@@ -891,7 +1025,7 @@ func _build_menu() -> void:
 # =================================================================== dialogs
 func _on_dialog(title: String, text: String, opts: Array, cb: Callable) -> void:
 	dialog_queue.append([title, text, opts, cb])
-	if dialog_queue.size() == 1:
+	if dialog_panel == null or not is_instance_valid(dialog_panel):
 		_show_dialog()
 
 
@@ -930,13 +1064,15 @@ func _show_dialog() -> void:
 
 
 func _dialog_pick(o: String, i: int) -> void:
+	if dialog_queue.is_empty() or dialog_panel == null or not is_instance_valid(dialog_panel):
+		return              # a second tap on a dialog that is already closing
 	var d: Array = dialog_queue.pop_front()
 	dialog_panel.queue_free()
 	dialog_panel = null
 	var cb: Callable = d[3]
 	if cb.is_valid():
 		cb.call(o, i)
-	if not dialog_queue.is_empty():
+	if not dialog_queue.is_empty() and dialog_panel == null:      # the callback may already have opened the next one
 		_show_dialog()
 
 

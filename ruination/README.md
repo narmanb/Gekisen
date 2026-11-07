@@ -33,7 +33,11 @@ redrawn by hand.
   Drag it by its title bar, resize it from the corner, minimise it, and switch between a dark
   panel, a clear (no background) look and the old fading overlay. Tabs: All, Ticks, Combat
   and Gains (what you've gained this session, with rates per hour). It remembers its layout.
-* **Minimap.** Tap it to enlarge; Menu turns it on or off.
+* **Minimap.** Tap it to cycle small / medium / large, drag it to move it; it remembers
+  where you left it. Menu turns it on or off or resets its place.
+* **Test menu.** The **Test** button (top right) levels you up 1–5,000 times, refills you,
+  teaches every technique your race can learn, and teleports you to any NPC, any enemy type
+  or typed-in coordinates.
 * **Full stats screen.** Every stat, all 13 skills with their exp, multipliers, active
   effects and transformations.
 * **Dragon hotbar.** A Shenron-themed bar with 9 slots per page (3 pages); tap the dragon

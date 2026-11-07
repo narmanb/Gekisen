@@ -1,34 +1,102 @@
 extends Control
 ## Minimap: the tiles around you coloured from their own sprites, monsters red, people cyan,
-## you white. Tap it to switch between small and large.
+## you white. Tap it to cycle small / medium / large; drag it to move it. Remembered between runs.
 
 const RADIUS := 20
-var big := false
+const SIZES := [160.0, 240.0, 320.0]
+const DRAG_START := 12.0
+var size_i := 0
 var colors := {}          # type index -> Color
 var images := {}          # icon id -> Image
 var last := 0.0
+var touch := -1           # finger index holding the map
+var press_at := Vector2.ZERO
+var grab := Vector2.ZERO
+var dragged := false
+var ui                    # set by ui.gd
 
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP
-	gui_input.connect(_on_input)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE      # touches are handled in _input (no mouse emulation double-taps)
+	var d: Dictionary = _prefs().get("minimap_layout", {})
+	size_i = clampi(int(d.get("size", 0)), 0, SIZES.size() - 1)
+	var s: float = SIZES[size_i]
+	var vs := get_viewport_rect().size
+	position = Vector2(float(d.get("x", vs.x - s - 10)), float(d.get("y", 76)))
 	_apply_size()
+	get_viewport().size_changed.connect(_clamp)
 
 
-func _on_input(e: InputEvent) -> void:
-	if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-		big = not big
-		_apply_size()
-		accept_event()
+func _input(e: InputEvent) -> void:
+	if not is_visible_in_tree():
+		return
+	if e is InputEventScreenTouch:
+		if e.pressed:
+			if touch == -1 and Rect2(global_position, size).has_point(e.position) and not _blocked():
+				touch = e.index
+				press_at = e.position
+				grab = e.position - position
+				dragged = false
+				get_viewport().set_input_as_handled()
+		elif e.index == touch:
+			touch = -1
+			if not dragged:
+				size_i = (size_i + 1) % SIZES.size()
+				var c := position + size / 2
+				var s: float = SIZES[size_i]
+				position = c - Vector2(s, s) / 2         # grow / shrink around the centre
+				_apply_size()
+			_save()
+			get_viewport().set_input_as_handled()
+	elif e is InputEventScreenDrag and e.index == touch:
+		if not dragged and (e.position - press_at).length() > DRAG_START:
+			dragged = true
+		if dragged:
+			position = e.position - grab
+			_clamp()
+		get_viewport().set_input_as_handled()
+
+
+## Don't steal touches meant for an open dialog or the skills book.
+func _blocked() -> bool:
+	return ui != null and (ui._modal_open() or ui.book.visible or ui.stats_panel.visible or ui.menu_panel.visible)
 
 
 func _apply_size() -> void:
-	var s := 300.0 if big else 160.0
+	var s: float = SIZES[size_i]
+	custom_minimum_size = Vector2(s, s)       # set first: size can't go below the old minimum
 	size = Vector2(s, s)
-	custom_minimum_size = size
-	var vs := get_viewport_rect().size
-	position = Vector2(vs.x - 435 - s, 8)        # between the HUD and the top-right buttons
+	_clamp()
 	queue_redraw()
+
+
+func _clamp() -> void:
+	var vs := get_viewport_rect().size
+	position = Vector2(clampf(position.x, 0, maxf(0, vs.x - size.x)), clampf(position.y, 0, maxf(0, vs.y - size.y)))
+
+
+func reset_layout() -> void:
+	size_i = 0
+	var vs := get_viewport_rect().size
+	position = Vector2(vs.x - SIZES[0] - 10, 76)
+	_apply_size()
+	_save()
+
+
+func _prefs() -> Dictionary:
+	var path := "user://ui_prefs.json"
+	if not FileAccess.file_exists(path):
+		return {}
+	var v = JSON.parse_string(FileAccess.get_file_as_string(path))
+	return v if v is Dictionary else {}
+
+
+func _save() -> void:
+	var d := _prefs()
+	d["minimap_layout"] = {"x": position.x, "y": position.y, "size": size_i}
+	var f := FileAccess.open("user://ui_prefs.json", FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(d))
 
 
 func _process(_d: float) -> void:
@@ -37,8 +105,6 @@ func _process(_d: float) -> void:
 	var t := Time.get_ticks_msec()
 	if t - last > 250:
 		last = t
-		var vs := get_viewport_rect().size
-		position.x = vs.x - 435 - size.x
 		queue_redraw()
 
 

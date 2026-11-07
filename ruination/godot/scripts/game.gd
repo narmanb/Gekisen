@@ -1452,7 +1452,7 @@ func level_up() -> void:
 
 
 ## Skill_Gain(): learn techniques by race / gene / level.
-func skill_gain(silent: bool) -> void:
+func skill_gain(silent: bool, ignore_level := false) -> void:
 	var learned: Array = P["learned"]
 	for e in Data.rules["learn"]:
 		var tkey: String = e["tech"]
@@ -1462,12 +1462,12 @@ func skill_gain(silent: bool) -> void:
 			continue
 		if e.has("gene") and e["gene"] != P["gene"]:
 			continue
-		if int(P["level"]) < int(e["level"]):
+		if int(P["level"]) < int(e["level"]) and not ignore_level:
 			continue
 		var req = e.get("req")
 		if req == "weapon":
 			continue
-		if req == "ki_control_mastered" and float(P["skills"]["ki_control"][0]) < 100:
+		if req == "ki_control_mastered" and float(P["skills"]["ki_control"][0]) < 100 and not ignore_level:
 			continue
 		if Data.tech(tkey).is_empty():
 			continue
@@ -1478,6 +1478,66 @@ func skill_gain(silent: bool) -> void:
 			msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
 		if not _is_utility(tkey):
 			_auto_hotbar("t:" + tkey)
+
+
+# =================================================================== test menu
+## Test helpers behind the Test button: level up N times, refill, learn everything, teleport.
+func test_level_up(n: int) -> void:
+	var start_lv := int(P["level"])
+	for i in n:
+		P["exp"] = float(P["tnl"])
+		level_up()
+	P["pl"] = pl_max()
+	P["ki"] = cap("ki")
+	msg("Test: level %d → %d." % [start_lv, int(P["level"])], Color(0.6, 1, 0.6))
+
+
+func test_restore() -> void:
+	P["pl"] = pl_max()
+	P["ki"] = cap("ki")
+	P["stam"] = 0.0
+	msg("Test: powerlevel and Ki refilled, fatigue cleared.", Color(0.6, 1, 0.6))
+
+
+func test_learn_all() -> void:
+	var before: int = P["learned"].size()
+	skill_gain(false, true)
+	msg("Test: learned %d techniques." % (P["learned"].size() - before), Color(0.6, 1, 0.6))
+
+
+## Map placements as teleport targets. kind "npc" or "monster"; one entry per name per area.
+func test_targets(kind: String) -> Array:
+	var seen := {}
+	var out: Array = []
+	for e in Data.map["entities"]:
+		var t: Dictionary = Data.types.get(str(int(e[0])), {})
+		var p: String = t.get("path", "")
+		if not p.begins_with("/mob") or t.has("invis") or p.begins_with("/mob/Gravity_Room"):
+			continue
+		var is_mon := p.begins_with("/mob/Monster/")
+		if is_mon != (kind == "monster"):
+			continue
+		var nm: String = t.get("name", "")
+		if is_mon:
+			nm = str(Data.mobs.get(p, {}).get("name", nm))
+		if nm == "":
+			nm = p.get_file().replace("_", " ")
+		var z := int(e[3])
+		var k := "%s|%d" % [nm, z]
+		if seen.has(k):
+			seen[k][4] += 1
+			continue
+		var row := [nm, int(e[1]), int(e[2]), z, 1]
+		seen[k] = row
+		out.append(row)
+	out.sort_custom(func(a, b): return a[3] < b[3] if a[3] != b[3] else a[0].naturalnocasecmp_to(b[0]) < 0)
+	return out
+
+
+func test_teleport(x: int, y: int, z: int) -> void:
+	stop_busy()
+	teleport(x, y, z)
+	msg("Test: teleported to %s (%d,%d)." % [zname(z), pe.x, pe.y], Color(0.6, 1, 0.6))
 
 
 func _is_utility(key: String) -> bool:

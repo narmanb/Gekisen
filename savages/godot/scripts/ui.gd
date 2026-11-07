@@ -834,7 +834,7 @@ func _todo_text() -> String:
 # =================================================================== dialogs
 func _on_dialog(title: String, text: String, opts: Array, cb: Callable) -> void:
 	dialog_queue.append([title, text, opts, cb])
-	if dialog_queue.size() == 1:
+	if dialog_panel == null or not is_instance_valid(dialog_panel):
 		_show_dialog()
 
 
@@ -873,13 +873,15 @@ func _show_dialog() -> void:
 
 
 func _dialog_pick(o: String, i: int) -> void:
+	if dialog_queue.is_empty() or dialog_panel == null or not is_instance_valid(dialog_panel):
+		return              # a second tap on a dialog that is already closing
 	var d: Array = dialog_queue.pop_front()
 	dialog_panel.queue_free()
 	dialog_panel = null
 	var cb: Callable = d[3]
 	if cb.is_valid():
 		cb.call(o, i)
-	if not dialog_queue.is_empty():
+	if not dialog_queue.is_empty() and dialog_panel == null:      # the callback may already have opened the next one
 		_show_dialog()
 
 

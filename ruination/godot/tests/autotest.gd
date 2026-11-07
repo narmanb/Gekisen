@@ -21,6 +21,29 @@ func wait(sec: float) -> void:
 	await get_tree().create_timer(sec).timeout
 
 
+func touch_at(a: Vector2, b: Vector2) -> void:
+	var t := InputEventScreenTouch.new()
+	t.index = 0
+	t.position = a
+	t.pressed = true
+	Input.parse_input_event(t)
+	await get_tree().process_frame
+	if a != b:
+		for i in 5:
+			var d := InputEventScreenDrag.new()
+			d.index = 0
+			d.position = a.lerp(b, (i + 1) / 5.0)
+			Input.parse_input_event(d)
+			await get_tree().process_frame
+	var u := InputEventScreenTouch.new()
+	u.index = 0
+	u.position = b
+	u.pressed = false
+	Input.parse_input_event(u)
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+
 func shot(name: String) -> void:
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(shots + "/" + name + ".png")
@@ -110,6 +133,35 @@ func run() -> void:
 	await wait(0.3)
 	await shot("04a_train_menu")
 	ui._dialog_pick("Cancel", 4)
+	# --- test menu
+	ui._test_menu()
+	await wait(0.3)
+	await shot("04t_test_menu")
+	ui._dialog_pick("Level Up…", 0)
+	ui._dialog_pick("100", 3)
+	print("TEST LEVEL ", Game.P["level"])
+	assert(int(Game.P["level"]) >= 101)
+	ui._on_test_tp("To an NPC", 0)
+	await wait(0.3)
+	await shot("04u_tp_npcs")
+	print("NPC targets ", ui._tp_rows.size(), " first ", ui._tp_rows.slice(0, 3))
+	var ni: int = ui._tp_rows.size() / 2
+	var nrow: Array = ui._tp_rows[ni]
+	ui._dialog_pick("x", ni)
+	print("TP NPC -> ", nrow, " at ", Game.pe.x, ",", Game.pe.y, ",", Game.pe.z)
+	ui._on_test_tp("To an Enemy", 0)
+	print("ENEMY targets ", ui._tp_rows.size(), " first ", ui._tp_rows.slice(0, 3))
+	ui._dialog_pick("x", 0)
+	ui._on_test_tp("To Coordinates", 0)
+	await wait(0.3)
+	await shot("04v_tp_coords")
+	ui._close_coord()
+	Game.test_teleport(395, 256, 7)
+	ui._test_menu()
+	ui._dialog_pick("Learn All Techniques", 2)
+	await wait(0.5)
+	await shot("04w_learned_all")
+	print("LEARNED ", Game.P["learned"].size(), " panel ", Game.panel_actions())
 	Game.teleport(399, 247, 7)
 	await wait(0.4)
 	await shot("04b_bed")
@@ -254,12 +306,24 @@ func run() -> void:
 	ui.logwin.position = Vector2(300, 120)
 	ui.logwin.full_size = Vector2(420, 160)
 	ui.logwin._layout()
-	ui.minimap.big = true
-	ui.minimap._apply_size()
+	# minimap: tap cycles sizes, drag moves it
+	var mm = ui.minimap
+	var s0: float = mm.size.x
+	await touch_at(mm.global_position + mm.size / 2, mm.global_position + mm.size / 2)
+	var s1: float = mm.size.x
+	await touch_at(mm.global_position + mm.size / 2, mm.global_position + mm.size / 2)
+	var s2: float = mm.size.x
+	await touch_at(mm.global_position + mm.size / 2, mm.global_position + mm.size / 2)
+	var s3: float = mm.size.x
+	print("MINIMAP sizes ", [s0, s1, s2, s3])
+	assert(s1 > s0 and s2 > s1 and is_equal_approx(s3, s0))
+	await touch_at(mm.global_position + Vector2(20, 20), Vector2(700, 300))
+	print("MINIMAP moved to ", mm.position)
+	assert(mm.position.distance_to(Vector2(680, 280)) < 2)
+	await touch_at(mm.global_position + mm.size / 2, mm.global_position + mm.size / 2)
 	await wait(0.5)
 	await shot("15d_moved_minimap")
-	ui.minimap.big = false
-	ui.minimap._apply_size()
+	mm.reset_layout()
 	ui.logwin.reset_layout()
 	Game.stop_busy()
 	ui.toggle_stats()
