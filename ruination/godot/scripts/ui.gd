@@ -421,17 +421,27 @@ class ActionButton extends Control:
 		var c := Vector2(size.x / 2, size.x / 2)
 		ui.draw_dragon_ball(self, c, size.x / 2 - 2, stars, on)
 		var font := ThemeDB.fallback_font
-		var g: String = info["glyph"]
-		var w := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
-		draw_string_outline(font, Vector2(c.x - w / 2, c.y + 15), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, 4, Color(0.25, 0.05, 0, 0.9))
-		draw_string(font, Vector2(c.x - w / 2, c.y + 15), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1, 0.97, 0.85))
 		var nm: String = info["name"].replace("Instant Transmission", "Teleport").replace(" (Fly)", "")
-		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
-		draw_string_outline(font, Vector2(c.x - nw / 2, size.x + 9), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 4, Color(0, 0, 0, 0.85))
-		draw_string(font, Vector2(c.x - nw / 2, size.x + 9), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color.WHITE)
+		var fs := 12
+		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		var pill := Rect2(c.x - nw / 2 - 5, size.x + 1, nw + 10, fs + 5)
+		draw_style_box(ui.label_pill, pill)
+		var tp := Vector2(c.x - nw / 2, size.x + fs + 1)
+		draw_string_outline(font, tp, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color(0, 0, 0, 1))
+		draw_string(font, tp, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 0.93, 0.55) if on else Color.WHITE)
 
 
 ## A dragon ball: orange sphere, shine, and 1-7 red stars. Used by the side buttons and the page ball.
+var label_pill := _make_pill()
+
+
+func _make_pill() -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0.62)
+	sb.set_corner_radius_all(7)
+	return sb
+
+
 func draw_dragon_ball(ci: CanvasItem, c: Vector2, r: float, stars: int, glow: bool) -> void:
 	if glow:
 		ci.draw_circle(c, r + 5, Color(1, 0.95, 0.4, 0.55))
@@ -448,7 +458,7 @@ func draw_dragon_ball(ci: CanvasItem, c: Vector2, r: float, stars: int, glow: bo
 	var n := clampi(stars, 1, 7)
 	var sr := r * (0.26 if n == 1 else (0.18 if n <= 4 else 0.13))
 	for o in layouts[n]:
-		_star(ci, c + o * r - Vector2(0, r * 0.12), sr)
+		_star(ci, c + o * r, sr)
 
 
 func _star(ci: CanvasItem, c: Vector2, r: float) -> void:
@@ -472,7 +482,7 @@ func _refresh_actions() -> void:
 	action_buttons.clear()
 	# two columns above the attack button, filled bottom-up
 	var vs := root.get_viewport_rect().size
-	var d := 62.0
+	var d := 78.0
 	for i in ids.size():
 		var b := ActionButton.new()
 		b.id = ids[i]
@@ -481,7 +491,7 @@ func _refresh_actions() -> void:
 		b.size = Vector2(56, 56)
 		var col := i % 2
 		var row := i / 2
-		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 230 - row * (d + 8))
+		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 230 - row * (d - 2))
 		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		action_panel.add_child(b)
 		action_buttons.append(b)
