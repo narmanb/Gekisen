@@ -1,6 +1,10 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Balanced races[/b][/color]
+- Every race and gene now has the same total of built-in stat multipliers (15), and races with permanent transformations a couple more (17). Each keeps its original shape: Prideful Saiyans are still Ki-heavy, Namekians still Powerlevel and Defense heavy, and so on
+- Your 5 creation stat points still go on top
+
 [color=#ffd75e][b]11/8/2026 – New numbers, stat points, rebirth[/b][/color]
 - Numbers are much closer to the series: Humans start around 50 powerlevel, Saiyans 150, Changelings 1,000 (genes add or take up to 20%). Reaching a billion takes a long time
 - Monsters are on the same scale and keep their order: bunnies around 8, Saibamen around 120, Saiyan Warriors around 1,500, Super Saiyan mobs around 2.5 million, the strongest God-tier monsters and Beerus' planet in the billions

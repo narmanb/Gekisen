@@ -10,6 +10,13 @@ var ui
 func _ready() -> void:
 	ui = get_parent().get_node("UI")
 	await get_tree().process_frame
+	if OS.get_cmdline_user_args().has("--multis"):
+		for race in Data.rules["races"]:
+			for g in (Data.rules["races"][race].get("genes", []) if not Data.rules["races"][race].get("genes", []).is_empty() else [""]):
+				var p := Game.new_player({"race": race, "gene": g, "name": "Sim"})
+				print("MULTI %-16s %-22s %2d  %d/%d/%d/%d  start PL %s" % [race, g, int(p["power_multi"] + p["ki_multi"] + p["strength_multi"] + p["defence_multi"]), int(p["power_multi"]), int(p["ki_multi"]), int(p["strength_multi"]), int(p["defence_multi"]), Game.fmt(p["powerlevel"])])
+		get_tree().quit()
+		return
 	if not OS.get_cmdline_user_args().has("--mob-only"):
 		for race in [["Saiyan", "Honourable"], ["Human", "Pure Blooded"], ["Changeling", "Pure Blooded"]]:
 			run_afk(race[0], race[1])

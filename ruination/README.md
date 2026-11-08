@@ -101,6 +101,9 @@ redrawn by hand.
   faster than AFK), transformations x2-x12 (step races x1.5 per form), original levels remapped
   (/50 up to the wall). `tests/balance.gd` (`-- --balance`) prints growth curves: AFK Self Train
   reaches ~1 million in ~90 h and a billion in ~400 h; mobbing a billion in ~100 h.
+* **Balanced races.** Each race/gene's built-in multipliers keep the original's shape
+  (Powerlevel_Birth.dm) but are scaled to the same total: 15, or 17 for step races
+  (`MULTI_TOTAL`, `PERM_MULTI_TOTAL`). `-- --balance --multis` prints them all.
 * **Stat points and rebirth** (`SetMultis.dm`, `Xeno.dm`): 5 points (+1 per rebirth) on the
   multipliers (max 10 + rebirths) or Stamina at creation; the Omni King rebirths you at level 1,000
   (+200 per rebirth, up to 2,000) as a new race and gene with more points, exp and gains.

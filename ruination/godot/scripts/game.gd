@@ -41,6 +41,8 @@ const START_PL := {"Human": 50, "Saiyan": 150, "Half Saiyan": 120, "Namekian": 1
 	"Bio Android": 250, "Changeling": 1000, "Majin": 200, "Demon": 200, "Kai": 120, "Tuffle": 100,
 	"Saibaman": 80, "Alien": 90, "Heran": 150, "Konat": 100, "Feline": 120, "Dragon": 300,
 	"Bio Warrior": 150, "Majin Wizard": 100, "Majin Incarnate": 120}
+const MULTI_TOTAL := 15           # built-in Powerlevel+Ki+Strength+Defense multipliers, every race/gene
+const PERM_MULTI_TOTAL := 17      # step (permanent-transformation) races get a couple more
 const LEVEL_WALL := 1000           # past this, levels come much slower and give little
 const K_TRAIN := 0.0015            # Self Train: gain = K * stat^0.85 * multi/5 per stat tick
 const K_LEVEL := 0.02              # level-up gain per stat
@@ -315,6 +317,7 @@ func new_player(o: Dictionary) -> Dictionary:
 	var gm: Dictionary = rd.get("gene_multi", {}).get(p["gene"], {})
 	for k in gm:
 		p[k + "_multi"] += float(gm[k])
+	_balance_multis(p)
 	for s in SKILLS:
 		p["skills"][s] = [10.0, 0.0, 75.0]       # value, exp, tnl
 	var rs: Dictionary = rd.get("skills", {})
@@ -360,6 +363,35 @@ const DEMON_HAIR := {"Goku": "hair_-_goku_super_saiyan_-_ruination_dt.dmi", "Her
 	"Trunks Long": "hair_-_trunks_long_dt.dmi", "Raditz": "hair_-_raditz_ssj_rose_dt.dmi",
 	"Female Long": "hair_femalelongssj_dt.dmi", "Female Ponytail": "hairfemaleponytail_ssj_dt.dmi"}
 const LYCANTHROPES := ["Basil", "Bergamo", "Lavender"]
+
+
+## Even out the races: keep each race/gene's original multiplier shape (Powerlevel/Ki/Strength/Defense
+## from Powerlevel_Birth.dm) but scale it to the same total, a little more for step races.
+func _balance_multis(p: Dictionary) -> void:
+	var keys := ["power_multi", "ki_multi", "strength_multi", "defence_multi"]
+	var rf: Dictionary = Data.rules["forms"].get(p["race"], {})
+	var lst = rf.get(p.get("gene", ""), rf.get("*", null))
+	var perm: bool = lst != null and not (lst as Array).is_empty() and int(lst[0].get("stack", 0)) == 1
+	var target := PERM_MULTI_TOTAL if perm else MULTI_TOTAL
+	var tot := 0.0
+	for k in keys:
+		tot += maxf(1.0, float(p[k]))
+	var vals := {}
+	var rems: Array = []
+	var used := 0
+	for k in keys:
+		var exact := maxf(1.0, float(p[k])) * target / tot
+		vals[k] = maxi(1, int(floor(exact)))
+		used += vals[k]
+		rems.append([exact - floor(exact), k])
+	rems.sort_custom(func(a, b): return a[0] > b[0])
+	var i := 0
+	while used < target:
+		vals[rems[i % 4][1]] += 1
+		used += 1
+		i += 1
+	for k in keys:
+		p[k] = float(vals[k])
 
 
 ## Which appearance choices a race/gene has, as [title, key, values].
