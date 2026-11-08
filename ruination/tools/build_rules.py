@@ -344,6 +344,8 @@ def forms(tree):
         for i, n in procs:
             proc_at.append((i, n))
         menus = {}
+        reqs = {}
+        menu_alias = {}
         stack = []
         cur = None
         seq = {}
@@ -362,16 +364,24 @@ def forms(tree):
                 stack.pop()
             m = re.match(r'if\((.*)\)\s*(menu \+= "Form (\d+)")?$', s)
             if m and m.group(2):
-                g = next((re.search(r'gene\s*==\s*"([^"]+)"', c).group(1) for _, c in stack
-                          if re.search(r'gene\s*==\s*"([^"]+)"', c)), '*')
+                gl = next((re.findall(r'gene\s*==\s*"([^"]+)"', c) for _, c in stack
+                           if re.search(r'gene\s*==\s*"([^"]+)"', c)), ['*'])
+                g = gl[0]
+                for extra_g in gl[1:]:
+                    menu_alias[extra_g] = g
                 lv = re.search(r'level\s*>=\s*(\d+)', m.group(1))
                 if lv:
-                    menus.setdefault(g, {}).setdefault(int(m.group(3)), int(lv.group(1)))
+                    fno = int(m.group(3))
+                    menus.setdefault(g, {}).setdefault(fno, int(lv.group(1)))
+                    # every condition on the menu line: [var, op, value]
+                    req = [[v, op, float(x)] for v, op, x in
+                           re.findall(r'(?:src\.)?(\w+)\s*(>=|<=|==|<|>)\s*([\d.]+)', m.group(1))]
+                    reqs.setdefault(g, {}).setdefault(fno, req)
                 continue
             if m:
                 stack.append((ind, m.group(1)))
                 continue
-            m = re.match(r'var/(plg|kig|strg|defg)\s*=\s*\(?([\d.]+)', s)
+            m = re.match(r'var/(plg|kig|strg|defg)\s*=\s*\(?([\d.]+)(?:\s*\+\s*\(src\.trans_lvl/([\d.]+)\))?', s)
             if m:
                 g = next((re.search(r'gene\s*==\s*"([^"]+)"', c).group(1) for _, c in stack
                           if re.search(r'gene\s*==\s*"([^"]+)"', c)), dflt)
@@ -380,6 +390,8 @@ def forms(tree):
                 if f is None:
                     continue
                 seq.setdefault(g, {}).setdefault(f, {})[m.group(1)] = float(m.group(2))
+                if m.group(3):
+                    seq[g][f][m.group(1) + '_t'] = 1.0 / float(m.group(3))
                 cur = (g, f)
                 continue
             m = re.match(r"src\.icon\s*=\s*'([^']+)'", s)
@@ -400,9 +412,33 @@ def forms(tree):
                             break
                 lst.append({'form': f, 'level': mm[f], 'pl': st.get('plg', 2), 'ki': st.get('kig', 2),
                             'str': st.get('strg', 2), 'def': st.get('defg', 2),
+                            'req': reqs.get(g, {}).get(f, []), 'src': 'menu' if st else 'menu-guess',
+                            **{k2[0] + '_t' if k2 != 'plg' else 'pl_t': st[k2 + '_t'] for k2 in ('plg', 'kig', 'strg', 'defg') if k2 + '_t' in st},
                             **({'icon': st['icon']} if 'icon' in st else {}),
                             **({'ssjhair': 1} if st.get('ssjhair') else {})})
             race_forms[g] = lst
+        for extra_g, g in menu_alias.items():
+            if g in race_forms:
+                # same menu; the multipliers come from that gene's own form blocks when present
+                lst = []
+                for f in race_forms[g]:
+                    st = seq.get(extra_g, {}).get(f['form'])
+                    nf = dict(f)
+                    if st:
+                        nf.update({'pl': st.get('plg', f['pl']), 'ki': st.get('kig', f['ki']),
+                                   'str': st.get('strg', f['str']), 'def': st.get('defg', f['def'])})
+                        if 'icon' in st:
+                            nf['icon'] = st['icon']
+                    lst.append(nf)
+                race_forms[extra_g] = lst
+        # sequential races (Namek, Majin, Dragon, Android...): each Transform press goes one form
+        # further and multiplies the CURRENT stats again (if(!src.form_N) blocks).
+        for g, region in gene_regions(src):
+            if g in race_forms or 'if(!src.form_1)' not in region:
+                continue
+            sf = seq_forms(region)
+            if sf:
+                race_forms[g] = sf
         # second pass: sequential "if(level >= N) -> next form" style (no menus)
         for g, region in gene_regions(src):
             if g in race_forms and race_forms[g]:
@@ -433,7 +469,8 @@ def forms(tree):
                         re.findall(r"src\.icon\s*=\s*'([^']+)'", seg.split('enrage')[-1])
                     lvl = star[k]['level'] if k < len(star) else DEFAULT_LEVELS[min(k, len(DEFAULT_LEVELS) - 1)]
                     f = {'form': k + 1, 'level': lvl,
-                         'pl': mult, 'ki': mult, 'str': mult, 'def': mult}
+                         'pl': mult, 'ki': mult, 'str': mult, 'def': mult,
+                         'src': 'seq' if mm else 'seq-guess'}
                     if ic:
                         f['icon'] = os.path.basename(ic[0]).lower()
                     lst.append(f)
@@ -441,16 +478,75 @@ def forms(tree):
                     race_forms[g] = lst
                 continue
             mults = [float(x) for x in re.findall(r'var/plg\s*=\s*\(?([\d.]+)', region)]
+            mults_t = [1.0 / float(x) if x else 0.0 for x in re.findall(r'var/plg\s*=\s*\(?[\d.]+(?:\s*\+\s*\(src\.trans_lvl/([\d.]+)\))?', region)]
             icons = [os.path.basename(i).lower() for i in re.findall(r"src\.icon\s*=\s*'([^']+)'", region)]
             lst = []
             for k, lv in enumerate(levels):
                 mm = mults[k] if k < len(mults) else DEFAULT_MULT[min(k, len(DEFAULT_MULT) - 1)]
-                f = {'form': k + 1, 'level': lv, 'pl': mm, 'ki': mm, 'str': mm * 1.1, 'def': mm * 1.1}
+                def _nth(var, d):
+                    vals = [float(x) for x in re.findall(r'var/' + var + r'\s*=\s*\(?([\d.]+)', region)]
+                    return vals[k] if k < len(vals) else d
+                f = {'form': k + 1, 'level': lv, 'pl': mm, 'ki': _nth('kig', mm), 'str': _nth('strg', mm), 'def': _nth('defg', mm),
+                     'src': 'levels' if k < len(mults) else 'levels-guess'}
+                if k < len(mults_t) and mults_t[k]:
+                    f.update({'pl_t': mults_t[k], 'ki_t': mults_t[k], 'str_t': mults_t[k], 'def_t': mults_t[k]})
                 if k < len(icons):
                     f['icon'] = icons[k]
                 lst.append(f)
             race_forms[g] = lst
         out[race] = race_forms
+    # Hand fixes, read from the procs the generic passes can't follow:
+    # Kai Zealot: ZealotPermTrans() needs 25M max powerlevel, x8.5 everything, permanent.
+    if 'Kai' in out:
+        out['Kai']['Zealot'] = [{'form': 1, 'level': 0, 'req': [['powerlevel_max', '>=', 25000000.0]],
+                                 'pl': 8.5, 'ki': 8.5, 'str': 8.5, 'def': 8.5, 'stack': 1, 'src': 'hand'}]
+    # Named menu entries
+    for race, gene, names in (('Demon', 'Fomhoire', ['Super Demon', 'Demon King', 'Demon God']),
+                              ('Human', 'Roshi', ['Bulk Up', 'False UI'])):
+        for f, n in zip(out.get(race, {}).get(gene, []), names):
+            f['name'] = n
+    return out
+
+
+def seq_forms(region):
+    """Forms written as nested if(!src.form_N) blocks: condition, then *= multipliers."""
+    out = []
+    parts = re.split(r'if\(!src\.form_(\d)\)', region)
+    for k in range(1, len(parts), 2):
+        n = int(parts[k])
+        body = parts[k + 1]
+        nxt = re.search(r'if\(!src\.form_\d\)', body)
+        body = body[:nxt.start()] if nxt else body
+        cond = re.search(r'if\(([^\n]*)\)', body)
+        req = [[v, op, float(x)] for v, op, x in
+               re.findall(r'(?:src\.)?(\w+)\s*(>=|<=|==|<|>)\s*([\d.]+)', cond.group(1))] if cond else []
+        lvl = next((int(x) for v, op, x in req if v == 'level' and op in ('>=', '>')), 0)
+        f = {'form': n, 'level': lvl, 'req': req, 'stack': 1, 'src': 'seq'}
+        varx = {}
+        for v, base, per in re.findall(r'var/(plg|kig|strg|defg)\s*=\s*\(?([\d.]+)(?:\s*\+\s*\(src\.trans_lvl/([\d.]+)\))?', body):
+            varx[v] = (float(base), 1.0 / float(per) if per else 0.0)
+        for stat, key, vname in (('powerlevel_max', 'pl', 'plg'), ('ki_max', 'ki', 'kig'),
+                                 ('strength_max', 'str', 'strg'), ('defence_max', 'def', 'defg')):
+            m = re.search(r'src\.' + stat + r'\s*\*=\s*([\w.]+)', body)
+            if not m:
+                f[key] = 1.0
+                continue
+            val = m.group(1)
+            if re.match(r'^[\d.]+$', val):
+                f[key] = float(val)
+            elif val in varx:
+                f[key] = varx[val][0]
+                if varx[val][1]:
+                    f[key + '_t'] = varx[val][1]
+            else:
+                f[key] = 1.0
+        ic = re.findall(r"src\.icon\s*=\s*'([^']+)'", body)
+        if ic:
+            f['icon'] = os.path.basename(ic[0]).lower()
+        if 'SSJHair_Apply' in body:
+            f['ssjhair'] = 1
+        if not any(x['form'] == n for x in out):
+            out.append(f)
     return out
 
 

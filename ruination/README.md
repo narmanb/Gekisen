@@ -64,6 +64,16 @@ redrawn by hand.
   pay 500 Ki and stand still while you lock on (3 s, 1.5 s for Yardrats), then appear next to
   them. Not from Dr. Gero's Lab and beyond, and not with gravity on. Put it on the hotbar from
   Skills.
+* **Transformations follow `Transformations/*.dm`.** Transform opens the original "Which form would
+  you like to transform to?" menu with every form you qualify for (e.g. Saiyans get Form 3 instead
+  of Form 2 once their Transformation level reaches 25). Namekians, Majins, Androids, Dragons and
+  the other step races go one form further per press and their forms stack. Transforming takes
+  5.1 s at first (faster as Transformation Speed rises) with lightning and an explosion ring;
+  time in a form raises your Transformation level, which also boosts forms written as
+  "x + trans_lvl/20". Staying transformed costs nothing, as in the original. Each race gets its
+  own Big Aura (Menu can turn it off); Androids, Bio Androids, Hitmen and Zealots can't revert.
+  Counters the port doesn't keep (Majin eats, Demon corrupts, Saibaman/Tuffle infects, Android
+  chips, absorbs, assassin kills) count as met.
 * **Test menu.** The **Test** button (top right) levels you up 1–5,000 times, refills you,
   teaches every technique your race can learn, and teleports you to any NPC, any enemy type
   or typed-in coordinates.

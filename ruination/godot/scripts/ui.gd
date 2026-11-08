@@ -977,11 +977,18 @@ func _refresh_stats() -> void:
 	s += "\n[b]Training[/b]\n"
 	s += "Self Train focus: %s · Meditate focus: %s\n" % [P["focus"], Game.SKILL_NAMES[P["med_focus"]]]
 	s += "Techniques known: %d · Kills: %s\n" % [(P["learned"] as Array).size(), f.call(P["kills"])]
-	s += "\n[b]Transformations[/b] (%s gene)\n" % P["gene"]
-	var i := 0
+	s += "\n[b]Transformations[/b] (%s gene%s)\n" % [P["gene"], ", forms stack" if Game.is_step_race() else ""]
+	s += "Transformation level %d / 100 (%s / %s exp) · Speed %d (transforming takes %.1f s)\n" % [int(Game.trans_lvl()), f.call(P.get("trans_exp", 0)), f.call(P.get("trans_tnl", 75)), int(P.get("trans_speed", 0)), float(P.get("trans_spd", 51)) / 10.0]
 	for fm in Game.forms_for():
-		i += 1
-		s += "Form %d — level %s, power x%s%s\n" % [i, f.call(fm["level"]), str(fm["pl"]), "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if int(P["level"]) >= int(fm["level"]) else "")]
+		var i := int(fm["form"])
+		var mult := str(fm["pl"]) + (" + trans lvl/20" if fm.has("pl_t") else "")
+		var reqs: Array = []
+		for c in fm.get("req", []):
+			if c[0] == "level":
+				continue
+			reqs.append("%s %s %s" % [str(c[0]).replace("_", " "), c[1], f.call(c[2])])
+		var state := "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if Game.form_ready(fm) else "")
+		s += "%s — level %s, power x%s%s%s\n" % [Game.form_name(fm), f.call(fm["level"]), mult, (" [" + ", ".join(reqs) + "]") if not reqs.is_empty() else "", state]
 	var mins := int(float(P["playtime"]) / 60.0)
 	s += "\nLocation: %s (%d, %d) · Play time %dh %dm" % [Game.zname(int(P["z"])), int(P["x"]), int(P["y"]), mins / 60, mins % 60]
 	stats_label.text = s
@@ -1011,6 +1018,10 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
+	v.add_child(_button("Transformation Aura On / Off", func():
+		Game.P["trans_aura"] = not bool(Game.P.get("trans_aura", true))
+		Game.build_appearance()
+		Game.msg("Transformation aura %s." % ("on" if Game.P["trans_aura"] else "off"), Color(0.7, 0.8, 1))))
 	var hm := HBoxContainer.new()
 	hm.add_theme_constant_override("separation", 6)
 	v.add_child(hm)

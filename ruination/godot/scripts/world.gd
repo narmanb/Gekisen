@@ -178,11 +178,11 @@ func draw_mob(m: Mob, pos: Vector2, now: float) -> void:
 		draw_set_transform_matrix(Transform2D.IDENTITY)
 		return
 	for u in m.underlays:
-		_sprite(u["icon"], u.get("state", "") if u.get("state") != null else m.state, m.dir, p, now, moving, fl, u.get("alpha", 1.0), null, true)
+		_sprite(u["icon"], u.get("state", "") if u.get("state") != null else m.state, m.dir, p - Vector2(0, u.get("py", 0)), now, moving, fl, u.get("alpha", 1.0), null, true)
 	_sprite(m.icon, m.state, m.dir, p, now, moving, fl)
 	for o in m.overlays:
 		var st = o.get("state")
-		_sprite(o["icon"], m.state if st == null else st, m.dir, p, now, moving, fl, o.get("alpha", 1.0), null, true)
+		_sprite(o["icon"], m.state if st == null else st, m.dir, p - Vector2(0, o.get("py", 0)), now, moving, fl, o.get("alpha", 1.0), null, true)
 
 
 func _draw() -> void:

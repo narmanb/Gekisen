@@ -358,10 +358,27 @@ func run() -> void:
 	Game.P["level"] = 25000
 	Game.skill_gain(false)
 	Game.P["stam"] = 0.0
+	Game.P["level"] = 60000
 	Game.transform()
-	await wait(0.6)
-	print("TRANSFORMED ", state())
+	await wait(0.3)
+	print("FORM MENU ", ui.dialog_queue[0][2] if not ui.dialog_queue.is_empty() else "none")
+	await shot("11a_form_menu")
+	ui._dialog_pick("Form 2", 1)            # trans_lvl 0 -> Form 2 (Form 3 needs trans level 25)
+	await wait(2.5)
+	await shot("11b_transforming")
+	await wait(3.0)
+	print("TRANSFORMED form=", Game.P["form"], " x", Game.form_mult("pl"), " trans_lvl=", Game.trans_lvl(), " exp=", Game.P.get("trans_exp"), " panel ", Game.panel_actions())
+	assert(int(Game.P["form"]) == 2)
 	await shot("11_transform")
+	Game.P["trans_lvl"] = 30
+	Game.revert()
+	Game.transform()
+	print("FORM MENU at trans 30 ", ui.dialog_queue[0][2] if not ui.dialog_queue.is_empty() else "none")
+	while not ui.dialog_queue.is_empty():
+		ui._dialog_pick("Cancel", 0)
+	Game.P["level"] = 25000
+	Game.P["form"] = 1
+	Game.build_appearance()
 	# --- warp test: walk onto the nearest warp turf on this z
 	var w := Vector3i.ZERO
 	for y in range(1, 500):

@@ -366,17 +366,42 @@ func build_appearance(p: Dictionary = P, e: Mob = pe) -> void:
 		if hid >= 0:
 			e.overlays.append({"icon": hid})
 	if e == pe:
-		var aura_name := "defaultaurablue.dmi"
-		if not f.is_empty():
-			aura_name = "defaultaurayellow.dmi" if int(f.get("ssjhair", 0)) == 1 else "defaultaurapurple.dmi"
-		var aura := Data.icon_id(aura_name)
-		if (busy == "power" or toggles.get("aura", false) or not f.is_empty()) and aura >= 0:
-			e.underlays.append({"icon": aura, "state": "", "alpha": 0.9})
+		var big := _big_aura(p) if not f.is_empty() and bool(p.get("trans_aura", true)) else ""
+		var bid := Data.icon_id(big) if big != "" else -1
+		if bid >= 0:
+			# Aura.dm Big_Aura(): the bottom half behind you, the "top" half above your head in front
+			e.underlays.append({"icon": bid, "state": "", "alpha": 0.95})
+			e.overlays.append({"icon": bid, "state": "top", "py": 32, "alpha": 0.95})
+		elif busy == "power" or toggles.get("aura", false):
+			var aura := Data.icon_id("defaultaurablue.dmi")
+			if aura >= 0:
+				e.underlays.append({"icon": aura, "state": "", "alpha": 0.9})
 		if toggles.get("kaioken", false):
 			var ka := Data.icon_id("kaio aura.dmi")
 			if ka >= 0:
 				e.underlays.append({"icon": ka, "state": ""})
 	e.name = p.get("name", "")
+
+
+## Aura.dm Big_Aura(): which transformation aura each race gets.
+func _big_aura(p: Dictionary) -> String:
+	var r: String = p["race"]
+	var g: String = p.get("gene", "")
+	var fn := int(p.get("form", 0))
+	match r:
+		"Saiyan":
+			if g == "Godly" and fn == 6:
+				return "ssjbauranew.dmi"
+			return "big aura 10.dmi" if g == "Legendary" else "big aura.dmi"
+		"Half Saiyan": return "big aura.dmi"
+		"Changeling": return "big aura 3.dmi"
+		"Majin": return "big aura 2.dmi"
+		"Namekian", "Saibaman", "Bio Android": return "big aura 5.dmi"
+		"Kai": return "androa.dmi"
+		"Android": return "androa.dmi" if fn >= 1 else "big aura 7.dmi"
+		"Tuffle", "Dragon", "Konat", "Human": return "big aura 6.dmi"
+		"Demon": return ["", "demona.dmi", "demona2.dmi", "demona3.dmi", ""][mini(fn, 4)]
+	return ""
 
 
 func start(p: Dictionary) -> void:
@@ -505,13 +530,13 @@ func cap(stat: String) -> float:
 	var f := current_form()
 	match stat:
 		"powerlevel":
-			return pl_max() * kc() * (float(f.get("pl", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+			return pl_max() * kc() * form_mult("pl") * _buff(stat)
 		"ki":
-			return float(P["ki_max"]) * kc() * (float(f.get("ki", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+			return float(P["ki_max"]) * kc() * form_mult("ki") * _buff(stat)
 		"strength":
-			return float(P["strength_max"]) * kc() * (float(f.get("str", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+			return float(P["strength_max"]) * kc() * form_mult("str") * _buff(stat)
 		"defence":
-			return float(P["defence_max"]) * kc() * (float(f.get("def", 1)) if not f.is_empty() else 1.0) * _buff(stat)
+			return float(P["defence_max"]) * kc() * form_mult("def") * _buff(stat)
 	return 0.0
 
 
@@ -2087,11 +2112,9 @@ func panel_actions() -> Array:
 	for k in ["Fly", "PowerUp", "PowerDown"]:
 		if k in P.get("learned", []):
 			out.append("t:" + k)
-	var fl := forms_for()
-	var cur := int(P.get("form", 0))
-	if cur < fl.size() and int(P["level"]) >= int(fl[cur]["level"]):
+	if not available_forms().is_empty():
 		out.append("transform")
-	if cur > 0:
+	if int(P.get("form", 0)) > 0 and can_revert():
 		out.append("revert")
 	return out
 
@@ -2118,31 +2141,194 @@ func _auto_hotbar(id: String) -> void:
 
 
 # =================================================================== transform
+# =================================================================== transformations
+## Transformations/*.dm. Two kinds:
+##  * menu races (Saiyan, Half Saiyan, Human, Changeling...): Transform opens "Which form would you
+##    like to transform to?" with every form you qualify for; each form multiplies your BASE stats
+##    (some by x + trans_lvl/20). You must revert before picking another.
+##  * step races (Namekian, Majin, Android, Dragon...): each Transform goes one form further and
+##    multiplies your CURRENT stats again, so the forms stack.
+## Transforming takes trans_spd/10 seconds (5.1 s at first, quicker as Transformation Speed rises),
+## with blue lightning around you and an explosion ring at the end. Staying transformed costs
+## nothing; time in a form raises your Transformation level (Trans_Gain).
+const NO_REVERT := {"Android": ["Mechanical", "Bionic"], "Bio Android": ["Pure Blooded", "Perfect"], "Alien": ["Hitman"], "Kai": ["Zealot"]}
+var transforming := false
+
+
+func _tdef(k: String, v: float) -> float:
+	if not P.has(k):
+		P[k] = v
+	return float(P[k])
+
+
+func trans_lvl() -> float:
+	return _tdef("trans_lvl", 0.0)
+
+
+func form_mult(key: String) -> float:
+	var cur := int(P.get("form", 0))
+	if cur <= 0:
+		return 1.0
+	var fl := forms_for()
+	var stack := int(fl[0].get("stack", 0)) == 1
+	var m := 1.0
+	for i in range(0 if stack else cur - 1, mini(cur, fl.size())):
+		var f: Dictionary = fl[i]
+		m *= float(f.get(key, 1)) + float(f.get(key + "_t", 0)) * trans_lvl()
+	return m
+
+
+func form_name(f: Dictionary) -> String:
+	return f.get("name", "Form %d" % int(f["form"]))
+
+
+func is_step_race() -> bool:
+	var fl := forms_for()
+	return not fl.is_empty() and int(fl[0].get("stack", 0)) == 1
+
+
+func can_revert() -> bool:
+	return not P.get("gene", "") in NO_REVERT.get(P["race"], [])
+
+
+## The menu lines' conditions. Counters this port doesn't keep (eats, corrupts, infects, chips,
+## absorbs, assassin kills, karma) count as met.
+func form_ready(f: Dictionary) -> bool:
+	if int(P["level"]) < int(f.get("level", 0)):
+		return false
+	for c in f.get("req", []):
+		var v: String = c[0]
+		var have: float
+		match v:
+			"level": have = float(P["level"])
+			"trans_lvl": have = trans_lvl()
+			"powerlevel_max": have = pl_max()
+			_: continue
+		var want := float(c[2])
+		var ok := true
+		match str(c[1]):
+			">=": ok = have >= want
+			">": ok = have > want
+			"<=": ok = have <= want
+			"<": ok = have < want
+			"==": ok = have == want
+		if not ok:
+			return false
+	return true
+
+
+func available_forms() -> Array:
+	var fl := forms_for()
+	var cur := int(P.get("form", 0))
+	if is_step_race():
+		return [fl[cur]] if cur < fl.size() and form_ready(fl[cur]) else []
+	if cur > 0:
+		return []
+	return fl.filter(func(f): return form_ready(f))
+
+
 func transform() -> void:
+	if transforming:
+		return
 	if busy != "":
 		stop_busy()
-	var fl := forms_for()
-	var cur := int(P["form"])
-	if cur >= fl.size():
-		msg("You are already at your strongest form.", Color(0.8, 0.8, 0.8))
+	var opts := available_forms()
+	if opts.is_empty():
+		var fl := forms_for()
+		var cur := int(P["form"])
+		if cur > 0 and not is_step_race():
+			msg("Revert first to pick another form.", Color(0.8, 0.8, 0.8))
+		elif cur >= fl.size():
+			msg("You are already at your strongest form.", Color(0.8, 0.8, 0.8))
+		else:
+			msg("You need level %s for your next form (%s gene)." % [fmt(fl[cur]["level"]), P["gene"]], Color(1, 0.5, 0.4))
 		return
-	var nf: Dictionary = fl[cur]
-	if int(P["level"]) < int(nf["level"]):
-		msg("You need level %s for your next form (%s gene)." % [fmt(nf["level"]), P["gene"]], Color(1, 0.5, 0.4))
+	if is_step_race():
+		_do_transform(int(opts[0]["form"]))
 		return
-	if tired():
-		msg("You are too tired to transform.", Color(1, 0.4, 0.4))
+	var names: Array = opts.map(func(f): return form_name(f))
+	names.append("Cancel")
+	ask("Transform", "Which form would you like to transform to?", names, func(c: String, i: int):
+		if c != "Cancel":
+			_do_transform(int(opts[i]["form"])))
+
+
+func _do_transform(n: int) -> void:
+	transforming = true
+	var spd := _tdef("trans_spd", 51.0)
+	var ms := spd * 100.0
+	set_move_dir(0)
+	pe.stun_until = now + ms
+	pe.state = "enrage" if Data.has_state(pe.icon, "enrage") else pe.state
+	_lightning()
+	after(ms / 2.0, func(): _lightning())
+	after(ms, func():
+		transforming = false
+		P["form"] = n
+		P["powerlevel"] = cap("powerlevel")
+		P["ki"] = cap("ki")
+		# Trans_Level / Trans_Speed experience for transforming
+		P["trans_exp"] = _tdef("trans_exp", 0.0) + roundf(3.0 + float(P["level"]) / 5000.0)
+		P["transsexp"] = _tdef("transsexp", 0.0) + roundf(6.0 + float(P["level"]) / 2500.0)
+		_trans_levels()
+		P["trans_gain_at"] = float(P["playtime"]) + _trans_gain_secs()
+		_update_state()
+		_lightning()
+		_basic_boom(pe.x, pe.y, pe.z, 3)
+		var f: Dictionary = forms_for()[n - 1]
+		msg("You transform! (%s: power x%s)" % [form_name(f), str(snappedf(form_mult("pl"), 0.01))], Color(1, 0.75, 0.2))
+		build_appearance())
+
+
+## BlueLightningEffect(): a bolt strikes somewhere within 6 tiles for two seconds.
+func _lightning() -> void:
+	var ic := Data.icon_id("lightning.dmi")
+	if ic < 0 or pe == null:
 		return
-	P["form"] = cur + 1
-	P["powerlevel"] = cap("powerlevel")
-	P["ki"] = cap("ki")
-	pe.do_flick("enrage", now)
-	msg("You transform! (Form %d: power x%s)" % [P["form"], str(nf["pl"])], Color(1, 0.75, 0.2))
-	build_appearance()
+	var b := Mob.new()
+	b.kind = "fx"
+	b.x = pe.x + randi_range(-6, 6)
+	b.y = pe.y + randi_range(-6, 6)
+	b.z = pe.z
+	b.from_x = b.x
+	b.from_y = b.y
+	b.icon = ic
+	b.state = "5"
+	b.layer = 9.0
+	b.dense = false
+	world.add(b)
+	after(2000.0, func(): world.remove(b))
+
+
+func _trans_gain_secs() -> float:
+	return maxf(15.0, 90.0 - trans_lvl() * 0.75)          # spawn(900 - trans_lvl*7.5) ticks
+
+
+func _trans_levels() -> void:
+	# Trans_Level(): tnl 75, +10% per level, mastered at 100 (trans_spd 1)
+	while trans_lvl() < 100 and _tdef("trans_exp", 0.0) >= _tdef("trans_tnl", 75.0):
+		P["trans_exp"] = float(P["trans_exp"]) - float(P["trans_tnl"])
+		P["trans_lvl"] = trans_lvl() + 1
+		P["trans_tnl"] = float(P["trans_tnl"]) + roundf(float(P["trans_tnl"]) * 0.1)
+		tick("Transformation level increased to %d!" % int(P["trans_lvl"]), true)
+		if int(P["trans_lvl"]) >= 100:
+			P["trans_spd"] = 1.0
+	# Trans_Speed(): each level makes transforming 0.05 s faster
+	while _tdef("trans_speed", 0.0) < 100 and _tdef("transsexp", 0.0) >= _tdef("transstnl", 75.0):
+		P["transsexp"] = float(P["transsexp"]) - float(P["transstnl"])
+		P["trans_speed"] = float(P["trans_speed"]) + 1
+		P["trans_spd"] = maxf(1.0, _tdef("trans_spd", 51.0) - 0.5)
+		P["transstnl"] = float(P["transstnl"]) + roundf(float(P["transstnl"]) * 0.1)
+		if int(P["trans_speed"]) >= 100:
+			P["trans_spd"] = 1.0
 
 
 func revert(quiet := false) -> void:
 	if int(P["form"]) == 0:
+		return
+	if not can_revert():
+		if not quiet:
+			msg("This transformation can't be reverted.", Color(1, 0.5, 0.4))
 		return
 	P["form"] = 0
 	P["powerlevel"] = minf(float(P["powerlevel"]), cap("powerlevel"))
@@ -2159,11 +2345,13 @@ func second_tick() -> void:
 		if now > float(buffs[k]["until"]):
 			buffs.erase(k)
 			msg("Your %s boost wears off." % k, Color(0.8, 0.8, 0.8))
-	if int(P["form"]) > 0:
-		fatigue(1)
-		if tired():
-			msg("You are too exhausted to stay transformed.", Color(1, 0.5, 0.4))
-			revert()
+	if int(P["form"]) > 0 and float(P["playtime"]) >= float(P.get("trans_gain_at", 0)):
+		# Trans_Gain(): form 1: +1, 2: +2-3, 3: +3, 4: +4-5, 5+: +5 transformation exp
+		var fn := int(P["form"])
+		var g: int = [0, 1, randi_range(2, 3), 3, randi_range(4, 5), 5][mini(fn, 5)]
+		P["trans_exp"] = _tdef("trans_exp", 0.0) + g
+		_trans_levels()
+		P["trans_gain_at"] = float(P["playtime"]) + _trans_gain_secs()
 	if toggles.get("kaioken", false):
 		P["powerlevel"] = float(P["powerlevel"]) - cap("powerlevel") * 0.01
 		fatigue(2)
