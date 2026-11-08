@@ -1,0 +1,7 @@
+Deadron.TextHandling version=5
+Deadron.Test version=4
+Deadron.PathFinding version=15
+Deadron.Geography version=2
+Deadron.EventLoop version=9
+Deadron.BaseCamp version=23
+Dantom.htmllib version=9

@@ -1,0 +1,2693 @@
+macro "macro1"
+	elem 
+		name = "Center+REP"
+		command = ".center"
+	elem 
+		name = "Northeast+REP"
+		command = ".northeast"
+	elem 
+		name = "Southeast+REP"
+		command = ".southeast"
+	elem 
+		name = "Southwest+REP"
+		command = ".southwest"
+	elem 
+		name = "Northwest+REP"
+		command = ".northwest"
+	elem 
+		name = "SHIFT+West"
+		command = "DodgeDir 4"
+	elem "WEST"
+		name = "West+REP"
+		command = ".west"
+	elem 
+		name = "SHIFT+North"
+		command = "DodgeDir 8"
+	elem "NORTH"
+		name = "North+REP"
+		command = ".north"
+	elem 
+		name = "SHIFT+East"
+		command = "DodgeDir 6"
+	elem "EAST"
+		name = "East+REP"
+		command = ".east"
+	elem 
+		name = "SHIFT+South"
+		command = "DodgeDir 2"
+	elem "SOUTH"
+		name = "South+REP"
+		command = ".south"
+
+macro "macroSS"
+	elem 
+		name = "West"
+		command = "SS-Left"
+	elem "WEST"
+		name = "West+REP"
+	elem 
+		name = "North"
+		command = "SS-Up"
+	elem "NORTH"
+		name = "North+REP"
+	elem 
+		name = "East"
+		command = "SS-Right"
+	elem "EAST"
+		name = "East+REP"
+	elem 
+		name = "South"
+		command = "SS-Down"
+	elem "SOUTH"
+		name = "South+REP"
+
+macro "macrotest"
+	elem 
+		name = "A+UP"
+		command = "MoveKey 8 0"
+	elem 
+		name = "A+REP"
+		command = "MoveKey 8 1"
+	elem 
+		name = "D+UP"
+		command = "MoveKey 4 0"
+	elem 
+		name = "D+REP"
+		command = "MoveKey 4 1"
+	elem 
+		name = "S+UP"
+		command = "MoveKey 2 0"
+	elem 
+		name = "S+REP"
+		command = "MoveKey 2 1"
+	elem 
+		name = "W+UP"
+		command = "MoveKey 10"
+	elem 
+		name = "W+REP"
+		command = "MoveKey 11"
+
+macro "macro4"
+	elem 
+		name = "West"
+		command = "MoveKey 8 1"
+	elem 
+		name = "West+UP"
+		command = "MoveKey 8 0"
+	elem "WEST"
+		name = "West+REP"
+	elem 
+		name = "North"
+		command = "MoveKey 1 1"
+	elem 
+		name = "North+UP"
+		command = "MoveKey 1 0"
+	elem "NORTH"
+		name = "North+REP"
+	elem 
+		name = "East"
+		command = "MoveKey 4 1"
+	elem 
+		name = "East+UP"
+		command = "MoveKey 4 0"
+	elem "EAST"
+		name = "East+REP"
+	elem 
+		name = "South"
+		command = "MoveKey 2 1"
+	elem 
+		name = "South+UP"
+		command = "MoveKey 2 0"
+	elem "SOUTH"
+		name = "South+REP"
+
+macro "macro5"
+	elem 
+		name = "Center+REP"
+		command = ".center"
+	elem 
+		name = "Northeast+REP"
+		command = ".northeast"
+	elem 
+		name = "Southeast+REP"
+		command = ".southeast"
+	elem 
+		name = "Southwest+REP"
+		command = ".southwest"
+	elem 
+		name = "Northwest+REP"
+		command = ".northwest"
+	elem 
+		name = "West+UP"
+		command = "SS-Left"
+	elem "WEST"
+		name = "West+REP"
+		command = ".west"
+	elem 
+		name = "SHIFT+North+UP"
+		command = "DodgeDir 8"
+	elem "NORTH"
+		name = "North+REP"
+		command = ".north"
+	elem 
+		name = "East+UP"
+		command = "SS-Right"
+	elem "EAST"
+		name = "East+REP"
+		command = ".east"
+	elem 
+		name = "South+UP"
+		command = "SS-Down"
+	elem "SOUTH"
+		name = "South+REP"
+		command = ".south"
+
+
+menu "menu"
+	elem 
+		name = "File"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Options + Messages (F1)"
+		command = ".options"
+		category = "File"
+		saved-params = "is-checked"
+	elem 
+		name = "Logout"
+		command = ".quit"
+		category = "File"
+		saved-params = "is-checked"
+	elem 
+		name = "Resolution"
+		command = ""
+		saved-params = "is-checked"
+	elem "Stretch"
+		name = "Stretch To Fit"
+		command = ".winset \"default.map.icon-size=0\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon32"
+		name = "32x32"
+		command = ".winset \"default.map.icon-size=32\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon32"
+		name = "34x34"
+		command = ".winset \"default.map.icon-size=34\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon32"
+		name = "36x36"
+		command = ".winset \"default.map.icon-size=36\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon32"
+		name = "38x38"
+		command = ".winset \"default.map.icon-size=38\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon40"
+		name = "40x40"
+		command = ".winset \"default.map.icon-size=40\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon44"
+		name = "42x42"
+		command = ".winset \"default.map.icon-size=42\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon44"
+		name = "44x44"
+		command = ".winset \"default.map.icon-size=44\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "46x46"
+		command = ".winset \"default.map.icon-size=46\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "48x48"
+		command = ".winset \"default.map.icon-size=48\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "50x50"
+		command = ".winset \"default.map.icon-size=50\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "52x52"
+		command = ".winset \"default.map.icon-size=52\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "54x54"
+		command = ".winset \"default.map.icon-size=54\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "56x56"
+		command = ".winset \"default.map.icon-size=56\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "58x58"
+		command = ".winset \"default.map.icon-size=58\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "60x60"
+		command = ".winset \"default.map.icon-size=60\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "62x62"
+		command = ".winset \"default.map.icon-size=62\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem "Icon46"
+		name = "64x64"
+		command = ".winset \"default.map.icon-size=64\""
+		category = "Resolution"
+		can-check = true
+		group = "Size"
+		saved-params = "is-checked"
+	elem 
+		name = "View Range"
+		command = "Screen-Size"
+		category = "Resolution"
+		saved-params = "is-checked"
+	elem 
+		name = "Game"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Game Guide"
+		command = "Game-Guide"
+		category = "Game"
+		saved-params = "is-checked"
+	elem 
+		name = "Update Log"
+		command = "Update-Log"
+		category = "Game"
+		saved-params = "is-checked"
+	elem 
+		name = "Rules"
+		command = "seerules"
+		category = "Game"
+		saved-params = "is-checked"
+	elem 
+		name = "View Maps"
+		command = "View-Maps"
+		category = "Game"
+		saved-params = "is-checked"
+	elem 
+		name = "Who"
+		command = "Who"
+		category = "Game"
+		saved-params = "is-checked"
+	elem 
+		name = "PVP"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Enter Tournament"
+		command = "Enter-Tournament"
+		category = "PVP"
+		saved-params = "is-checked"
+	elem 
+		name = "Leave Tournament"
+		command = "Leave-Tournament"
+		category = "PVP"
+		saved-params = "is-checked"
+	elem 
+		name = "Watch Tournament"
+		command = "Watch-Tournament"
+		category = "PVP"
+		saved-params = "is-checked"
+	elem 
+		name = "Watch Budokai"
+		command = "Watch-Budokai"
+		category = "PVP"
+		saved-params = "is-checked"
+	elem 
+		name = "Arena Challenge"
+		command = "Arena-Challenge"
+		category = "PVP"
+		saved-params = "is-checked"
+	elem 
+		name = "System"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "Options"
+		command = "Options"
+		category = "System"
+		saved-params = "is-checked"
+	elem 
+		name = "Technique Options"
+		command = "Technique-Options"
+		category = "System"
+		saved-params = "is-checked"
+	elem 
+		name = "Report"
+		command = "Report"
+		category = "System"
+		saved-params = "is-checked"
+	elem 
+		name = "Server Information"
+		command = "Server-Information"
+		category = "System"
+		saved-params = "is-checked"
+	elem 
+		name = "Scoreboard"
+		command = "Scoreboard"
+		category = "System"
+		saved-params = "is-checked"
+
+
+window "Guide"
+	elem "Guide"
+		type = MAIN
+		pos = 281,0
+		size = 640x480
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		is-visible = false
+		border = sunken
+		saved-params = "pos;size;is-minimized;is-maximized"
+		statusbar = false
+		icon = 'Images\\dr icon.jpg'
+	elem "MainBrowser"
+		type = BROWSER
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = #000000
+		is-default = true
+		border = sunken
+		saved-params = ""
+
+window "Login"
+	elem "Login"
+		type = MAIN
+		pos = 372,0
+		size = 880x500
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		saved-params = "pos;size;is-minimized;is-maximized"
+		titlebar = false
+		statusbar = false
+		on-close = ".quit"
+	elem "browser1"
+		type = BROWSER
+		pos = 0,0
+		size = 880x500
+		anchor1 = 1,1
+		anchor2 = 99,99
+		saved-params = ""
+
+window "NLD"
+	elem "NLD"
+		type = MAIN
+		pos = 372,0
+		size = 227x246
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Dragonball:Ruination Login"
+		statusbar = false
+		icon = 'Images\\dr icon.jpg'
+		on-close = ".quit"
+	elem "button26"
+		type = BUTTON
+		pos = 8,168
+		size = 211x70
+		anchor1 = 4,68
+		anchor2 = 96,97
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\ZDelete.png'
+		command = "DeleteCharacter"
+	elem "button25"
+		type = BUTTON
+		pos = 8,88
+		size = 211x70
+		anchor1 = 4,36
+		anchor2 = 96,64
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\ZLoad.png'
+		command = "LoadCharacter"
+	elem "button24"
+		type = BUTTON
+		pos = 8,8
+		size = 211x70
+		anchor1 = 4,3
+		anchor2 = 96,32
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\ZNew.png'
+		command = "NewCharacter"
+
+window "Race"
+	elem "Race"
+		type = MAIN
+		pos = 372,0
+		size = 1257x600
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Race Picker"
+		icon = 'Images\\dr icon.jpg'
+		image = 'Images\\Character Selection Screen.jpg'
+		on-close = ".quit"
+	elem "button28"
+		type = BUTTON
+		pos = 32,464
+		size = 211x70
+		anchor1 = 3,61
+		anchor2 = 19,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Alien.png'
+		command = "Alien"
+	elem "button27"
+		type = BUTTON
+		pos = 1036,288
+		size = 211x70
+		anchor1 = 82,48
+		anchor2 = 99,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Game Guide.png'
+		command = "LoginGameGuide2"
+	elem "label4"
+		type = LABEL
+		pos = 344,461
+		size = 500x75
+		anchor1 = 27,77
+		anchor2 = 67,89
+		font-size = 16
+		font-style = "bold"
+		text-color = #e5652f
+		background-color = #444444
+		saved-params = ""
+		text = "Please Select a race to load the Description here"
+	elem "label2"
+		type = LABEL
+		pos = 376,24
+		size = 496x80
+		anchor1 = 30,4
+		anchor2 = 69,17
+		font-family = "Century Gothic"
+		font-size = 38
+		font-style = "bold"
+		text-color = #e5652f
+		background-color = #444444
+		border = sunken
+		saved-params = ""
+		text = "Choose your race"
+	elem "button23"
+		type = BUTTON
+		pos = 1036,368
+		size = 211x70
+		anchor1 = 82,61
+		anchor2 = 99,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Next.png'
+		command = "Next"
+	elem "button22"
+		type = BUTTON
+		pos = 1036,208
+		size = 211x70
+		anchor1 = 82,35
+		anchor2 = 99,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Tuffle.png'
+		command = "Tuffle"
+	elem "button21"
+		type = BUTTON
+		pos = 1036,128
+		size = 211x70
+		anchor1 = 82,21
+		anchor2 = 99,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Saiyan.png'
+		command = "Saiyan"
+	elem "button20"
+		type = BUTTON
+		pos = 785,368
+		size = 211x70
+		anchor1 = 62,61
+		anchor2 = 79,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Saibaman.png'
+		command = "Saibaman"
+	elem "button19"
+		type = BUTTON
+		pos = 785,288
+		size = 211x70
+		anchor1 = 62,48
+		anchor2 = 79,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Namekian.png'
+		command = "Namekian"
+	elem "button18"
+		type = BUTTON
+		pos = 785,208
+		size = 211x70
+		anchor1 = 62,35
+		anchor2 = 79,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\MajinWizard.png'
+		command = "MajinWizard"
+	elem "button17"
+		type = BUTTON
+		pos = 785,128
+		size = 211x70
+		anchor1 = 62,21
+		anchor2 = 79,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Majin.png'
+		command = "Majin"
+	elem "button16"
+		type = BUTTON
+		pos = 534,288
+		size = 211x70
+		anchor1 = 42,48
+		anchor2 = 59,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Kai.png'
+		command = "KAi"
+	elem "button15"
+		type = BUTTON
+		pos = 534,208
+		size = 211x70
+		anchor1 = 42,35
+		anchor2 = 59,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Human.png'
+		command = "Human"
+	elem "button14"
+		type = BUTTON
+		pos = 534,128
+		size = 211x70
+		anchor1 = 42,21
+		anchor2 = 59,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Heran.png'
+		command = "Heran"
+	elem "button13"
+		type = BUTTON
+		pos = 283,368
+		size = 211x70
+		anchor1 = 23,61
+		anchor2 = 39,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\HalfSaiyan.png'
+		command = "HalfSaiyan"
+	elem "button12"
+		type = BUTTON
+		pos = 534,368
+		size = 211x70
+		anchor1 = 42,61
+		anchor2 = 59,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Konat.png'
+		command = "Konat"
+	elem "button11"
+		type = BUTTON
+		pos = 283,288
+		size = 211x70
+		anchor1 = 23,48
+		anchor2 = 39,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Feline.png'
+		command = "Feline"
+	elem "button10"
+		type = BUTTON
+		pos = 283,208
+		size = 211x70
+		anchor1 = 23,35
+		anchor2 = 39,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Dragon.png'
+		command = "Dragon"
+	elem "button9"
+		type = BUTTON
+		pos = 283,128
+		size = 211x70
+		anchor1 = 23,21
+		anchor2 = 39,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Demon.png'
+		command = "Demon"
+	elem "button8"
+		type = BUTTON
+		pos = 32,368
+		size = 211x70
+		anchor1 = 3,61
+		anchor2 = 19,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Changeling.png'
+		command = "Changeling"
+	elem "button6"
+		type = BUTTON
+		pos = 32,288
+		size = 211x70
+		anchor1 = 3,48
+		anchor2 = 19,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\BioWarrior.png'
+		command = "BioWarrior"
+	elem "button5"
+		type = BUTTON
+		pos = 32,208
+		size = 211x70
+		anchor1 = 3,35
+		anchor2 = 19,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\BioAndroid.png'
+		command = "BioAndroid"
+	elem "button4"
+		type = BUTTON
+		pos = 32,128
+		size = 211x70
+		anchor1 = 3,21
+		anchor2 = 19,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Android.png'
+		command = "Android"
+
+window "RaceRebirth"
+	elem "RaceRebirth"
+		type = MAIN
+		pos = 372,0
+		size = 1257x600
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Race Picker"
+		can-close = false
+		icon = 'Images\\dr icon.jpg'
+		image = 'Images\\Character Selection Screen.jpg'
+		on-close = ".quit"
+	elem "button28"
+		type = BUTTON
+		pos = 32,464
+		size = 211x70
+		anchor1 = 3,61
+		anchor2 = 19,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Alien.png'
+		command = "Alien"
+	elem "button27"
+		type = BUTTON
+		pos = 1036,288
+		size = 211x70
+		anchor1 = 82,48
+		anchor2 = 99,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Game Guide.png'
+		command = "LoginGameGuide2"
+	elem "label4"
+		type = LABEL
+		pos = 344,461
+		size = 500x75
+		anchor1 = 27,77
+		anchor2 = 67,89
+		font-size = 16
+		font-style = "bold"
+		text-color = #e5652f
+		background-color = #444444
+		saved-params = ""
+		text = "Please Select a race to load the Description here"
+	elem "label2"
+		type = LABEL
+		pos = 376,24
+		size = 496x80
+		anchor1 = 30,4
+		anchor2 = 69,17
+		font-family = "Century Gothic"
+		font-size = 38
+		font-style = "bold"
+		text-color = #e5652f
+		background-color = #444444
+		border = sunken
+		saved-params = ""
+		text = "Choose your race"
+	elem "button23"
+		type = BUTTON
+		pos = 1036,368
+		size = 211x70
+		anchor1 = 82,61
+		anchor2 = 99,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Next.png'
+		command = "NextRebirth"
+	elem "button22"
+		type = BUTTON
+		pos = 1036,208
+		size = 211x70
+		anchor1 = 82,35
+		anchor2 = 99,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Tuffle.png'
+		command = "Tuffle"
+	elem "button21"
+		type = BUTTON
+		pos = 1036,128
+		size = 211x70
+		anchor1 = 82,21
+		anchor2 = 99,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Saiyan.png'
+		command = "Saiyan"
+	elem "button20"
+		type = BUTTON
+		pos = 785,368
+		size = 211x70
+		anchor1 = 62,61
+		anchor2 = 79,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Saibaman.png'
+		command = "Saibaman"
+	elem "button19"
+		type = BUTTON
+		pos = 785,288
+		size = 211x70
+		anchor1 = 62,48
+		anchor2 = 79,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Namekian.png'
+		command = "Namekian"
+	elem "button18"
+		type = BUTTON
+		pos = 785,208
+		size = 211x70
+		anchor1 = 62,35
+		anchor2 = 79,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\MajinWizard.png'
+		command = "MajinWizard"
+	elem "button17"
+		type = BUTTON
+		pos = 785,128
+		size = 211x70
+		anchor1 = 62,21
+		anchor2 = 79,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Majin.png'
+		command = "Majin"
+	elem "button16"
+		type = BUTTON
+		pos = 534,288
+		size = 211x70
+		anchor1 = 42,48
+		anchor2 = 59,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Kai.png'
+		command = "KAi"
+	elem "button15"
+		type = BUTTON
+		pos = 534,208
+		size = 211x70
+		anchor1 = 42,35
+		anchor2 = 59,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Human.png'
+		command = "Human"
+	elem "button14"
+		type = BUTTON
+		pos = 534,128
+		size = 211x70
+		anchor1 = 42,21
+		anchor2 = 59,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Heran.png'
+		command = "Heran"
+	elem "button13"
+		type = BUTTON
+		pos = 283,368
+		size = 211x70
+		anchor1 = 23,61
+		anchor2 = 39,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\HalfSaiyan.png'
+		command = "HalfSaiyan"
+	elem "button12"
+		type = BUTTON
+		pos = 534,368
+		size = 211x70
+		anchor1 = 42,61
+		anchor2 = 59,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Konat.png'
+		command = "Konat"
+	elem "button11"
+		type = BUTTON
+		pos = 283,288
+		size = 211x70
+		anchor1 = 23,48
+		anchor2 = 39,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Feline.png'
+		command = "Feline"
+	elem "button10"
+		type = BUTTON
+		pos = 283,208
+		size = 211x70
+		anchor1 = 23,35
+		anchor2 = 39,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Dragon.png'
+		command = "Dragon"
+	elem "button9"
+		type = BUTTON
+		pos = 283,128
+		size = 211x70
+		anchor1 = 23,21
+		anchor2 = 39,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Demon.png'
+		command = "Demon"
+	elem "button8"
+		type = BUTTON
+		pos = 32,368
+		size = 211x70
+		anchor1 = 3,61
+		anchor2 = 19,73
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Changeling.png'
+		command = "Changeling"
+	elem "button6"
+		type = BUTTON
+		pos = 32,288
+		size = 211x70
+		anchor1 = 3,48
+		anchor2 = 19,60
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\BioWarrior.png'
+		command = "BioWarrior"
+	elem "button5"
+		type = BUTTON
+		pos = 32,208
+		size = 211x70
+		anchor1 = 3,35
+		anchor2 = 19,46
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\BioAndroid.png'
+		command = "BioAndroid"
+	elem "button4"
+		type = BUTTON
+		pos = 32,128
+		size = 211x70
+		anchor1 = 3,21
+		anchor2 = 19,33
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = ""
+		image = 'Images\\Login Races\\Android.png'
+		command = "Android"
+
+window "chat"
+	elem "chat"
+		type = MAIN
+		pos = 372,0
+		size = 533x352
+		anchor1 = none
+		anchor2 = none
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Chat"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "output"
+		type = OUTPUT
+		pos = 0,0
+		size = 533x352
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "Segoe UI"
+		font-size = 8
+		text-color = #f2f2f2
+		background-color = #000000
+		is-default = true
+		border = sunken
+		saved-params = "max-lines"
+		visited-color = #a21114
+
+window "MOTD"
+	elem "MOTD"
+		type = MAIN
+		pos = 281,0
+		size = 425x390
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		is-visible = false
+		border = sunken
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Updates"
+		statusbar = false
+		can-resize = false
+		icon = 'Images\\dr icon.jpg'
+	elem "label46"
+		type = LABEL
+		pos = 84,32
+		size = 260x48
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 13
+		font-style = "bold"
+		text-color = #808080
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Dragonball : Ruination Updates"
+	elem "Title"
+		type = LABEL
+		pos = 85,80
+		size = 259x280
+		anchor1 = 20,7
+		anchor2 = 81,92
+		font-size = 2
+		text-color = #808080
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Crimzon Slayer is the bomb diggity\n\nLet it be known throughout the universe.\n\nPs Vegita is the strongest saiyan.\n\n<3 Crimzon"
+		text-wrap = true
+
+window "default"
+	elem "default"
+		type = MAIN
+		pos = 372,0
+		size = 1280x721
+		anchor1 = none
+		anchor2 = none
+		background-color = #1b51ab
+		is-default = true
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Ruination"
+		statusbar = false
+		macro = "macro1"
+		menu = "menu"
+	elem "input4"
+		type = INPUT
+		pos = 916,690
+		size = 356x24
+		anchor1 = 72,95
+		anchor2 = 99,99
+		font-family = "Arial"
+		font-size = 9
+		font-style = "bold"
+		text-color = #f2f2f2
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		command = "Guild-Chat"
+	elem "button58"
+		type = BUTTON
+		pos = 813,690
+		size = 97x24
+		anchor1 = 64,95
+		anchor2 = 71,99
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = "is-checked"
+		text = "Guild Chat"
+		command = "Guild Chat"
+	elem "input3"
+		type = INPUT
+		pos = 916,659
+		size = 356x24
+		anchor1 = 72,91
+		anchor2 = 99,94
+		font-family = "Arial"
+		font-size = 9
+		font-style = "bold"
+		text-color = #f2f2f2
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		command = "say"
+	elem "input2"
+		type = INPUT
+		pos = 916,629
+		size = 356x24
+		anchor1 = 72,87
+		anchor2 = 99,90
+		font-family = "Arial"
+		font-size = 9
+		font-style = "bold"
+		text-color = #ffffff
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		command = "OOC"
+	elem "button3"
+		type = BUTTON
+		pos = 813,659
+		size = 97x24
+		anchor1 = 64,91
+		anchor2 = 71,94
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		is-default = true
+		border = sunken
+		saved-params = "is-checked"
+		text = "Say"
+		command = "say"
+	elem "button2"
+		type = BUTTON
+		pos = 813,630
+		size = 97x24
+		anchor1 = 64,87
+		anchor2 = 71,90
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		is-default = true
+		border = sunken
+		saved-params = "is-checked"
+		text = "OOC"
+		command = "ooc"
+	elem "outputguildchat"
+		type = OUTPUT
+		pos = 376,564
+		size = 427x152
+		anchor1 = 30,78
+		anchor2 = 63,99
+		font-family = "monospace"
+		font-size = 12
+		text-color = #808080
+		background-color = #000000
+		border = sunken
+		saved-params = "max-lines"
+	elem "output2"
+		type = OUTPUT
+		pos = 2,564
+		size = 372x152
+		anchor1 = 0,78
+		anchor2 = 29,99
+		font-family = "Segoe UI"
+		font-size = 8
+		text-color = #c0b283
+		background-color = #000000
+		border = sunken
+		saved-params = "max-lines"
+	elem "output1"
+		type = OUTPUT
+		pos = 808,5
+		size = 465x91
+		anchor1 = 63,1
+		anchor2 = 99,13
+		font-family = "Segoe UI"
+		font-size = 8
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = "max-lines"
+	elem "child1"
+		type = CHILD
+		pos = 809,100
+		size = 464x525
+		anchor1 = 63,14
+		anchor2 = 99,87
+		background-color = #444444
+		border = sunken
+		saved-params = "splitter"
+		left = "statpanel"
+		right = "chat"
+		is-vert = false
+		splitter = 40
+	elem "map"
+		type = MAP
+		pos = 3,3
+		size = 800x558
+		anchor1 = 1,1
+		anchor2 = 63,78
+		is-default = true
+		border = sunken
+		saved-params = "icon-size"
+		on-size = "onResize"
+		zoom = 1
+
+window "edit"
+	elem "edit"
+		type = MAIN
+		pos = 372,0
+		size = 640x480
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Edit Pane"
+	elem "button31"
+		type = BUTTON
+		pos = 488,200
+		size = 136x80
+		anchor1 = none
+		anchor2 = none
+		text-color = #c0b283
+		background-color = #444444
+		saved-params = "is-checked"
+		text = "Close Window"
+		command = ""
+	elem "button30"
+		type = BUTTON
+		pos = 488,104
+		size = 136x80
+		anchor1 = none
+		anchor2 = none
+		text-color = #c0b283
+		background-color = #444444
+		saved-params = "is-checked"
+		text = "Save File"
+		command = ""
+	elem "button29"
+		type = BUTTON
+		pos = 488,8
+		size = 136x80
+		anchor1 = none
+		anchor2 = none
+		text-color = #c0b283
+		background-color = #444444
+		saved-params = "is-checked"
+		text = "Open Sav"
+		command = ""
+	elem "input5"
+		type = INPUT
+		pos = 8,8
+		size = 472x464
+		anchor1 = none
+		anchor2 = none
+		font-size = 8
+		font-style = "bold"
+		text-color = #f2f2f2
+		background-color = #444444
+		border = line
+		saved-params = ""
+
+window "hudmap"
+	elem "hudmap"
+		type = MAIN
+		pos = 372,0
+		size = 156x32
+		anchor1 = none
+		anchor2 = none
+		background-color = none
+		is-visible = false
+		border = line
+		saved-params = "pos;size;is-minimized;is-maximized"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		outer-size = 172x48
+		inner-size = 156x32
+	elem "labelDB"
+		type = LABEL
+		pos = 0,0
+		size = 32x32
+		anchor1 = none
+		anchor2 = none
+		background-color = #1b51ab
+		is-disabled = true
+		saved-params = ""
+		text = ""
+		image = 'Hud\\du\\HUDdb.dmi'
+	elem "map2"
+		type = MAP
+		pos = 32,0
+		size = 128x32
+		anchor1 = none
+		anchor2 = none
+		background-color = #1b51ab
+		is-disabled = true
+		drop-zone = false
+		saved-params = "zoom;letterbox;zoom-mode"
+
+window "multis"
+	elem "multis"
+		type = MAIN
+		pos = 372,0
+		size = 380x438
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Stat Multis"
+		statusbar = false
+		can-close = false
+		can-resize = false
+	elem "KiLab"
+		type = LABEL
+		pos = 325,220
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StrengthLab"
+		type = LABEL
+		pos = 325,259
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "DefenseLab"
+		type = LABEL
+		pos = 325,298
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StaminaLab"
+		type = LABEL
+		pos = 325,337
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "Proceed"
+		type = BUTTON
+		pos = 202,387
+		size = 154x37
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 17
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = "is-checked"
+		text = "Continue"
+		command = ".Done_With_Multis"
+		is-flat = true
+	elem "label6"
+		type = LABEL
+		pos = 16,375
+		size = 156x20
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Points Available"
+	elem "PointsRemaining"
+		type = LABEL
+		pos = 18,400
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "6"
+	elem "POW"
+		type = LABEL
+		pos = 13,337
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Stamina"
+	elem "plusPOW"
+		type = BUTTON
+		pos = 288,337
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Stamina\""
+	elem "minusPOW"
+		type = BUTTON
+		pos = 250,337
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Stamina\""
+	elem "SPD"
+		type = LABEL
+		pos = 13,298
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Defense Multi"
+	elem "plusSPD"
+		type = BUTTON
+		pos = 288,298
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Defense\""
+	elem "minusSPD"
+		type = BUTTON
+		pos = 250,298
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Defense\""
+	elem "END"
+		type = LABEL
+		pos = 13,259
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Strength Multi"
+	elem "plusEND"
+		type = BUTTON
+		pos = 288,259
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Strength\""
+	elem "minusEND"
+		type = BUTTON
+		pos = 250,259
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Strength\""
+	elem "STR"
+		type = LABEL
+		pos = 13,220
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Ki Multi"
+	elem "plusSTR"
+		type = BUTTON
+		pos = 288,220
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Ki\""
+	elem "minusSTR"
+		type = BUTTON
+		pos = 250,220
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Ki\""
+	elem "label4"
+		type = LABEL
+		pos = 3,7
+		size = 372x200
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 9
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = ""
+		text = "Please distribute points into the following categories.\nThe first four effect your level up gains and stat ticks.\nYou can subtract from your base multis, but they cannot go lower than 1, or higher than 10 + # of rebirths\nEach point in Stamina increases your stamina by 200 (default of 1000)\n\nThink about what type of character you would like. Balanced, Ki and defense based, All out strength, or try to be a tank with Powerlevel + defense"
+		align = left
+		text-wrap = true
+
+window "multis3"
+	elem "multis3"
+		type = MAIN
+		pos = 372,0
+		size = 380x489
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Stat Multis"
+		statusbar = false
+		can-close = false
+		can-resize = false
+	elem "PowerlevelLab"
+		type = LABEL
+		pos = 325,221
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "KiLab"
+		type = LABEL
+		pos = 325,260
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StrengthLab"
+		type = LABEL
+		pos = 325,299
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "DefenseLab"
+		type = LABEL
+		pos = 325,338
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StaminaLab"
+		type = LABEL
+		pos = 325,377
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "Proceed"
+		type = BUTTON
+		pos = 202,427
+		size = 154x37
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 17
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = "is-checked"
+		text = "Continue"
+		command = ".Done_With_Multis"
+		is-flat = true
+	elem "label6"
+		type = LABEL
+		pos = 16,415
+		size = 156x20
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Points Available"
+	elem "PointsRemaining"
+		type = LABEL
+		pos = 18,440
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "6"
+	elem "POW"
+		type = LABEL
+		pos = 13,377
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Stamina"
+	elem "plusPOW"
+		type = BUTTON
+		pos = 288,377
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Stamina\""
+	elem "minusPOW"
+		type = BUTTON
+		pos = 250,377
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Stamina\""
+	elem "SPD"
+		type = LABEL
+		pos = 13,338
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Defense Multi"
+	elem "plusSPD"
+		type = BUTTON
+		pos = 288,338
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Defense\""
+	elem "minusSPD"
+		type = BUTTON
+		pos = 250,338
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Defense\""
+	elem "END"
+		type = LABEL
+		pos = 13,299
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Strength Multi"
+	elem "plusEND"
+		type = BUTTON
+		pos = 288,299
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Strength\""
+	elem "minusEND"
+		type = BUTTON
+		pos = 250,299
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Strength\""
+	elem "STR"
+		type = LABEL
+		pos = 13,260
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Ki Multi"
+	elem "plusSTR"
+		type = BUTTON
+		pos = 288,260
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Ki\""
+	elem "minusSTR"
+		type = BUTTON
+		pos = 250,260
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Ki\""
+	elem "EN"
+		type = LABEL
+		pos = 13,221
+		size = 229x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Powerlevel Multi"
+	elem "label4"
+		type = LABEL
+		pos = 3,7
+		size = 372x200
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 9
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = ""
+		text = "Please distribute points into the following categories.\nThe first four effect your level up gains and stat ticks.\nYou can subtract from your base multis, but they cannot go lower than 1, or higher than 10 + # of rebirths\nEach point in Stamina increases your stamina by 200 (default of 1000)\n\nThink about what type of character you would like. Balanced, Ki and defense based, All out strength, or try to be a tank with Powerlevel + defense"
+		align = left
+		text-wrap = true
+	elem "plusEN"
+		type = BUTTON
+		pos = 288,221
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Powerlevel\""
+	elem "minusEN"
+		type = BUTTON
+		pos = 250,221
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black,@Yu Gothic Medium"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "-"
+		command = ".M_Points \"-\" \"Powerlevel\""
+
+window "multisold2"
+	elem "multisold2"
+		type = MAIN
+		pos = 372,0
+		size = 380x489
+		anchor1 = none
+		anchor2 = none
+		background-color = #444444
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Stat Multis"
+		statusbar = false
+		can-close = false
+		can-resize = false
+	elem "PowerlevelLab"
+		type = LABEL
+		pos = 325,221
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "KiLab"
+		type = LABEL
+		pos = 325,260
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StrengthLab"
+		type = LABEL
+		pos = 325,299
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "DefenseLab"
+		type = LABEL
+		pos = 325,338
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "StaminaLab"
+		type = LABEL
+		pos = 325,377
+		size = 42x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = sunken
+		saved-params = ""
+		text = "0"
+	elem "Proceed"
+		type = BUTTON
+		pos = 202,427
+		size = 154x37
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 17
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = "is-checked"
+		text = "Continue"
+		command = ".Done_With_Multis"
+		is-flat = true
+	elem "label6"
+		type = LABEL
+		pos = 16,415
+		size = 156x20
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial"
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Points Available"
+	elem "PointsRemaining"
+		type = LABEL
+		pos = 18,440
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-size = 10
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "6"
+	elem "POW"
+		type = LABEL
+		pos = 13,377
+		size = 267x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Stamina"
+	elem "plusPOW"
+		type = BUTTON
+		pos = 288,377
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Stamina\""
+	elem "SPD"
+		type = LABEL
+		pos = 13,338
+		size = 267x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Defense Multi"
+	elem "plusSPD"
+		type = BUTTON
+		pos = 288,338
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Defense\""
+	elem "END"
+		type = LABEL
+		pos = 13,299
+		size = 267x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Strength Multi"
+	elem "plusEND"
+		type = BUTTON
+		pos = 288,299
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Strength\""
+	elem "STR"
+		type = LABEL
+		pos = 13,260
+		size = 267x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Ki Multi"
+	elem "plusSTR"
+		type = BUTTON
+		pos = 288,260
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Ki\""
+	elem "EN"
+		type = LABEL
+		pos = 13,221
+		size = 267x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 12
+		text-color = #c0b283
+		background-color = #373737
+		border = line
+		saved-params = ""
+		text = "Powerlevel Multi"
+	elem "label4"
+		type = LABEL
+		pos = 3,7
+		size = 372x200
+		anchor1 = none
+		anchor2 = none
+		font-family = "Bahnschrift,@Malgun Gothic,monospace"
+		font-size = 9
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = ""
+		text = "Please distribute points into the following categories.\nThe first four effect your level up gains and stat ticks.\nEach point in Stamina increases your stamina by 200 (default of 1000)\n\nThink about what type of character you would like. Balanced, Ki and defense based, All out strength, or try to be a tank with Powerlevel + defense"
+		align = left
+		text-wrap = true
+	elem "plusEN"
+		type = BUTTON
+		pos = 288,221
+		size = 30x30
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 20
+		font-style = "bold"
+		text-color = #c0b283
+		background-color = #373737
+		saved-params = "is-checked"
+		text = "+"
+		command = ".M_Points \"+\" \"Powerlevel\""
+
+window "statpanel"
+	elem "statpanel"
+		type = MAIN
+		pos = 372,0
+		size = 533x352
+		anchor1 = none
+		anchor2 = none
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "statpanel"
+		titlebar = false
+		statusbar = false
+		can-close = false
+		can-minimize = false
+		can-resize = false
+		is-pane = true
+	elem "info"
+		type = INFO
+		pos = 0,0
+		size = 533x352
+		anchor1 = 0,0
+		anchor2 = 100,100
+		font-family = "Arial"
+		font-size = 9
+		font-style = "bold"
+		text-color = #f2f2f2
+		background-color = #373737
+		is-default = true
+		border = sunken
+		saved-params = ""
+		highlight-color = #0dc61b
+		tab-text-color = #c0b283
+		tab-background-color = #373737
+		tab-font-family = "Crystal clear,Segoe UI"
+		tab-font-size = 8
+		tab-font-style = "bold"
+
+window "report"
+	elem "report"
+		type = MAIN
+		pos = 372,0
+		size = 425x471
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Report bugs/Give Suggestions"
+		statusbar = false
+		can-resize = false
+		on-close = ".clear"
+	elem "label5"
+		type = LABEL
+		pos = 12,152
+		size = 211x96
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 8
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = ""
+		text = "Your reports are only viewable by the admin team"
+		align = left
+		text-wrap = true
+	elem "Name"
+		type = INPUT
+		pos = 50,124
+		size = 325x20
+		anchor1 = none
+		anchor2 = none
+		border = sunken
+		saved-params = ""
+		no-command = true
+	elem "label1"
+		type = LABEL
+		pos = 78,16
+		size = 269x72
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Bugs, Features, \nFixes, Glitches\nSuggestions"
+		text-wrap = true
+	elem "bug"
+		type = BUTTON
+		pos = 252,187
+		size = 89x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Bug"
+		command = ""
+		is-checked = true
+		group = "type"
+		button-type = radio
+	elem "NameR"
+		type = LABEL
+		pos = 112,100
+		size = 204x20
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Issue/Suggestion"
+	elem "label2"
+		type = LABEL
+		pos = 269,164
+		size = 54x20
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Type"
+	elem "suggestion"
+		type = BUTTON
+		pos = 252,206
+		size = 89x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Suggestion"
+		command = ""
+		group = "type"
+		button-type = radio
+	elem "fix"
+		type = BUTTON
+		pos = 252,225
+		size = 89x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Fix"
+		command = ""
+		group = "type"
+		button-type = radio
+	elem "desc"
+		type = INPUT
+		pos = 50,288
+		size = 325x91
+		anchor1 = none
+		anchor2 = none
+		border = sunken
+		saved-params = ""
+		multi-line = true
+		no-command = true
+	elem "prob"
+		type = LABEL
+		pos = 105,256
+		size = 227x27
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Problem Description"
+	elem "key"
+		type = LABEL
+		pos = 72,428
+		size = 94x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "Key"
+		text-wrap = true
+	elem "ip"
+		type = LABEL
+		pos = 165,428
+		size = 94x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "IP"
+	elem "id"
+		type = LABEL
+		pos = 258,428
+		size = 94x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "Computer ID"
+	elem "submit"
+		type = BUTTON
+		pos = 152,385
+		size = 60x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = "is-checked"
+		text = "Submit"
+		command = ".submit"
+	elem "label3"
+		type = LABEL
+		pos = 101,450
+		size = 223x13
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = ""
+		text = "The above items are logged upon submission."
+	elem "selected"
+		type = LABEL
+		pos = 350,206
+		size = 60x20
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		is-visible = false
+		border = line
+		saved-params = ""
+		text = ""
+	elem "load"
+		type = LABEL
+		pos = 72,406
+		size = 280x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = ""
+	elem "clear"
+		type = BUTTON
+		pos = 214,385
+		size = 60x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = "is-checked"
+		text = "Clear"
+		command = ".clear"
+
+window "reportview"
+	elem "reportview"
+		type = MAIN
+		pos = 372,0
+		size = 425x471
+		anchor1 = none
+		anchor2 = none
+		background-color = #000000
+		is-visible = false
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Reports Viewer"
+		statusbar = false
+		can-resize = false
+		on-close = ".clearv"
+	elem "button2"
+		type = BUTTON
+		pos = 168,102
+		size = 90x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Delete this"
+		command = ".delete"
+	elem "viewing"
+		type = LABEL
+		pos = 78,77
+		size = 270x22
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = ""
+		text = "Click View Reports to see a list of reports!"
+	elem "button1"
+		type = BUTTON
+		pos = 261,102
+		size = 87x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "Delete All"
+		command = ".deleteall"
+	elem "rpt"
+		type = BUTTON
+		pos = 78,102
+		size = 87x20
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		border = line
+		saved-params = "is-checked"
+		text = "View Report"
+		command = ".view"
+	elem "reportbrowser"
+		type = BROWSER
+		pos = 14,150
+		size = 397x311
+		anchor1 = none
+		anchor2 = none
+		saved-params = ""
+	elem "label1"
+		type = LABEL
+		pos = 78,8
+		size = 269x65
+		anchor1 = none
+		anchor2 = none
+		font-family = "Arial Black"
+		font-size = 10
+		font-style = "bold"
+		text-color = #ff0000
+		background-color = #000000
+		border = sunken
+		saved-params = ""
+		text = "Report Viewer"
+		text-wrap = true
+	elem "loadv"
+		type = LABEL
+		pos = 77,125
+		size = 270x22
+		anchor1 = none
+		anchor2 = none
+		text-color = #ff0000
+		background-color = #000000
+		saved-params = ""
+		text = ""
+

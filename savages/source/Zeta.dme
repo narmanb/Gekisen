@@ -1,0 +1,41 @@
+// DM Environment file for Desktop.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+#define FILE_DIR "icons"
+// END_FILE_DIR
+
+// BEGIN_INCLUDE
+#include "battle_system.dm"
+#include "CHANGAWN.dm"
+#include "colour2html.dm"
+#include "damage.dm"
+#include "DBZ_Power.dm"
+#include "dragonballs.dm"
+#include "DSFS(1).dm"
+#include "Guild.dm"
+#include "hair.dm"
+#include "HUD.dm"
+#include "mobs.dm"
+#include "new_char_handling.dm"
+#include "objs.dm"
+#include "Police.dm"
+#include "races.dm"
+#include "s_missle.dm"
+#include "Scoreboard.dm"
+#include "seiya.dm"
+#include "skills.dm"
+#include "spam.dm"
+#include "Steal Icon Code.dm"
+#include "turfs.dm"
+#include "Zeta.dm"
+#include "map.dmp"
+// END_INCLUDE
+
+// BEGIN_PREFERENCES
+#define DEBUG
+// END_PREFERENCES
+// BEGIN_INTERNALS
+// END_INTERNALS

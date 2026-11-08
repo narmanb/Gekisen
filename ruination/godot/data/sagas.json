@@ -1,0 +1,607 @@
+{
+ "_about": "Saga lines from Mobs/Sagas/Sagas.dm SAGA_CHECK (sagas_evil = villains for good players, sagas_good = Z fighters for evil players). Each part spawns its bosses together in the original saga area; a boss with several forms comes back as the next form when beaten (the original's 'Frieza: Form 2' ... episodes). Levels and sprites from the /mob/Saga types; moves are new (the original saga AI was commented out). Trimmed to the Saiyan and Frieza sagas for now. Powerlevels (\"pl\", \"pls\" per form) are series-like and scaled by the difficulty.",
+ "area": [
+  393,
+  466,
+  35,
+  86,
+  1
+ ],
+ "bosses": {
+  "Raditz": {
+   "name": "Raditz",
+   "level": 500,
+   "forms": [
+    [
+     "raditz",
+     ""
+    ]
+   ],
+   "moves": [
+    "double_sunday",
+    "blast"
+   ],
+   "pl": 1500
+  },
+  "Nappa": {
+   "name": "Nappa",
+   "level": 600,
+   "forms": [
+    [
+     "nappa",
+     ""
+    ]
+   ],
+   "moves": [
+    "break_cannon",
+    "giant_storm"
+   ],
+   "pl": 4000
+  },
+  "Vegeta": {
+   "name": "Vegeta",
+   "level": 750,
+   "forms": [
+    [
+     "vegeta",
+     ""
+    ]
+   ],
+   "moves": [
+    "galick_gun",
+    "blast"
+   ],
+   "pl": 18000
+  },
+  "Jeice": {
+   "name": "Jeice",
+   "level": 1300,
+   "forms": [
+    [
+     "jeice",
+     ""
+    ]
+   ],
+   "moves": [
+    "crusher_ball",
+    "blast"
+   ],
+   "pl": 30000
+  },
+  "Burter": {
+   "name": "Burter",
+   "level": 1400,
+   "forms": [
+    [
+     "burter",
+     ""
+    ]
+   ],
+   "moves": [
+    "space_mach",
+    "blast"
+   ],
+   "pl": 30000
+  },
+  "Recoom": {
+   "name": "Recoome",
+   "level": 1200,
+   "forms": [
+    [
+     "recoom",
+     ""
+    ]
+   ],
+   "moves": [
+    "eraser_gun",
+    "rush"
+   ],
+   "pl": 40000
+  },
+  "Guldo": {
+   "name": "Guldo",
+   "level": 1200,
+   "forms": [
+    [
+     "guldo",
+     ""
+    ]
+   ],
+   "moves": [
+    "time_freeze",
+    "blast"
+   ],
+   "pl": 12000
+  },
+  "Ginyu": {
+   "name": "Captain Ginyu",
+   "level": 1600,
+   "forms": [
+    [
+     "ginyu",
+     ""
+    ]
+   ],
+   "moves": [
+    "milky_cannon",
+    "blast"
+   ],
+   "pl": 120000
+  },
+  "Frieza": {
+   "name": "Frieza",
+   "level": 2000,
+   "forms": [
+    [
+     "frieza",
+     "Form 1"
+    ],
+    [
+     "frieza1",
+     "Form 2"
+    ],
+    [
+     "frieza2",
+     "Form 3"
+    ],
+    [
+     "frieza3",
+     "Form 4"
+    ],
+    [
+     "frieza4",
+     "Form 4 100%"
+    ]
+   ],
+   "moves": [
+    "death_beam",
+    "death_ball",
+    "volley"
+   ],
+   "pls": [
+    530000,
+    1000000,
+    1300000,
+    1500000,
+    1800000
+   ]
+  },
+  "Goku1": {
+   "name": "Goku",
+   "level": 800,
+   "forms": [
+    [
+     "goku1",
+     ""
+    ]
+   ],
+   "moves": [
+    "kamehameha",
+    "rush"
+   ],
+   "pl": 420
+  },
+  "Piccolo1": {
+   "name": "Piccolo",
+   "level": 750,
+   "forms": [
+    [
+     "piccolo1",
+     ""
+    ]
+   ],
+   "moves": [
+    "masenko_piccolo",
+    "blast"
+   ],
+   "pl": 400
+  },
+  "Goku2": {
+   "name": "Goku",
+   "level": 1250,
+   "forms": [
+    [
+     "goku1",
+     ""
+    ]
+   ],
+   "moves": [
+    "kamehameha",
+    "rush"
+   ],
+   "pl": 8000
+  },
+  "Piccolo2": {
+   "name": "Piccolo",
+   "level": 1300,
+   "forms": [
+    [
+     "piccolo1",
+     ""
+    ]
+   ],
+   "moves": [
+    "masenko_piccolo",
+    "blast"
+   ],
+   "pl": 3500
+  },
+  "Gohan1": {
+   "name": "Gohan",
+   "level": 1250,
+   "forms": [
+    [
+     "gohan1",
+     ""
+    ]
+   ],
+   "moves": [
+    "masenko",
+    "blast"
+   ],
+   "pl": 2800
+  },
+  "Choutzu1": {
+   "name": "Chiaotzu",
+   "level": 750,
+   "forms": [
+    [
+     "choutzu1",
+     ""
+    ]
+   ],
+   "moves": [
+    "telekinesis",
+    "blast"
+   ],
+   "pl": 600
+  },
+  "Krillin1": {
+   "name": "Krillin",
+   "level": 900,
+   "forms": [
+    [
+     "krillin1",
+     ""
+    ]
+   ],
+   "moves": [
+    "destructo_disc",
+    "blast"
+   ],
+   "pl": 1800
+  },
+  "Tien1": {
+   "name": "Tien",
+   "level": 880,
+   "forms": [
+    [
+     "tien1",
+     ""
+    ]
+   ],
+   "moves": [
+    "tri_beam",
+    "solar_flare"
+   ],
+   "pl": 1800
+  },
+  "Yamcha1": {
+   "name": "Yamcha",
+   "level": 980,
+   "forms": [
+    [
+     "yamcha1",
+     ""
+    ]
+   ],
+   "moves": [
+    "wolf_fang_fist",
+    "blast"
+   ],
+   "pl": 1500
+  },
+  "Gohan2": {
+   "name": "Gohan",
+   "level": 3500,
+   "forms": [
+    [
+     "gohan2",
+     ""
+    ]
+   ],
+   "moves": [
+    "masenko",
+    "blast"
+   ],
+   "pl": 200000
+  },
+  "Krillin2": {
+   "name": "Krillin",
+   "level": 3200,
+   "forms": [
+    [
+     "krillin2",
+     ""
+    ]
+   ],
+   "moves": [
+    "destructo_disc",
+    "solar_flare"
+   ],
+   "pl": 75000
+  },
+  "Goku3": {
+   "name": "Goku",
+   "level": 3000,
+   "forms": [
+    [
+     "goku1",
+     ""
+    ]
+   ],
+   "moves": [
+    "kamehameha",
+    "rush"
+   ],
+   "pl": 600000
+  },
+  "Vegeta2": {
+   "name": "Vegeta",
+   "level": 2500,
+   "forms": [
+    [
+     "vegeta",
+     ""
+    ]
+   ],
+   "moves": [
+    "galick_gun",
+    "volley"
+   ],
+   "pl": 500000
+  },
+  "Goku4": {
+   "name": "Super Saiyan Goku",
+   "level": 5000,
+   "forms": [
+    [
+     "goku4",
+     ""
+    ]
+   ],
+   "moves": [
+    "kamehameha",
+    "rush"
+   ],
+   "pl": 2000000
+  }
+ },
+ "lines": {
+  "villain": {
+   "name": "Villain Saga",
+   "parts": [
+    {
+     "saga": "Saiyan",
+     "part": "Raditz",
+     "bosses": [
+      "Raditz"
+     ]
+    },
+    {
+     "saga": "Saiyan",
+     "part": "Vegeta and Nappa",
+     "bosses": [
+      "Vegeta",
+      "Nappa"
+     ]
+    },
+    {
+     "saga": "Frieza",
+     "part": "Ginyu Force",
+     "bosses": [
+      "Jeice",
+      "Burter",
+      "Recoom",
+      "Guldo",
+      "Ginyu"
+     ]
+    },
+    {
+     "saga": "Frieza",
+     "part": "Frieza",
+     "bosses": [
+      "Frieza"
+     ]
+    }
+   ]
+  },
+  "hero": {
+   "name": "Hero Saga",
+   "parts": [
+    {
+     "saga": "Saiyan",
+     "part": "Goku and Piccolo",
+     "bosses": [
+      "Goku1",
+      "Piccolo1"
+     ]
+    },
+    {
+     "saga": "Saiyan",
+     "part": "Saiyan Force",
+     "bosses": [
+      "Goku2",
+      "Piccolo2",
+      "Gohan1",
+      "Choutzu1",
+      "Krillin1",
+      "Tien1",
+      "Yamcha1"
+     ]
+    },
+    {
+     "saga": "Frieza",
+     "part": "Gohan and Krillin",
+     "bosses": [
+      "Gohan2",
+      "Krillin2"
+     ]
+    },
+    {
+     "saga": "Frieza",
+     "part": "Goku and Vegeta",
+     "bosses": [
+      "Goku3",
+      "Vegeta2"
+     ]
+    },
+    {
+     "saga": "Frieza",
+     "part": "Super Saiyan Goku",
+     "bosses": [
+      "Goku4"
+     ]
+    }
+   ]
+  }
+ },
+ "moves": {
+  "blast": {
+   "type": "blast",
+   "say": "HA!",
+   "state": "blastr",
+   "icon": "techs.dmi",
+   "pow": 0.07
+  },
+  "volley": {
+   "type": "volley",
+   "say": "HAAAA!",
+   "count": 6,
+   "pow": 0.04
+  },
+  "rush": {
+   "type": "rush",
+   "say": "",
+   "hits": 3
+  },
+  "double_sunday": {
+   "type": "twin_beam",
+   "say": "DOUBLE SUNDAY!",
+   "state": "doublesunday",
+   "pow": 0.3,
+   "icon": "doublesunday.dmi"
+  },
+  "break_cannon": {
+   "type": "beam",
+   "say": "BREAK CANNON!",
+   "state": "mouthenergywave",
+   "pow": 0.45
+  },
+  "giant_storm": {
+   "type": "wave",
+   "say": "GIANT STORM!",
+   "radius": 3,
+   "pow": 0.2
+  },
+  "galick_gun": {
+   "type": "beam",
+   "say": "GALICK GUN!",
+   "state": "galickgun",
+   "pow": 0.5
+  },
+  "crusher_ball": {
+   "type": "blast",
+   "say": "CRUSHER BALL!",
+   "state": "spiritball",
+   "icon": "techs.dmi",
+   "pow": 0.3,
+   "splash": 1
+  },
+  "space_mach": {
+   "type": "rush",
+   "say": "SPACE MACH ATTACK!",
+   "hits": 4
+  },
+  "eraser_gun": {
+   "type": "beam",
+   "say": "RECOOME ERASER GUN!",
+   "state": "mouthenergywave",
+   "pow": 0.5
+  },
+  "time_freeze": {
+   "type": "freeze",
+   "say": "TIME FREEZE!",
+   "secs": 2.5,
+   "text": "Guldo froze time! You can't move!"
+  },
+  "milky_cannon": {
+   "type": "beam",
+   "say": "MILKY CANNON!",
+   "state": "kamehameha",
+   "pow": 0.5
+  },
+  "death_beam": {
+   "type": "beam",
+   "say": "DEATH BEAM!",
+   "state": "deathbeam",
+   "pow": 0.4
+  },
+  "death_ball": {
+   "type": "ball",
+   "say": "DEATH BALL!",
+   "prefix": "rb",
+   "pow": 0.6,
+   "min_form": 3
+  },
+  "destructo_disc": {
+   "type": "blast",
+   "say": "DESTRUCTO DISC!",
+   "state": "distructodisk",
+   "icon": "techs.dmi",
+   "pow": 0.35,
+   "pierce": 1
+  },
+  "kamehameha": {
+   "type": "beam",
+   "say": "KAMEHAMEHA!",
+   "state": "kamehameha",
+   "pow": 0.5
+  },
+  "solar_flare": {
+   "type": "freeze",
+   "say": "SOLAR FLARE!",
+   "secs": 2.0,
+   "text": "You're blinded!"
+  },
+  "masenko_piccolo": {
+   "type": "beam",
+   "say": "MASENKO!",
+   "state": "masenko",
+   "pow": 0.4
+  },
+  "masenko": {
+   "type": "beam",
+   "say": "MASENKO-HA!",
+   "state": "masenko",
+   "pow": 0.45
+  },
+  "telekinesis": {
+   "type": "freeze",
+   "say": "Hnnngh!",
+   "secs": 2.0,
+   "text": "Chiaotzu holds you with his mind!"
+  },
+  "tri_beam": {
+   "type": "beam",
+   "say": "TRI-BEAM!",
+   "state": "tribeam",
+   "pow": 0.5
+  },
+  "wolf_fang_fist": {
+   "type": "rush",
+   "say": "WOLF FANG FIST!",
+   "hits": 5
+  }
+ }
+}

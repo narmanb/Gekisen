@@ -1,0 +1,63 @@
+name: Build Android APK
+
+# Archived: Dragonball Ruination is the main game in this repo. This port only builds
+# when started by hand (Actions tab -> Run workflow).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Check the web build data is present
+        run: test -f android-port/web/data/map.json && test -f android-port/web/index.html
+
+      - name: Build release APK
+        working-directory: android-port/android
+        env:
+          # Optional: set these repository secrets to sign with your own private key.
+          GEKISEN_KEYSTORE_B64: ${{ secrets.GEKISEN_KEYSTORE_B64 }}
+          GEKISEN_KEYSTORE_PASSWORD: ${{ secrets.GEKISEN_KEYSTORE_PASSWORD }}
+          GEKISEN_KEY_ALIAS: ${{ secrets.GEKISEN_KEY_ALIAS }}
+          GEKISEN_KEY_PASSWORD: ${{ secrets.GEKISEN_KEY_PASSWORD }}
+        run: |
+          if [ -n "$GEKISEN_KEYSTORE_B64" ]; then
+            echo "$GEKISEN_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            export GEKISEN_KEYSTORE="$RUNNER_TEMP/release.keystore"
+          else
+            unset GEKISEN_KEYSTORE_PASSWORD GEKISEN_KEY_ALIAS GEKISEN_KEY_PASSWORD
+          fi
+          gradle assembleRelease --no-daemon --stacktrace
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/Gekisen.apk"
+          ls -la "$GITHUB_WORKSPACE/Gekisen.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Gekisen-apk
+          path: Gekisen.apk
+
+      - name: Publish as a GitHub release (easy download on the phone)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="android-${GITHUB_REF_NAME//\//-}"
+          gh release delete "$TAG" --yes --cleanup-tag || true
+          gh release create "$TAG" Gekisen.apk \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "Gekisen for Android ($GITHUB_REF_NAME, build $GITHUB_RUN_NUMBER)" \
+            --notes "Single-player Android build of Gekisen. Download **Gekisen.apk** on your phone and open it to install (allow installs from unknown sources when asked)."

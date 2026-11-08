@@ -1,0 +1,10 @@
+turf
+	dungeon
+		icon='dungeon.dmi'
+		var/player=""
+		Waiting_Tile
+			Entered(var/mob/PC/M)
+				if(!src.player)
+					src.player=M
+			Exited(var/mob/PC/M)
+				src.player=""

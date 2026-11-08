@@ -1,0 +1,106 @@
+<style type="text/css">
+body {
+	color: white;
+	background: black;
+}
+a {
+	text-decoration: none;
+	color: #00C;
+}
+a:visited {
+	text-decoration: none;
+	color: #90F;
+}
+
+.title {
+	color: #F29400;
+}
+.name {
+	color: #0284B4;
+}
+.say {
+	color: #AAD;
+}
+.worldsay {
+	color: silver;
+}
+.roleplay {
+	color: #35ABFD;
+}
+.yell {
+	color: #DBF5C5;
+}
+.scouter {
+	color: #D9D7F7;
+}
+.chattype {
+	color: silver;
+}
+
+.who {
+	color: #FFF;
+}
+.who .name {
+	color: #FFF;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.who .race {
+	color: #090;
+}
+.who .key {
+	color: #900;
+}
+.who .online {
+	font-weight: bold;
+}
+.who .guild {
+	color: #D00;
+	font-weight: bold;
+}
+.who .guild .name {
+	color: #D00;
+	text-decoration: none;
+	font-weight: normal;
+}
+.who .guild .title {
+	color: #D00;
+	font-weight: normal;
+}
+
+.login {
+	color: #090;
+}
+.login .brackets {
+	color: #778;
+}
+
+.info {
+	color: #7EF;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.reboot {
+	color: #F00;
+	font-size: large;
+	font-weight: bold;
+}
+
+.shutdown {
+	color: #F00;
+	font-size: large;
+	font-weight: bolder;
+}
+
+.wipe {
+	color: #F00;
+	font-weight: bold;
+}
+</style>
+
+macro
+	A return "Block"
+	Q return "Punch"
+	W return "Kick"
+	S return "Throw"

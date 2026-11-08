@@ -1,0 +1,25 @@
+"a" = (/turf/Cities/West_City/Turf012,/area)
+"b" = (/turf/Cities/West_City/Turf012,/turf/PlanetVegetaB/PVegetab_026,/area)
+"c" = (/turf/PlanetVegetaB/PVegetab_027,/area)
+"d" = (/turf/PlanetVegetaB/PVegetab_028,/area)
+"e" = (/turf/Cities/West_City/Turf012,/turf/PlanetVegetaB/PVegetab_030,/area)
+"f" = (/turf/PlanetVegetaB/PVegetab_031,/area)
+"g" = (/turf/PlanetVegetaB/PVegetab_031,/turf/Buildings/CC_Logo_2,/area)
+"h" = (/turf/Buildings/Door{density = 0},/turf/Passages/Dr_Geros/BankEnter,/area)
+"i" = (/turf/PlanetVegetaB/PVegetab_031,/turf/Buildings/SignBank,/area)
+"j" = (/turf/Cities/West_City/Turf015,/turf/Cities/West_City/Turf006,/area)
+"k" = (/turf/Cities/West_City/Turf015,/area)
+"l" = (/turf/Cities/West_City/Turf021,/area)
+
+(1,1,1) = {"
+aabcdddddd
+aaefffghhi
+aaaaaaaaaa
+jkkkkkkkkk
+llllllllll
+llllllllll
+llllllllll
+llllllllll
+llllllllll
+llllllllll
+"}

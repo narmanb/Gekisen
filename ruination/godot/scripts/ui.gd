@@ -1,0 +1,1664 @@
+extends CanvasLayer
+## All UI: title, character creation, HUD, log, joystick, hotbar, skills book, stats, dialogs.
+
+const SLOTS := 9
+const PAGES := 3
+const GOLD := Color(1, 0.72, 0.18)
+const PANEL_BG := Color(0.06, 0.07, 0.13, 0.94)
+
+var root: Control
+var hud: Control
+var logwin: Control
+var minimap: Control
+var bars := {}
+var hud_labels := {}
+var hotbar: Control
+var slots: Array = []
+var page := 0
+var page_label: Control
+var stick: Control
+var attack_btn: Control
+var action_panel: Control
+var action_buttons: Array = []
+var book_cancel: Button
+var modal_layer: Control
+var dialog_panel: PanelContainer
+var dialog_queue: Array = []
+var book: PanelContainer
+var book_grid: GridContainer
+var book_info: Label
+var assign_id := ""
+var assign_hint: Label
+var stats_panel: PanelContainer
+var stats_label: RichTextLabel
+var menu_panel: PanelContainer
+var create_root: Control
+var title_root: Control
+var font_big := 22
+var touches := {}            # index -> {kind, slot, t}
+var creation := {}
+
+
+func _ready() -> void:
+	root = Control.new()
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root)
+	_theme()
+	_build_hud()
+	_build_hotbar()
+	_build_stick()
+	_build_book()
+	_build_stats()
+	_build_menu()
+	modal_layer = Control.new()
+	modal_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	modal_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(modal_layer)
+	Game.log_msg.connect(_on_log)
+	Game.dialog.connect(_on_dialog)
+	Game.rebirth_requested.connect(start_rebirth)
+	set_game_ui(false)
+	show_title()
+
+
+func _theme() -> void:
+	var th := Theme.new()
+	th.default_font_size = 18
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.16, 0.18, 0.3, 0.92)
+	sb.set_corner_radius_all(10)
+	sb.set_border_width_all(1)
+	sb.border_color = Color(1, 1, 1, 0.18)
+	sb.content_margin_left = 12
+	sb.content_margin_right = 12
+	sb.content_margin_top = 8
+	sb.content_margin_bottom = 8
+	var sbh := sb.duplicate()
+	sbh.bg_color = Color(0.25, 0.28, 0.45, 0.95)
+	var sbp := sb.duplicate()
+	sbp.bg_color = Color(0.85, 0.55, 0.1, 0.95)
+	th.set_stylebox("normal", "Button", sb)
+	th.set_stylebox("hover", "Button", sbh)
+	th.set_stylebox("pressed", "Button", sbp)
+	th.set_stylebox("focus", "Button", StyleBoxEmpty.new())
+	var pnl := StyleBoxFlat.new()
+	pnl.bg_color = PANEL_BG
+	pnl.set_corner_radius_all(14)
+	pnl.set_border_width_all(2)
+	pnl.border_color = GOLD
+	pnl.content_margin_left = 16
+	pnl.content_margin_right = 16
+	pnl.content_margin_top = 12
+	pnl.content_margin_bottom = 12
+	th.set_stylebox("panel", "PanelContainer", pnl)
+	var le := sb.duplicate()
+	le.bg_color = Color(0.1, 0.11, 0.2)
+	th.set_stylebox("normal", "LineEdit", le)
+	th.set_color("font_color", "Label", Color(0.95, 0.95, 0.97))
+	root.theme = th
+
+
+func _label(text: String, size := 18, col := Color(0.95, 0.95, 0.97)) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_color_override("font_color", col)
+	l.add_theme_color_override("font_outline_color", Color.BLACK)
+	l.add_theme_constant_override("outline_size", 4)
+	return l
+
+
+## Place an anchored control by its offsets from the anchor. Setting .position instead
+## depends on the parent's size at that moment, which is not final yet on some starts
+## (the joystick could end up off-screen when continuing a saved game).
+func _offs(c: Control, off: Vector2) -> void:
+	var s := c.size if c.size != Vector2.ZERO else c.custom_minimum_size
+	c.offset_left = off.x
+	c.offset_top = off.y
+	c.offset_right = off.x + s.x
+	c.offset_bottom = off.y + s.y
+
+
+func _button(text: String, cb: Callable, size := 18) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.add_theme_font_size_override("font_size", size)
+	b.pressed.connect(cb)
+	return b
+
+
+func set_game_ui(on: bool) -> void:
+	for n in [hud, hotbar, stick, attack_btn, action_panel]:
+		n.visible = on
+
+
+# =================================================================== HUD
+func _build_hud() -> void:
+	hud = Control.new()
+	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(hud)
+	var panel := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0.55)
+	sb.set_corner_radius_all(10)
+	sb.content_margin_left = 10
+	sb.content_margin_right = 10
+	sb.content_margin_top = 6
+	sb.content_margin_bottom = 6
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.position = Vector2(8, 8)
+	panel.custom_minimum_size = Vector2(330, 0)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 2)
+	panel.add_child(v)
+	hud_labels["name"] = _label("", 17, GOLD)
+	v.add_child(hud_labels["name"])
+	hud_labels["level"] = _label("", 14)
+	v.add_child(hud_labels["level"])
+	for b in [["pl", "Powerlevel", Color(0.9, 0.25, 0.25)], ["ki", "Ki", Color(0.25, 0.5, 0.95)],
+			["stam", "Fatigue", Color(0.85, 0.6, 0.15)], ["exp", "Exp", Color(0.6, 0.35, 0.9)]]:
+		v.add_child(_bar(b[0], b[1], b[2]))
+	hud_labels["info"] = _label("", 13, Color(0.75, 0.78, 0.9))
+	v.add_child(hud_labels["info"])
+	logwin = preload("res://scripts/logwindow.gd").new()
+	hud.add_child(logwin)
+	minimap = preload("res://scripts/minimap.gd").new()
+	minimap.ui = self
+	hud.add_child(minimap)
+	minimap.visible = bool(logwin._prefs().get("minimap", true))
+	Game.sfx_on = bool(logwin._prefs().get("sound", true))
+	# top-right buttons
+	var tr := HBoxContainer.new()
+	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_offs(tr, Vector2(-510, 10))
+	tr.custom_minimum_size = Vector2(500, 56)
+	tr.alignment = BoxContainer.ALIGNMENT_END
+	tr.add_theme_constant_override("separation", 8)
+	hud.add_child(tr)
+	tr.add_child(_button("Test", func(): _test_menu(), 18))
+	tr.add_child(_button("Train", func(): _train_menu(), 18))
+	tr.add_child(_button("Skills", func(): toggle_book(), 18))
+	tr.add_child(_button("Stats", func(): toggle_stats(), 18))
+	tr.add_child(_button("Menu", func(): menu_panel.visible = not menu_panel.visible, 18))
+	assign_hint = _label("", 20, GOLD)
+	assign_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	assign_hint.offset_top -= 150
+	assign_hint.offset_bottom -= 150
+	assign_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	assign_hint.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	hud.add_child(assign_hint)
+
+
+func _bar(key: String, title: String, col: Color) -> Control:
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(310, 18)
+	var bg := ColorRect.new()
+	bg.color = Color(1, 1, 1, 0.12)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	c.add_child(bg)
+	var fill := ColorRect.new()
+	fill.color = col
+	fill.position = Vector2.ZERO
+	fill.size = Vector2(310, 18)
+	c.add_child(fill)
+	var l := _label(title, 12)
+	l.position = Vector2(6, -1)
+	c.add_child(l)
+	bars[key] = [fill, l, title]
+	return c
+
+
+func _set_bar(key: String, cur: float, mx: float, txt := "") -> void:
+	var b: Array = bars[key]
+	var k := clampf(cur / maxf(mx, 1.0), 0.0, 1.0)
+	b[0].size = Vector2(310 * k, 18)
+	b[1].text = "%s  %s" % [b[2], txt if txt != "" else "%s / %s" % [Game.fmt(cur), Game.fmt(mx)]]
+
+
+func _process(_d: float) -> void:
+	if not Game.running:
+		return
+	var P := Game.P
+	hud_labels["name"].text = "%s  (%s %s)" % [P["name"], P["gene"], P["race"]]
+	var f := Game.current_form()
+	var busy_txt: String = {"selftrain": " · training", "meditate": " · meditating", "rest": " · resting", "power": " · powering up"}.get(Game.busy, "")
+	hud_labels["level"].text = "Level %s · %s Mode%s%s" % [Game.fmt(P["level"]), P["mode"], " · Form %d" % P["form"] if not f.is_empty() else "", busy_txt]
+	_set_bar("pl", P["powerlevel"], Game.cap("powerlevel"))
+	_set_bar("ki", P["ki"], Game.cap("ki"))
+	_set_bar("stam", P["stam"], P["stam_max"])
+	_set_bar("exp", P["exp"], P["tnl"])
+	hud_labels["info"].text = "%s zenni · %s (%d,%d)%s" % [Game.fmt(P["zenni"]), Game.zname(int(P["z"])), int(P["x"]), int(P["y"]),
+		(" · SAFE" if Data.is_safe(int(P["x"]), int(P["y"]), int(P["z"])) else "") + (" · %dx GRAVITY" % int(Game.grav) if Game.grav > 0.0 else "")]
+	for s in slots:
+		s.queue_redraw()
+	attack_btn.queue_redraw()
+	if Engine.get_process_frames() % 15 == 0:
+		_refresh_actions()
+	for b in action_buttons:
+		b.queue_redraw()
+	if stats_panel.visible and Engine.get_process_frames() % 20 == 0:
+		_refresh_stats()
+
+
+func _on_log(text: String, col: Color, cat := "general") -> void:
+	logwin.add_entry(text, col, cat)
+
+
+## Training options behind the Train button (replaces the Self Train / Meditate / Rest side buttons)
+func _train_menu() -> void:
+	var busy: String = Game.busy
+	var opts: Array = []
+	opts.append("■ Stop Self Train" if busy == "selftrain" else "Self Train")
+	opts.append("■ Stop Meditating" if busy == "meditate" else "Meditate")
+	opts.append("■ Stop Resting" if busy == "rest" else "Rest")
+	opts.append("Training Focus")
+	opts.append("Cancel")
+	var info := "Self Train focus: %s · Meditate focus: %s\nFatigue %s / %s" % [Game.P["focus"], Game.SKILL_NAMES[Game.P["med_focus"]], Game.fmt(Game.P["stam"]), Game.fmt(Game.P["stam_max"])]
+	Game.ask("Training", info, opts, func(c: String, _i: int):
+		if c.find("Self Train") >= 0:
+			Game.use_ability("selftrain")
+		elif c.find("Meditat") >= 0:
+			Game.use_ability("meditate")
+		elif c.find("Rest") >= 0:
+			Game.use_ability("rest")
+		elif c == "Training Focus":
+			Game.choose_focus())
+
+
+## Test menu (top-right "Test" button): quick levels, refills and teleporting for trying things out.
+func _test_menu() -> void:
+	var info := "Level %d · %s · %s (%d,%d)" % [int(Game.P["level"]), Game.P["mode"], Game.zname(Game.pe.z), Game.pe.x, Game.pe.y]
+	Game.ask("Test Menu", info, ["Level Up…", "Teleport…", "Learn All Techniques", "Full Restore", "Close"], _on_test_pick)
+
+
+func _on_test_pick(c: String, _i: int) -> void:
+	match c:
+		"Level Up…":
+			Game.ask("Level Up", "How many levels? (Level %d now.)" % int(Game.P["level"]),
+				["1", "10", "50", "100", "500", "1,000", "5,000", "Back"], _on_test_levels)
+		"Teleport…":
+			Game.ask("Teleport", "Where to?", ["To an NPC", "To an Enemy", "To Coordinates", "Back"], _on_test_tp)
+		"Learn All Techniques":
+			Game.test_learn_all()
+		"Full Restore":
+			Game.test_restore()
+
+
+func _on_test_levels(c: String, _i: int) -> void:
+	if c == "Back":
+		_test_menu()
+		return
+	Game.test_level_up(int(c.replace(",", "")))
+
+
+var _tp_rows: Array = []
+
+
+func _on_test_tp(c: String, _i: int) -> void:
+	match c:
+		"To an NPC", "To an Enemy":
+			var kind := "npc" if c == "To an NPC" else "monster"
+			_tp_rows = Game.test_targets(kind)
+			var opts: Array = []
+			for r in _tp_rows:
+				opts.append("%s — %s (%d,%d)%s" % [r[0], Game.zname(r[3]), r[1], r[2], (" ×%d" % r[4]) if r[4] > 1 else ""])
+			opts.append("Back")
+			Game.ask("Teleport to an NPC" if kind == "npc" else "Teleport to an Enemy", "%d places. Pick one:" % _tp_rows.size(), opts, _on_test_tp_target)
+		"To Coordinates":
+			_coord_dialog()
+		"Back":
+			_test_menu()
+
+
+func _on_test_tp_target(_c: String, i: int) -> void:
+	if i >= _tp_rows.size():
+		_on_test_pick("Teleport…", 0)
+		return
+	var r: Array = _tp_rows[i]
+	Game.test_teleport(r[1], r[2], r[3])
+
+
+var coord_panel: PanelContainer
+
+
+func _coord_dialog() -> void:
+	Game.set_move_dir(0)
+	coord_panel = PanelContainer.new()
+	coord_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	coord_panel.custom_minimum_size = Vector2(520, 0)
+	_offs(coord_panel, Vector2(-260, -200))
+	modal_layer.add_child(coord_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	coord_panel.add_child(v)
+	v.add_child(_label("Teleport to Coordinates", 22, GOLD))
+	var area := OptionButton.new()
+	area.add_theme_font_size_override("font_size", 18)
+	area.custom_minimum_size = Vector2(0, 46)
+	var zs: Array = Game.ZNAMES.keys()
+	zs.sort()
+	for z in zs:
+		area.add_item("%s (z %d)" % [Game.ZNAMES[z], z], z)
+		if z == Game.pe.z:
+			area.select(area.item_count - 1)
+	v.add_child(area)
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 10)
+	v.add_child(h)
+	var edits: Array = []
+	for pair in [["X", Game.pe.x], ["Y", Game.pe.y]]:
+		h.add_child(_label(pair[0], 20))
+		var le := LineEdit.new()
+		le.text = str(pair[1])
+		le.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
+		le.custom_minimum_size = Vector2(150, 46)
+		le.add_theme_font_size_override("font_size", 20)
+		le.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(le)
+		edits.append(le)
+	var err := _label("", 15, Color(1, 0.5, 0.4))
+	v.add_child(err)
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	nav.add_theme_constant_override("separation", 12)
+	v.add_child(nav)
+	nav.add_child(_button("Cancel", func(): _close_coord(), 18))
+	nav.add_child(_button("Go", func(): _coord_go(area, edits, err), 20))
+
+
+func _close_coord() -> void:
+	if coord_panel != null and is_instance_valid(coord_panel):
+		coord_panel.queue_free()
+	coord_panel = null
+
+
+func _coord_go(area: OptionButton, edits: Array, err: Label) -> void:
+	var z := area.get_item_id(area.selected)
+	var zi: Dictionary = Data.zinfo(z)
+	var w := int(zi.get("w", 500))
+	var hgt := int(zi.get("h", 500))
+	var xs: String = (edits[0] as LineEdit).text.strip_edges()
+	var ys: String = (edits[1] as LineEdit).text.strip_edges()
+	if not xs.is_valid_int() or not ys.is_valid_int():
+		err.text = "Enter whole numbers for X and Y."
+		return
+	var x := int(xs)
+	var y := int(ys)
+	if x < 1 or y < 1 or x > w or y > hgt:
+		err.text = "%s is %d × %d: X 1–%d, Y 1–%d." % [Game.zname(z), w, hgt, w, hgt]
+		return
+	_close_coord()
+	Game.test_teleport(x, y, z)
+
+
+func _toggle_minimap() -> void:
+	minimap.visible = not minimap.visible
+	var d: Dictionary = logwin._prefs()
+	d["minimap"] = minimap.visible
+	var f := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(d))
+	logwin._save()
+
+
+# =================================================================== hotbar
+class HotSlot extends Control:
+	var ui
+	var idx := 0
+	func _draw() -> void:
+		var r := Rect2(Vector2.ZERO, size)
+		var id: String = ui.slot_id(idx)
+		if id != "":
+			var info: Dictionary = Game.ability_info(id)
+			draw_rect(r.grow(-4), Color(info["color"].darkened(0.25), 0.85))
+			var drew := false
+			if info.has("icon"):
+				var fr := Data.frame(int(info["icon"]), info.get("state", ""), 4, Game.now, true)
+				if not fr.is_empty():
+					var src: Rect2 = fr[1]
+					var k := minf((size.x - 12) / src.size.x, (size.y - 12) / src.size.y)
+					var dst := Rect2((size - src.size * k) / 2, src.size * k)
+					draw_texture_rect_region(fr[0], dst, src)
+					drew = true
+			var font := ThemeDB.fallback_font
+			if not drew:
+				var g: String = info["glyph"]
+				var w := font.get_string_size(g, HORIZONTAL_ALIGNMENT_LEFT, -1, 18).x
+				draw_string(font, Vector2((size.x - w) / 2, size.y / 2 + 7), g, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
+			var nm: String = info["name"]
+			if nm.length() > 10:
+				nm = nm.substr(0, 9) + "."
+			var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+			draw_string(font, Vector2((size.x - nw) / 2, size.y - 4), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 1, 1, 0.9))
+			var cd: float = Game.cooldown_left(id)
+			if cd > 0:
+				draw_rect(r, Color(0, 0, 0, 0.6))
+				var s := "%.1f" % (cd / 1000.0)
+				var cw := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
+				draw_string(font, Vector2((size.x - cw) / 2, size.y / 2 + 6), s, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
+			elif info.has("tech") and Game.tech_cost(Data.tech(info["tech"])) > float(Game.P["ki"]):
+				draw_rect(r, Color(0.1, 0.1, 0.3, 0.55))
+			if (id == "selftrain" and Game.busy == "selftrain") or (id == "meditate" and Game.busy == "meditate") or (id == "rest" and Game.busy == "rest"):
+				draw_rect(r, Color(1, 0.8, 0.3), false, 3)
+		var hl: bool = ui.assign_id != ""
+		if hl:
+			draw_rect(r, Color(1, 1, 0.6), false, 3)
+		var key := str(idx + 1)
+		draw_string(ThemeDB.fallback_font, Vector2(5, 15), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.35, 0.12, 0, 0.9))
+
+
+class BigButton extends Control:
+	var ui
+	var label := "ATTACK"
+	func _draw() -> void:
+		var c := size / 2
+		draw_circle(c, size.x / 2, Color(0.7, 0.15, 0.1, 0.85))
+		draw_arc(c, size.x / 2 - 1, 0, TAU, 48, Color(1, 1, 1, 0.35), 2)
+		var font := ThemeDB.fallback_font
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 18).x
+		draw_string(font, Vector2(c.x - w / 2, c.y + 7), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color.WHITE)
+
+
+func slot_id(i: int) -> String:
+	if Game.P.is_empty():
+		return ""
+	var hb: Array = Game.P["hotbar"]
+	var k := page * SLOTS + i
+	return hb[k] if k < hb.size() else ""
+
+
+## The Shenron hotbar (ui/hotbar_dragon.png): the slots sit on the dragon's nine orange tiles.
+const BAR_IMG_W := 2147.0
+const BAR_SLOT_X := [392, 565, 738, 911, 1085, 1259, 1433, 1607, 1780]
+const BAR_SLOT_Y := 250.0
+const BAR_SLOT_W := 145.0
+const BAR_SLOT_H := 148.0
+const BAR_W := 905.0
+
+
+class PageBall extends Control:
+	## A little dragon ball on the dragon's back: its stars show the hotbar page; tap to switch.
+	var ui
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		gui_input.connect(func(e: InputEvent):
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				ui._page(1)
+				accept_event())
+	func _draw() -> void:
+		ui.draw_dragon_ball(self, size / 2, size.x / 2, ui.page + 1, false)
+
+
+func _build_hotbar() -> void:
+	hotbar = Control.new()
+	hotbar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	var k := BAR_W / BAR_IMG_W
+	var h := 554.0 * k
+	hotbar.custom_minimum_size = Vector2(BAR_W, h)
+	hotbar.size = Vector2(BAR_W, h)
+	_offs(hotbar, Vector2(212, -h + 20))       # just right of the joystick
+	hotbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(hotbar)
+	var art := TextureRect.new()
+	art.texture = load("res://ui/hotbar_dragon.png")
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_SCALE
+	art.size = Vector2(BAR_W, h)
+	art.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hotbar.add_child(art)
+	for i in SLOTS:
+		var sl := HotSlot.new()
+		sl.ui = self
+		sl.idx = i
+		sl.position = Vector2(BAR_SLOT_X[i] * k, BAR_SLOT_Y * k)
+		sl.size = Vector2(BAR_SLOT_W * k, BAR_SLOT_H * k)
+		sl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hotbar.add_child(sl)
+		slots.append(sl)
+	var pg := PageBall.new()
+	pg.ui = self
+	pg.size = Vector2(44, 44)
+	pg.position = Vector2(1975 * k - 22, 150 * k - 22)
+	hotbar.add_child(pg)
+	page_label = pg
+	attack_btn = BigButton.new()
+	attack_btn.ui = self
+	attack_btn.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	attack_btn.size = Vector2(120, 120)
+	_offs(attack_btn, Vector2(-140, -140))
+	attack_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(attack_btn)
+	action_panel = Control.new()
+	action_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	action_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(action_panel)
+
+
+## Round buttons on the right edge for the non-combat actions (train, meditate, rest,
+## fly, power up, transform...). They can also be placed on the hotbar from the Skills book.
+class ActionButton extends Control:
+	var id := ""
+	var ui
+	var stars := 1
+	func _draw() -> void:
+		var info: Dictionary = Game.ability_info(id)
+		var on: bool = Game.is_active(id)
+		var c := Vector2(size.x / 2, size.x / 2)
+		ui.draw_dragon_ball(self, c, size.x / 2 - 2, stars, on)
+		var font := ThemeDB.fallback_font
+		var nm: String = info["name"].replace("Instant Transmission", "Teleport").replace(" (Fly)", "")
+		var fs := 12
+		var nw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		var pill := Rect2(c.x - nw / 2 - 5, size.x + 1, nw + 10, fs + 5)
+		draw_style_box(ui.label_pill, pill)
+		var tp := Vector2(c.x - nw / 2, size.x + fs + 1)
+		draw_string_outline(font, tp, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color(0, 0, 0, 1))
+		draw_string(font, tp, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 0.93, 0.55) if on else Color.WHITE)
+
+
+## A dragon ball: orange sphere, shine, and 1-7 red stars. Used by the side buttons and the page ball.
+var label_pill := _make_pill()
+
+
+func _make_pill() -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0, 0, 0, 0.62)
+	sb.set_corner_radius_all(7)
+	return sb
+
+
+func draw_dragon_ball(ci: CanvasItem, c: Vector2, r: float, stars: int, glow: bool) -> void:
+	if glow:
+		ci.draw_circle(c, r + 5, Color(1, 0.95, 0.4, 0.55))
+	ci.draw_circle(c, r, Color(0.55, 0.22, 0.0, 0.95))
+	ci.draw_circle(c, r - 2, Color(0.98, 0.52, 0.05))
+	ci.draw_circle(c + Vector2(r * 0.12, r * 0.12), r * 0.78, Color(1.0, 0.62, 0.12))
+	ci.draw_circle(c - Vector2(r * 0.12, r * 0.18), r * 0.5, Color(1.0, 0.72, 0.25))
+	ci.draw_circle(c - Vector2(r * 0.38, r * 0.42), r * 0.2, Color(1, 1, 0.92, 0.85))
+	var layouts := {1: [Vector2(0, 0)], 2: [Vector2(-0.22, 0), Vector2(0.22, 0)], 3: [Vector2(0, -0.2), Vector2(-0.22, 0.14), Vector2(0.22, 0.14)],
+		4: [Vector2(-0.2, -0.2), Vector2(0.2, -0.2), Vector2(-0.2, 0.2), Vector2(0.2, 0.2)],
+		5: [Vector2(0, -0.28), Vector2(-0.27, -0.06), Vector2(0.27, -0.06), Vector2(-0.16, 0.26), Vector2(0.16, 0.26)],
+		6: [Vector2(-0.22, -0.26), Vector2(0.22, -0.26), Vector2(-0.3, 0.02), Vector2(0.3, 0.02), Vector2(-0.14, 0.28), Vector2(0.14, 0.28)],
+		7: [Vector2(0, 0), Vector2(0, -0.32), Vector2(-0.28, -0.16), Vector2(0.28, -0.16), Vector2(-0.28, 0.16), Vector2(0.28, 0.16), Vector2(0, 0.32)]}
+	var n := clampi(stars, 1, 7)
+	var sr := r * (0.26 if n == 1 else (0.18 if n <= 4 else 0.13))
+	for o in layouts[n]:
+		_star(ci, c + o * r, sr)
+
+
+func _star(ci: CanvasItem, c: Vector2, r: float) -> void:
+	var pts := PackedVector2Array()
+	for i in 10:
+		var a := -PI / 2 + i * PI / 5
+		var rr := r if i % 2 == 0 else r * 0.45
+		pts.append(c + Vector2(cos(a), sin(a)) * rr)
+	ci.draw_colored_polygon(pts, Color(0.85, 0.08, 0.05))
+
+
+func _refresh_actions() -> void:
+	var ids: Array = Game.panel_actions()
+	var cur: Array = []
+	for b in action_buttons:
+		cur.append(b.id)
+	if cur == ids:
+		return
+	for b in action_buttons:
+		b.queue_free()
+	action_buttons.clear()
+	# two columns above the attack button, filled bottom-up
+	var vs := root.get_viewport_rect().size
+	var d := 78.0
+	for i in ids.size():
+		var b := ActionButton.new()
+		b.id = ids[i]
+		b.ui = self
+		b.stars = (i % 7) + 1
+		b.size = Vector2(56, 56)
+		var col := i % 2
+		var row := i / 2
+		b.position = Vector2(vs.x - 80 - col * d - (36 if row == 0 else 0), vs.y - 230 - row * (d - 2))
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		action_panel.add_child(b)
+		action_buttons.append(b)
+
+
+func _action_at(p: Vector2) -> String:
+	for b in action_buttons:
+		if (p - (b.global_position + b.size / 2)).length() <= b.size.x / 2 + 3:
+			return b.id
+	return ""
+
+
+func _page(d: int) -> void:
+	page = (page + d + PAGES) % PAGES
+	page_label.queue_redraw()
+	Game.msg("Hotbar page %d" % (page + 1), Color(1, 0.75, 0.3))
+
+
+func _slot_at(p: Vector2) -> int:
+	for s in slots:
+		if Rect2(s.global_position, s.size).has_point(p):
+			return s.idx
+	return -1
+
+
+func _slot_tap(i: int) -> void:
+	var k := page * SLOTS + i
+	if assign_id != "":
+		var hb: Array = Game.P["hotbar"]
+		var old := hb.find(assign_id)
+		if old >= 0:
+			hb[old] = hb[k]
+		hb[k] = assign_id
+		Game.msg("Placed %s on bar %d slot %d." % [Game.ability_info(assign_id)["name"], page + 1, i + 1], GOLD)
+		_cancel_assign()
+		return
+	Game.use_ability(slot_id(i))
+
+
+func _slot_clear(i: int) -> void:
+	var k := page * SLOTS + i
+	var hb: Array = Game.P["hotbar"]
+	if hb[k] != "":
+		Game.msg("Removed %s from the bar." % Game.ability_info(hb[k])["name"], Color(0.8, 0.8, 0.8))
+		hb[k] = ""
+
+
+# =================================================================== joystick + touch routing
+class Stick extends Control:
+	var knob := Vector2.ZERO
+	func _draw() -> void:
+		var c := size / 2
+		# dark backing + light rim so the stick shows on snow, sand and grass alike
+		draw_circle(c, size.x / 2, Color(0, 0, 0, 0.28))
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(0, 0, 0, 0.55), 5)
+		draw_arc(c, size.x / 2 - 2, 0, TAU, 64, Color(1, 1, 1, 0.75), 2)
+		draw_circle(c + knob, size.x / 5 + 3, Color(0, 0, 0, 0.5))
+		draw_circle(c + knob, size.x / 5, Color(1, 1, 1, 0.65))
+
+
+func _build_stick() -> void:
+	stick = Stick.new()
+	stick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	stick.size = Vector2(190, 190)
+	_offs(stick, Vector2(24, -214))
+	stick.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(stick)
+
+
+func _modal_open() -> bool:
+	return dialog_panel != null and is_instance_valid(dialog_panel) or create_root != null or title_root != null \
+		or coord_panel != null and is_instance_valid(coord_panel) or server_panel != null and is_instance_valid(server_panel)
+
+
+func _input(event: InputEvent) -> void:
+	if not Game.running or not hud.visible:
+		return
+	if event is InputEventScreenTouch:
+		var p: Vector2 = event.position
+		if event.pressed:
+			if _modal_open() or book.visible and Rect2(book.global_position, book.size).has_point(p):
+				return
+			if logwin.contains(p) or (minimap.visible and Rect2(minimap.global_position, minimap.size).has_point(p)):
+				return
+			if Rect2(stick.global_position, stick.size).has_point(p):
+				touches[event.index] = {"kind": "stick"}
+				_stick_move(p)
+				get_viewport().set_input_as_handled()
+			elif _slot_at(p) >= 0:
+				touches[event.index] = {"kind": "slot", "slot": _slot_at(p), "t": Time.get_ticks_msec()}
+				get_viewport().set_input_as_handled()
+			elif _action_at(p) != "":
+				var aid := _action_at(p)
+				touches[event.index] = {"kind": "action"}
+				if assign_id == "":
+					Game.use_ability(aid)
+				get_viewport().set_input_as_handled()
+			elif (p - (attack_btn.global_position + attack_btn.size / 2)).length() < attack_btn.size.x / 2:
+				touches[event.index] = {"kind": "attack", "t": Time.get_ticks_msec()}
+				Game.use_ability("attack")
+				get_viewport().set_input_as_handled()
+		else:
+			var t = touches.get(event.index)
+			if t == null:
+				return
+			touches.erase(event.index)
+			match t["kind"]:
+				"stick":
+					stick.knob = Vector2.ZERO
+					stick.queue_redraw()
+					Game.set_move_dir(0)
+				"slot":
+					var held := Time.get_ticks_msec() - int(t["t"])
+					if _slot_at(p) == t["slot"]:
+						if held > 600:
+							_slot_clear(t["slot"])
+						else:
+							_slot_tap(t["slot"])
+			get_viewport().set_input_as_handled()
+	elif event is InputEventScreenDrag:
+		var t = touches.get(event.index)
+		if t != null and t["kind"] == "stick":
+			_stick_move(event.position)
+			get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo:
+		if _modal_open():
+			if event.keycode in [KEY_ENTER, KEY_SPACE] and dialog_panel != null and is_instance_valid(dialog_panel):
+				var bs := dialog_panel.find_children("*", "Button", true, false)
+				if not bs.is_empty():
+					bs[0].emit_signal("pressed")
+			return
+		var kc: int = event.keycode
+		if kc >= KEY_1 and kc <= KEY_9:
+			_slot_tap(kc - KEY_1)
+		elif kc == KEY_0:
+			_slot_tap(9)
+		elif kc == KEY_SPACE:
+			Game.use_ability("attack")
+		elif kc == KEY_TAB:
+			_page(1)
+		elif kc == KEY_K:
+			toggle_book()
+		elif kc == KEY_ESCAPE:
+			if assign_id != "":
+				_cancel_assign()
+			elif book.visible:
+				toggle_book()
+		elif kc == KEY_C:
+			toggle_stats()
+	_keys_move()
+
+
+var _held := {}
+
+
+func _keys_move() -> void:
+	if _modal_open():
+		return
+	var dx := 0
+	var dy := 0
+	if Input.is_physical_key_pressed(KEY_UP) or Input.is_physical_key_pressed(KEY_W):
+		dy += 1
+	if Input.is_physical_key_pressed(KEY_DOWN) or Input.is_physical_key_pressed(KEY_S):
+		dy -= 1
+	if Input.is_physical_key_pressed(KEY_RIGHT) or Input.is_physical_key_pressed(KEY_D):
+		dx += 1
+	if Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_A):
+		dx -= 1
+	var any := dx != 0 or dy != 0
+	if any:
+		Game.set_move_dir(Game.dir_to(dx, dy))
+		_held["k"] = true
+	elif _held.get("k", false):
+		_held["k"] = false
+		Game.set_move_dir(0)
+
+
+func _stick_move(p: Vector2) -> void:
+	var c := stick.global_position + stick.size / 2
+	var v := p - c
+	var mx := stick.size.x / 2 - 20
+	if v.length() > mx:
+		v = v.normalized() * mx
+	stick.knob = v
+	stick.queue_redraw()
+	if v.length() < 14:
+		Game.set_move_dir(0)
+		return
+	var a := rad_to_deg(atan2(-v.y, v.x))
+	var sector := int(roundf(fposmod(a, 360.0) / 45.0)) % 8
+	Game.set_move_dir([4, 5, 1, 9, 8, 10, 2, 6][sector])
+
+
+# =================================================================== skills book
+func _build_book() -> void:
+	book = PanelContainer.new()
+	book.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	book.custom_minimum_size = Vector2(760, 470)
+	_offs(book, Vector2(-380, -280))
+	book.visible = false
+	root.add_child(book)
+	var v := VBoxContainer.new()
+	book.add_child(v)
+	var h := HBoxContainer.new()
+	v.add_child(h)
+	var t := _label("Skills & Techniques", 22, GOLD)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(t)
+	book_cancel = _button("Cancel placing", func(): _cancel_assign())
+	book_cancel.visible = false
+	h.add_child(book_cancel)
+	h.add_child(_button("Close", func(): toggle_book()))
+	book_info = _label("Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it.", 15, Color(0.8, 0.82, 0.9))
+	book_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	book_info.custom_minimum_size = Vector2(720, 60)
+	v.add_child(book_info)
+	var sc := ScrollContainer.new()
+	sc.custom_minimum_size = Vector2(720, 340)
+	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	v.add_child(sc)
+	book_grid = GridContainer.new()
+	book_grid.columns = 4
+	book_grid.add_theme_constant_override("h_separation", 6)
+	book_grid.add_theme_constant_override("v_separation", 6)
+	sc.add_child(book_grid)
+
+
+func toggle_book() -> void:
+	book.visible = not book.visible
+	if book.visible:
+		stats_panel.visible = false
+		_refresh_book()
+	else:
+		_cancel_assign()
+
+
+func _cancel_assign() -> void:
+	assign_id = ""
+	assign_hint.text = ""
+	if book_cancel:
+		book_cancel.visible = false
+	if book_info:
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it."
+
+
+func _refresh_book() -> void:
+	for c in book_grid.get_children():
+		c.queue_free()
+	for id in Game.abilities():
+		var info := Game.ability_info(id)
+		var b := Button.new()
+		b.text = info["name"]
+		b.custom_minimum_size = Vector2(174, 54)
+		b.add_theme_font_size_override("font_size", 15)
+		b.clip_text = true
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(info["color"], 0.75)
+		sb.set_corner_radius_all(8)
+		sb.content_margin_left = 6
+		b.add_theme_stylebox_override("normal", sb)
+		if info.has("icon"):
+			var fr := Data.frame(int(info["icon"]), info.get("state", ""), 4, 0, false)
+			if not fr.is_empty():
+				var at := AtlasTexture.new()
+				at.atlas = fr[0]
+				at.region = fr[1]
+				b.icon = at
+				b.expand_icon = true
+		b.pressed.connect(func(): _pick(id))
+		book_grid.add_child(b)
+	var nxt := ""
+	for e in Data.rules["learn"]:
+		if (not e.has("race") or e["race"] == Game.P["race"]) and (not e.has("gene") or e["gene"] == Game.P["gene"]) \
+				and not e.has("req") and int(e["level"]) > int(Game.P["level"]) and not e["tech"] in Game.P["learned"]:
+			if nxt == "" or int(e["level"]) < int(nxt.get_slice("|", 0)):
+				nxt = "%d|%s" % [int(e["level"]), Data.tech(e["tech"]).get("name", e["tech"])]
+	if assign_id == "":
+		book_info.text = "Tap a skill to see what it does, then tap a hotbar slot to place it there. Hold a hotbar slot to clear it."
+		if nxt != "":
+			book_info.text += "\nNext technique: %s at level %s" % [nxt.get_slice("|", 1), Game.fmt(int(nxt.get_slice("|", 0)))]
+
+
+func _pick(id: String) -> void:
+	var info := Game.ability_info(id)
+	assign_id = id
+	book_info.text = "%s — %s\nNow tap a hotbar slot to place it (or tap the slot keys 1-0)." % [info["name"], info["desc"]]
+	assign_hint.text = "Tap a hotbar slot to place %s" % info["name"]
+	book_cancel.visible = true
+
+
+# =================================================================== stats
+func _build_stats() -> void:
+	stats_panel = PanelContainer.new()
+	stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	stats_panel.custom_minimum_size = Vector2(700, 470)
+	_offs(stats_panel, Vector2(-350, -280))
+	stats_panel.visible = false
+	root.add_child(stats_panel)
+	var v := VBoxContainer.new()
+	stats_panel.add_child(v)
+	var h := HBoxContainer.new()
+	v.add_child(h)
+	var t := _label("Character", 22, GOLD)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(t)
+	h.add_child(_button("Close", func(): toggle_stats()))
+	stats_label = RichTextLabel.new()
+	stats_label.bbcode_enabled = true
+	stats_label.custom_minimum_size = Vector2(660, 400)
+	stats_label.scroll_active = true
+	stats_label.add_theme_font_size_override("normal_font_size", 16)
+	v.add_child(stats_label)
+
+
+## Update Notes / Legacy Update Notes (Menu): a scrollable window showing data/*.txt.
+var notes_panel: PanelContainer
+var notes_title: Label
+var notes_label: RichTextLabel
+
+
+func _build_notes() -> void:
+	notes_panel = PanelContainer.new()
+	notes_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	notes_panel.custom_minimum_size = Vector2(760, 500)
+	_offs(notes_panel, Vector2(-380, -290))
+	notes_panel.visible = false
+	root.add_child(notes_panel)
+	var v := VBoxContainer.new()
+	notes_panel.add_child(v)
+	var h := HBoxContainer.new()
+	v.add_child(h)
+	notes_title = _label("Update Notes", 22, GOLD)
+	notes_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(notes_title)
+	h.add_child(_button("Close", func(): notes_panel.visible = false))
+	notes_label = RichTextLabel.new()
+	notes_label.bbcode_enabled = true
+	notes_label.custom_minimum_size = Vector2(720, 430)
+	notes_label.scroll_active = true
+	notes_label.selection_enabled = false
+	notes_label.add_theme_font_size_override("normal_font_size", 16)
+	notes_label.add_theme_font_size_override("bold_font_size", 17)
+	v.add_child(notes_label)
+
+
+func show_notes(legacy: bool) -> void:
+	if notes_panel == null:
+		_build_notes()
+	var path := "res://data/legacy_updates.txt" if legacy else "res://data/update_notes.txt"
+	notes_title.text = "Legacy Update Notes" if legacy else "Update Notes"
+	notes_label.text = FileAccess.get_file_as_string(path) if FileAccess.file_exists(path) else "No notes found."
+	notes_label.scroll_to_line(0)
+	menu_panel.visible = false
+	stats_panel.visible = false
+	book.visible = false
+	notes_panel.visible = true
+
+
+func toggle_stats() -> void:
+	stats_panel.visible = not stats_panel.visible
+	if stats_panel.visible:
+		book.visible = false
+		_refresh_stats()
+
+
+func _refresh_stats() -> void:
+	var P := Game.P
+	var f := Game.fmt
+	var keep := stats_label.get_v_scroll_bar().value
+	var s := "[b]%s[/b] — %s %s (%s) · %s Mode (level %d of the mode ladder)\n" % [P["name"], P["gene"], P["race"], P["gender"], P["mode"], int(P["modes"])]
+	s += "Level %s · Exp %s / %s · Training points %s · Zenni %s\n" % [f.call(P["level"]), f.call(P["exp"]), f.call(P["tnl"]), f.call(P["tp"]), f.call(P["zenni"])]
+	s += "\n[b]Power[/b]\n"
+	s += "Powerlevel %s / %s   (usable cap; raw max %s, PL bonus from training %s)\n" % [f.call(P["powerlevel"]), f.call(Game.cap("powerlevel")), f.call(Game.pl_max()), f.call(P["pl_bonus"])]
+	s += "Ki %s / %s   (base max %s)\n" % [f.call(P["ki"]), f.call(Game.cap("ki")), f.call(P["ki_max"])]
+	s += "Strength %s   (base %s) · Defence %s   (base %s)\n" % [f.call(Game.cap("strength")), f.call(P["strength_max"]), f.call(Game.cap("defence")), f.call(P["defence_max"])]
+	s += "Ki Control lets you use %d%% of your power\n" % int(Game.kc() * 100)
+	s += "Multipliers: Power x%s · Ki x%s · Strength x%s · Defence x%s\n" % [P["power_multi"], P["ki_multi"], P["strength_multi"], P["defence_multi"]]
+	s += "Fatigue %s / %s%s\n" % [f.call(P["stam"]), f.call(P["stam_max"]), "  [color=#f88](too tired)[/color]" if Game.tired() else ""]
+	var act: Array = []
+	var cf: Dictionary = Game.current_form()
+	if not cf.is_empty():
+		act.append("Form %d" % int(P["form"]))
+	for k in Game.buffs:
+		act.append("%s x%s" % [k, str(Game.buffs[k]["mult"])])
+	for k in Game.toggles:
+		if Game.toggles[k]:
+			act.append(k.capitalize())
+	if Game.grav > 0:
+		act.append("%dx gravity" % int(Game.grav))
+	if Game.busy != "":
+		act.append(Game.busy)
+	s += "Active: %s\n" % (", ".join(act) if not act.is_empty() else "nothing")
+	s += "\n[b]Skills[/b]  (level out of 100, exp toward the next level)\n[table=3]"
+	for k in Game.SKILLS:
+		var sk: Array = P["skills"][k]
+		var full := int(sk[0]) >= 100
+		s += "[cell]%s     [/cell][cell][b]%d[/b]     [/cell][cell]%s[/cell]" % [Game.SKILL_NAMES[k], int(sk[0]), "[color=#fd6]max[/color]" if full else "%s / %s exp" % [f.call(sk[1]), f.call(sk[2])]]
+	s += "[/table]\n"
+	s += "\n[b]Training[/b]\n"
+	s += "Self Train focus: %s · Meditate focus: %s\n" % [P["focus"], Game.SKILL_NAMES[P["med_focus"]]]
+	s += "Techniques known: %d · Kills: %s\n" % [(P["learned"] as Array).size(), f.call(P["kills"])]
+	s += "\n[b]Transformations[/b] (%s gene%s)\n" % [P["gene"], ", forms stack" if Game.is_step_race() else ""]
+	s += "Transformation level %d / 100 (%s / %s exp) · Speed %d (transforming takes %.1f s)\n" % [int(Game.trans_lvl()), f.call(P.get("trans_exp", 0)), f.call(P.get("trans_tnl", 75)), int(P.get("trans_speed", 0)), float(P.get("trans_spd", 51)) / 10.0]
+	for fm in Game.forms_for():
+		var i := int(fm["form"])
+		var mult := str(snappedf(pow(Game.PERM_FORM_MULT, i), 0.01)) + " total" if Game.is_step_race() else str(Game.TEMP_FORM_MULT[mini(i, Game.TEMP_FORM_MULT.size()) - 1])
+		var reqs: Array = []
+		for c in fm.get("req", []):
+			if c[0] == "level":
+				continue
+			var val: float = Game.ladder(float(c[2])) if c[0] == "powerlevel_max" else float(c[2])
+			reqs.append("%s %s %s" % [str(c[0]).replace("_", " ").replace("powerlevel max", "base powerlevel"), c[1], f.call(roundf(val))])
+		var state := "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if Game.form_ready(fm) else "")
+		s += "%s — level %s, power x%s%s%s\n" % [Game.form_name(fm), f.call(Game.form_level(fm)), mult, (" [" + ", ".join(reqs) + "]") if not reqs.is_empty() else "", state]
+	var mins := int(float(P["playtime"]) / 60.0)
+	s += "\nLocation: %s (%d, %d) · Play time %dh %dm" % [Game.zname(int(P["z"])), int(P["x"]), int(P["y"]), mins / 60, mins % 60]
+	stats_label.text = s
+	stats_label.get_v_scroll_bar().value = keep
+
+
+# =================================================================== menu
+func _build_menu() -> void:
+	menu_panel = PanelContainer.new()
+	menu_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	menu_panel.custom_minimum_size = Vector2(440, 0)
+	_offs(menu_panel, Vector2(-220, -235))
+	menu_panel.visible = false
+	root.add_child(menu_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 7)
+	menu_panel.add_child(v)
+	v.add_child(_label("Menu", 22, GOLD))
+	_menu_row(v, [["Training Focus", func(): menu_panel.visible = false; Game.choose_focus()],
+		["Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()]])
+	_menu_row(v, [["Character Stats", func(): menu_panel.visible = false; toggle_stats()]])
+	var hw := HBoxContainer.new()
+	hw.add_theme_constant_override("separation", 6)
+	v.add_child(hw)
+	hw.add_child(_label("Messages:", 15))
+	hw.add_child(_button("Panel", func(): logwin.set_look("panel"), 14))
+	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
+	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
+	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
+	_menu_row(v, [["Sagas", func(): menu_panel.visible = false; saga_menu()],
+		["Server Options", func(): menu_panel.visible = false; server_options()]])
+	_menu_row(v, [["Update Notes", func(): show_notes(false)], ["Legacy Update Notes", func(): show_notes(true)]])
+	_menu_row(v, [["Sound On / Off", func(): _toggle_sound()], ["Trans. Aura On / Off", func(): _toggle_trans_aura()]])
+	var hm := HBoxContainer.new()
+	hm.add_theme_constant_override("separation", 6)
+	v.add_child(hm)
+	hm.add_child(_label("Minimap:", 15))
+	hm.add_child(_button("On / Off", func(): menu_panel.visible = false; _toggle_minimap(), 14))
+	hm.add_child(_button("Reset", func(): minimap.reset_layout(), 14))
+	_menu_row(v, [["Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))],
+		["Save & Quit", func(): Game.save(); get_tree().reload_current_scene()]])
+	v.add_child(_button("Close", func(): menu_panel.visible = false))
+
+
+## Menu -> Sagas: start the Villain or Hero saga at a difficulty, or see / end the current one.
+func saga_menu() -> void:
+	var sd: Dictionary = Game.saga_data()
+	if Game.saga_active():
+		var part := Game.saga_part()
+		var lines: Array = []
+		for b in Game.saga_bosses:
+			if not b.dead:
+				lines.append("%s – %s (%d, %d)" % [b.name.replace("{Saga}", ""), Game.zname(b.z), b.x, b.y])
+		var info := "%s · %s difficulty\n%s Saga – %s (part %d of %d)\n%s" % [sd["lines"][Game.P["saga"]["line"]]["name"], Game.P["saga"]["difficulty"],
+			part.get("saga", ""), part.get("part", ""), int(Game.P["saga"]["part"]) + 1, (sd["lines"][Game.P["saga"]["line"]]["parts"] as Array).size(), "\n".join(lines)]
+		Game.ask("Sagas", info, ["Go to the fight", "End the saga", "Close"], func(c: String, _i: int):
+			if c == "Go to the fight":
+				for b in Game.saga_bosses:
+					if not b.dead:
+						Game.teleport(b.x - 4, b.y, b.z)
+						break
+			elif c == "End the saga":
+				Game.end_saga())
+		return
+	Game.ask("Sagas", "Saga bosses land on Earth and fight with their own techniques. Beat every boss in a part for the next one; some come back in a stronger form.",
+		["Villain Saga (Raditz to Frieza)", "Hero Saga (Goku and Piccolo to Super Saiyan Goku)", "Cancel"], func(c: String, i: int):
+			if i < 2:
+				var line := "villain" if i == 0 else "hero"
+				Game.ask("Saga Difficulty", "Difficulty scales the bosses' powerlevels (Raditz is 1,500 on Medium: a quarter on Pathetic, 3.5x on Extreme). Match my power makes each boss a bit stronger than you.",
+					["Match my power", "Pathetic", "Easy", "Medium", "Hard", "Extreme", "Cancel"], func(c2: String, _i2: int):
+						if c2 != "Cancel":
+							Game.start_saga(line, c2)))
+
+
+func _menu_row(v: Container, items: Array) -> void:
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 6)
+	v.add_child(h)
+	for it in items:
+		var b := _button(it[0], it[1], 16)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(b)
+
+
+func _toggle_sound() -> void:
+	Game.sfx_on = not Game.sfx_on
+	var d: Dictionary = logwin._prefs()
+	d["sound"] = Game.sfx_on
+	var fa := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
+	if fa:
+		fa.store_string(JSON.stringify(d))
+	Game.msg("Sound %s." % ("on" if Game.sfx_on else "off"), Color(0.7, 0.8, 1))
+
+
+func _toggle_trans_aura() -> void:
+	Game.P["trans_aura"] = not bool(Game.P.get("trans_aura", true))
+	Game.build_appearance()
+	Game.msg("Transformation aura %s." % ("on" if Game.P["trans_aura"] else "off"), Color(0.7, 0.8, 1))
+
+
+# =================================================================== dialogs
+func _on_dialog(title: String, text: String, opts: Array, cb: Callable) -> void:
+	dialog_queue.append([title, text, opts, cb])
+	if dialog_panel == null or not is_instance_valid(dialog_panel):
+		_show_dialog()
+
+
+func _show_dialog() -> void:
+	if dialog_queue.is_empty():
+		return
+	var d: Array = dialog_queue[0]
+	Game.set_move_dir(0)
+	dialog_panel = PanelContainer.new()
+	dialog_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	dialog_panel.custom_minimum_size = Vector2(520, 0)
+	_offs(dialog_panel, Vector2(-260, -240))
+	modal_layer.add_child(dialog_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	dialog_panel.add_child(v)
+	v.add_child(_label(d[0], 22, GOLD))
+	var l := _label(d[1], 17)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(480, 0)
+	v.add_child(l)
+	var opts: Array = d[2]
+	var holder: Container = v
+	if opts.size() > 6:
+		var sc := ScrollContainer.new()
+		sc.custom_minimum_size = Vector2(480, 300)
+		var vv := VBoxContainer.new()
+		vv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sc.add_child(vv)
+		v.add_child(sc)
+		holder = vv
+	for i in opts.size():
+		var o: String = opts[i]
+		var b := _button(o, func(): _dialog_pick(o, i))
+		holder.add_child(b)
+
+
+func _dialog_pick(o: String, i: int) -> void:
+	if dialog_queue.is_empty() or dialog_panel == null or not is_instance_valid(dialog_panel):
+		return              # a second tap on a dialog that is already closing
+	var d: Array = dialog_queue.pop_front()
+	dialog_panel.queue_free()
+	dialog_panel = null
+	var cb: Callable = d[3]
+	if cb.is_valid():
+		cb.call(o, i)
+	if not dialog_queue.is_empty() and dialog_panel == null:      # the callback may already have opened the next one
+		_show_dialog()
+
+
+# =================================================================== title + creation
+func _fullscreen_bg() -> Control:
+	var c := Control.new()
+	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var bg := ColorRect.new()
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.04, 0.04, 0.09)
+	c.add_child(bg)
+	root.add_child(c)
+	return c
+
+
+func show_title() -> void:
+	if Game.autostart_save:
+		Game.autostart_save = false
+		var sv := Game.load_save()
+		if not sv.is_empty():
+			_begin(sv)
+			return
+	title_root = _fullscreen_bg()
+	var v := VBoxContainer.new()
+	v.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_offs(v, Vector2(-300, -220))
+	v.custom_minimum_size = Vector2(600, 0)
+	v.add_theme_constant_override("separation", 14)
+	title_root.add_child(v)
+	var t1 := _label("DRAGONBALL", 40, Color(1, 0.85, 0.4))
+	t1.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t1)
+	var t2 := _label("RUINATION", 72, Color(1, 0.55, 0.1))
+	t2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	t2.add_theme_constant_override("outline_size", 10)
+	t2.add_theme_color_override("font_outline_color", Color(0.45, 0.1, 0))
+	v.add_child(t2)
+	var t3 := _label("single-player edition", 18, Color(0.6, 0.62, 0.75))
+	t3.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t3)
+	var save := Game.load_save()
+	if not save.is_empty():
+		v.add_child(_button("Continue  (%s, level %s %s)" % [save.get("name", "?"), Game.fmt(save.get("level", 1)), save.get("race", "")], func(): _begin(save), 22))
+	_title_has_save = not save.is_empty()
+	v.add_child(_button("New Character", _on_new_character, 22))
+
+
+var _title_has_save := false
+
+
+func _on_new_character() -> void:
+	if not _title_has_save:
+		_start_creation()
+	else:
+		Game.ask("New Character", "Your saved character will be overwritten when you start. Continue?", ["Create new", "Cancel"], _confirm_new)
+
+
+func _confirm_new(c: String, _i: int) -> void:
+	if c == "Create new":
+		_start_creation()
+
+
+func _begin(p: Dictionary) -> void:
+	if title_root:
+		title_root.queue_free()
+		title_root = null
+	if create_root:
+		create_root.queue_free()
+		create_root = null
+	set_game_ui(true)
+	Game.start(p)
+	Game.save()
+
+
+## Rebirth: pick a new race, gene and look (name kept), then stat points; the new character is
+## saved and the game reloads straight into it.
+func start_rebirth(old: Dictionary) -> void:
+	set_game_ui(false)
+	creation = {"race": old["race"], "gene": "", "gender": old.get("gender", "Male"), "skin": old.get("skin", "Tan"),
+		"hair": old.get("hair", "Goku"), "variant": "", "name": old["name"], "rebirths": int(old.get("rebirths", 0)) + 1,
+		"carry": {"zenni": old.get("zenni", 0), "kills": old.get("kills", 0), "playtime": old.get("playtime", 0)}}
+	create_root = _fullscreen_bg()
+	_race_step()
+
+
+func _start_creation() -> void:
+	if title_root:
+		title_root.queue_free()
+		title_root = null
+	creation = {"race": "Saiyan", "gene": "", "gender": "Male", "skin": "Tan", "hair": "Goku", "variant": "", "name": ""}
+	create_root = _fullscreen_bg()
+	_race_step()
+
+
+func _clear_create() -> VBoxContainer:
+	for c in create_root.get_children():
+		if not c is ColorRect:
+			c.queue_free()
+	var v := VBoxContainer.new()
+	v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 24
+	v.offset_right = -24
+	v.offset_top = 16
+	v.offset_bottom = -16
+	v.add_theme_constant_override("separation", 10)
+	create_root.add_child(v)
+	return v
+
+
+class SpriteView extends Control:
+	var mob: Mob
+	var scale_k := 4.0
+	func _process(_d: float) -> void:
+		queue_redraw()
+	func _draw() -> void:
+		if mob == null:
+			return
+		var fr := Data.frame(mob.icon, "", mob.dir, Game.now, false)
+		var h := 32.0
+		if not fr.is_empty():
+			h = fr[1].size.y
+		draw_set_transform(Vector2((size.x - 32 * scale_k) / 2, size.y - h * scale_k - 4), 0, Vector2(scale_k, scale_k))
+		var w: Node2D = Game.world
+		w.call("draw_mob_on", self, mob)
+		draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
+
+
+func _race_step() -> void:
+	var v := _clear_create()
+	v.add_child(_label("Choose your race", 28, GOLD))
+	var h := HBoxContainer.new()
+	h.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	h.add_theme_constant_override("separation", 16)
+	v.add_child(h)
+	var sc := ScrollContainer.new()
+	sc.custom_minimum_size = Vector2(720, 0)
+	sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	h.add_child(sc)
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
+	sc.add_child(grid)
+	var right := VBoxContainer.new()
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(right)
+	var preview := SpriteView.new()
+	preview.custom_minimum_size = Vector2(200, 200)
+	right.add_child(preview)
+	var info := _label("", 15)
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.custom_minimum_size = Vector2(380, 0)
+	right.add_child(info)
+	var select := func(r: String):
+		creation["race"] = r
+		var rd: Dictionary = Data.rules["races"][r]
+		creation["gene"] = rd["genes"][0]
+		preview.mob = _preview_mob()
+		var m: Dictionary = rd["multi"]
+		var techs: Array = []
+		for e in Data.rules["learn"]:
+			if e.get("race", "") == r and not e.has("gene"):
+				techs.append("%s (%s)" % [Data.tech(e["tech"]).get("name", e["tech"]), Game.fmt(e["level"])])
+		var sk: Dictionary = rd["skills"]
+		var sks: Array = []
+		for k in sk:
+			if not k.ends_with("_max"):
+				sks.append("%s %d" % [Game.SKILL_NAMES.get(k, k), int(sk[k])])
+		info.text = "%s\nPower x%s · Ki x%s · Strength x%s · Defence x%s\nGenes: %s\nStarting skills: %s\nRace techniques: %s" % [
+			r, m.get("power", 4), m.get("ki", 4), m.get("strength", 4), m.get("defence", 4),
+			", ".join(rd["genes"]), ", ".join(sks), ", ".join(techs) if not techs.is_empty() else "shared techniques"]
+	for r in Data.rules["races"]:
+		var b := Button.new()
+		b.text = r
+		b.custom_minimum_size = Vector2(170, 64)
+		b.clip_text = true
+		b.icon = _icon_tex(Game.base_icon({"race": r, "gene": Data.rules["races"][r]["genes"][0], "gender": "Male", "skin": "Tan"}))
+		b.pressed.connect(func(): select.call(r))
+		grid.add_child(b)
+	select.call(creation["race"])
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	nav.add_theme_constant_override("separation", 12)
+	v.add_child(nav)
+	nav.add_child(_button("Back", func(): create_root.queue_free(); create_root = null; show_title(), 20))
+	nav.add_child(_button("Next: Gene", func(): _gene_step(), 20))
+
+
+func _icon_tex(icon_id: int) -> Texture2D:
+	var fr := Data.frame(icon_id, "", 2, 0, false)
+	if fr.is_empty():
+		return null
+	var at := AtlasTexture.new()
+	at.atlas = fr[0]
+	at.region = Rect2(fr[1].position + Vector2(0, fr[1].size.y - 32), Vector2(32, 32))
+	return at
+
+
+func _preview_mob() -> Mob:
+	var m := Mob.new()
+	m.dir = 2
+	Game.build_appearance(creation, m)
+	return m
+
+
+func _gene_step() -> void:
+	var v := _clear_create()
+	var r: String = creation["race"]
+	var rd: Dictionary = Data.rules["races"][r]
+	v.add_child(_label("Choose your %s gene" % r, 28, GOLD))
+	var info := _label("", 16)
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	for g in rd["genes"]:
+		var gm: Dictionary = rd.get("gene_multi", {}).get(g, {})
+		var bonus: Array = []
+		for k in gm:
+			bonus.append("%s %s%s" % [k, "+" if float(gm[k]) >= 0 else "", gm[k]])
+		var p := {"race": r, "gene": g}
+		var fl := Game.forms_for(p)
+		var lv: Array = []
+		for f in fl:
+			lv.append(Game.fmt(f["level"]))
+		var gtech: Array = []
+		for e in Data.rules["learn"]:
+			if e.get("gene", "") == g and (e.get("race", r) == r):
+				gtech.append(Data.tech(e["tech"]).get("name", e["tech"]))
+		var txt := "%s — %d forms (levels %s)%s%s" % [g, fl.size(), ", ".join(lv),
+			"; bonus " + ", ".join(bonus) if not bonus.is_empty() else "",
+			"; techniques: " + ", ".join(gtech) if not gtech.is_empty() else ""]
+		var b := _button(txt, _pick_gene.bind(g), 16)
+		var gp := creation.duplicate()
+		gp["gene"] = g
+		b.icon = _icon_tex(Game.base_icon(gp))
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		v.add_child(b)
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	v.add_child(nav)
+	nav.add_child(_button("Back", func(): _race_step(), 20))
+
+
+func _pick_gene(g: String) -> void:
+	creation["gene"] = g
+	if not Game.look_options(creation).is_empty():
+		_look_step()
+	else:
+		_name_step()
+
+
+func _look_step() -> void:
+	var v := _clear_create()
+	var r: String = creation["race"]
+	v.add_child(_label("Appearance", 28, GOLD))
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 24)
+	v.add_child(h)
+	var preview := SpriteView.new()
+	preview.custom_minimum_size = Vector2(220, 240)
+	preview.mob = _preview_mob()
+	h.add_child(preview)
+	var opts := VBoxContainer.new()
+	opts.add_theme_constant_override("separation", 10)
+	h.add_child(opts)
+	var refresh := func(): preview.mob = _preview_mob()
+	var rot := _button("Rotate", func(): preview.mob.dir = {2: 4, 4: 1, 1: 8, 8: 2}[preview.mob.dir])
+	for o in Game.look_options(creation):
+		opts.add_child(_choice(o[0], o[2], o[1], refresh))
+	opts.add_child(rot)
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	nav.add_theme_constant_override("separation", 12)
+	v.add_child(nav)
+	nav.add_child(_button("Back", func(): _gene_step(), 20))
+	nav.add_child(_button("Next: Name", func(): _name_step(), 20))
+
+
+func _choice(title: String, values: Array, key: String, refresh: Callable) -> Control:
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 8)
+	var l := _label(title, 18)
+	l.custom_minimum_size = Vector2(90, 0)
+	h.add_child(l)
+	var ob := OptionButton.new()
+	ob.add_theme_font_size_override("font_size", 18)
+	for i in values.size():
+		ob.add_item(values[i])
+		if values[i] == creation.get(key, ""):
+			ob.select(i)
+	if not values.has(creation.get(key, "")):
+		creation[key] = values[0]
+	ob.item_selected.connect(_on_choice.bind(key, values, refresh))
+	h.add_child(ob)
+	return h
+
+
+func _on_choice(i: int, key: String, values: Array, refresh: Callable) -> void:
+	creation[key] = values[i]
+	refresh.call()
+
+
+func _name_step() -> void:
+	var v := _clear_create()
+	v.add_child(_label("What's your name?", 28, GOLD))
+	var le := LineEdit.new()
+	le.max_length = 15
+	le.custom_minimum_size = Vector2(420, 52)
+	le.add_theme_font_size_override("font_size", 24)
+	le.placeholder_text = "Letters only, 2-15 characters"
+	le.text = creation.get("name", "")
+	v.add_child(le)
+	var err := _label("", 16, Color(1, 0.5, 0.4))
+	v.add_child(err)
+	v.add_child(_label("%s · %s gene" % [creation["race"], creation["gene"]], 18, Color(0.75, 0.8, 0.95)))
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	nav.add_theme_constant_override("separation", 12)
+	v.add_child(nav)
+	nav.add_child(_button("Back", func(): _gene_step(), 20))
+	_name_edit = le
+	_name_err = err
+	nav.add_child(_button("Start", _on_start, 22))
+
+
+var _name_edit: LineEdit
+var _name_err: Label
+
+
+func _on_start() -> void:
+	var n := _name_edit.text.strip_edges()
+	var ok := n.length() >= 2
+	for ch in n:
+		if not (ch.to_lower() in "abcdefghijklmnopqrstuvwxyz "):
+			ok = false
+	if not ok:
+		_name_err.text = "Only letters A-Z are allowed, 2-15 characters."
+		return
+	creation["name"] = n.substr(0, 1).to_upper() + n.substr(1)
+	var np := Game.new_player(creation)
+	for k in creation.get("carry", {}):
+		np[k] = creation["carry"][k]
+	if creation.has("carry"):
+		np["moden"] = int(np["moden"]) + int(np["rebirths"])       # Xeno.dm: moden += rebirths
+		_points_step(np, func(p):
+			Game.P = p
+			Game.save()
+			Game.running = false
+			Game.autostart_save = true
+			get_tree().reload_current_scene())
+	else:
+		_points_step(np, func(p): _begin(p))
+
+
+## SetMultis.dm / Gold Glory.dmf "multis": spend your stat points (5, +1 per rebirth) on the Ki,
+## Strength and Defense multipliers (each capped at 10 + rebirths, counting the race's base, so
+## nobody can stack everything into one offensive stat) or on Stamina (+200 each, 600-2,000).
+## Unlike the original you can't take points out of your race's base (that let players move
+## Defense into Ki); "–" only takes back points you've put in. The Powerlevel multiplier stays at
+## your race's value (the live window has no Powerlevel buttons). Multipliers speed up training,
+## levels and mobbing.
+var _pts_p: Dictionary
+var _pts_done: Callable
+
+
+func _points_step(p: Dictionary, done: Callable) -> void:
+	p["points_base"] = {"ki_multi": p["ki_multi"], "strength_multi": p["strength_multi"], "defence_multi": p["defence_multi"], "stam_max": p["stam_max"]}
+	_pts_p = p
+	_pts_done = done
+	if create_root == null:
+		create_root = _fullscreen_bg()
+	_refresh_points()
+
+
+func _refresh_points() -> void:
+	var p := _pts_p
+	var v := _clear_create()
+	var cap := 10 + int(p.get("rebirths", 0))
+	v.add_child(_label("Stat Points", 28, GOLD))
+	v.add_child(_label("%s %s · %d point%s left%s" % [p["gene"], p["race"], int(p["points"]), "" if int(p["points"]) == 1 else "s",
+		(" · rebirth %d" % int(p["rebirths"])) if int(p.get("rebirths", 0)) > 0 else ""], 18, Color(0.85, 0.88, 1)))
+	var info := _label("Multipliers make Self Train, levels and mobbing raise that stat faster. Each multiplier is capped at %d including your race's base (+1 per rebirth). Stamina lets you train longer before resting." % cap, 15, Color(0.7, 0.75, 0.9))
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.custom_minimum_size = Vector2(900, 0)
+	v.add_child(info)
+	v.add_child(_label("Powerlevel multiplier (set by your race): %d" % int(p["power_multi"]), 16, Color(0.75, 0.8, 0.95)))
+	# Gold Glory.dmf "multis": the live window only has Ki, Strength, Defense and Stamina
+	for row in [["Ki", "ki_multi"], ["Strength", "strength_multi"], ["Defense", "defence_multi"], ["Stamina", "stam_max"]]:
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 12)
+		v.add_child(h)
+		var l := _label(row[0], 20)
+		l.custom_minimum_size = Vector2(160, 0)
+		h.add_child(l)
+		var val := _label(str(int(p[row[1]])), 20, GOLD)
+		val.custom_minimum_size = Vector2(80, 0)
+		h.add_child(val)
+		h.add_child(_button("–", _points_change.bind(row[1], -1), 20))
+		h.add_child(_button("+", _points_change.bind(row[1], 1), 20))
+		if row[1] != "stam_max":
+			h.add_child(_label("max %d" % cap, 15, Color(0.6, 0.65, 0.8)))
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	v.add_child(nav)
+	var go := _button("Done", func():
+		if int(_pts_p["points"]) > 0:
+			return
+		_pts_done.call(_pts_p), 22)
+	go.disabled = int(p["points"]) > 0
+	nav.add_child(go)
+
+
+func _points_change(key: String, dirn: int) -> void:
+	var p := _pts_p
+	var cap := 10 + int(p.get("rebirths", 0))
+	if dirn > 0 and int(p["points"]) <= 0:
+		return
+	var base := float(p.get("points_base", {}).get(key, 0.0))
+	if key == "stam_max":
+		var nv := float(p[key]) + 200.0 * dirn
+		if nv < maxf(600.0, base) or nv > 2000.0:
+			if dirn > 0:
+				Game.msg("Your stamina can't be raised any further.", Color(1, 0.8, 0.4))
+			return
+		p[key] = nv
+	else:
+		var nv2 := float(p[key]) + dirn
+		if nv2 < maxf(1.0, base):
+			return
+		if nv2 > cap:
+			Game.msg("You can only put %d points into this multiplier." % cap, Color(1, 0.8, 0.4))
+			return
+		p[key] = nv2
+	p["points"] = int(p["points"]) - dirn
+	_refresh_points()
+
+
+## Menu -> Server Options: Exp, Zenni and Stat Gains rates (10%-1000%, default 100%). Stored with
+## the game, not the character; in multiplayer these will be the host's settings.
+var server_panel: PanelContainer
+
+
+func server_options() -> void:
+	if server_panel:
+		server_panel.queue_free()
+	server_panel = PanelContainer.new()
+	server_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	server_panel.custom_minimum_size = Vector2(420, 0)
+	_offs(server_panel, Vector2(-210, -150))
+	root.add_child(server_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	server_panel.add_child(v)
+	v.add_child(_label("Server Options", 22, GOLD))
+	v.add_child(_label("Rates for everyone playing on this game (100% is normal).", 14, Color(0.7, 0.75, 0.9)))
+	for r in Game.SERVER_RATES:
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 10)
+		v.add_child(h)
+		var l := _label(r[1], 18)
+		l.custom_minimum_size = Vector2(130, 0)
+		h.add_child(l)
+		var val := _label("%d%%" % int(Game.server[r[0]]), 18, GOLD)
+		val.custom_minimum_size = Vector2(80, 0)
+		h.add_child(val)
+		h.add_child(_button("–", func(): Game.server_step(r[0], -1); server_options(), 18))
+		h.add_child(_button("+", func(): Game.server_step(r[0], 1); server_options(), 18))
+	var b := HBoxContainer.new()
+	b.add_theme_constant_override("separation", 8)
+	v.add_child(b)
+	b.add_child(_button("Reset to 100%", func():
+		for r in Game.SERVER_RATES:
+			Game.server[r[0]] = 100
+		Game.save_server()
+		server_options(), 16))
+	b.add_child(_button("Close", func(): server_panel.queue_free(); server_panel = null, 16))

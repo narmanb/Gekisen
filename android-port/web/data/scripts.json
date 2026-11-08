@@ -1,0 +1,3629 @@
+{
+"quests": {
+"entrances": {
+"/obj/Quest1Enter": {
+"prompt": "Would you like to enter?",
+"title": "Raditz",
+"req": 0,
+"dest": [
+8,
+164,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Raditz",
+8,
+173,
+18
+]
+],
+"done": "You have already defeated Raditz"
+},
+"/obj/Quest2Enter": {
+"prompt": "Confront Vegeta and Nappa?",
+"title": "Vegeta/Nappa",
+"req": 1,
+"dest": [
+27,
+155,
+18
+],
+"spawns": [
+[
+"/mob/monsters/saibaman",
+27,
+170,
+18
+],
+[
+"/mob/monsters/saibaman",
+27,
+170,
+18
+],
+[
+"/mob/monsters/saibaman",
+27,
+170,
+18
+]
+],
+"done": "You have already defeated Vegeta and Nappa"
+},
+"/obj/Quest3Enter": {
+"prompt": "Confront Kiwi?",
+"title": "Kiwi",
+"req": 2,
+"dest": [
+79,
+166,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Kiwi",
+88,
+166,
+18
+]
+],
+"done": "You have already defeated Kiwi"
+},
+"/obj/Quest4Enter": {
+"prompt": "Confront Dodoria?",
+"title": "Dodoria",
+"req": 3,
+"dest": [
+99,
+160,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Dodoria",
+99,
+170,
+18
+]
+],
+"done": "You have already defeated Dodoria"
+},
+"/obj/Quest5Enter": {
+"prompt": "Confront Zarbon?",
+"title": "Zarbon",
+"req": 4,
+"dest": [
+118,
+164,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Zarbon",
+118,
+171,
+18
+]
+],
+"done": "You have already defeated Zarbon"
+},
+"/obj/Quest7Enter": {
+"prompt": "Confront the Ginyu force?",
+"title": "Ginyu",
+"req": 6,
+"dest": [
+142,
+155,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Guldo",
+142,
+170,
+18
+]
+],
+"done": "You have already defeated the Ginyu Force"
+},
+"/obj/Quest7Enter2": {
+"prompt": "Confront the Ginyu force?",
+"title": "Ginyu",
+"req": 6,
+"dest": [
+142,
+155,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Guldo",
+142,
+170,
+18
+]
+],
+"done": "You have already defeated the Ginyu Force"
+},
+"/obj/Quest8Enter": {
+"prompt": "Confront Frieza?",
+"title": "Frieza",
+"req": 7,
+"dest": [
+162,
+165,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Frieza1",
+170,
+165,
+18
+]
+],
+"done": "You have already defeated Frieza"
+},
+"/obj/Quest9Enter": {
+"prompt": "Confront Frieza/King Cold?",
+"title": "Frieza/King Cold",
+"req": 8,
+"dest": [
+7,
+132,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Friezabot",
+24,
+135,
+18
+]
+],
+"done": "You have already defeated Friezabot/King Cold"
+},
+"/obj/Quest10Enter": {
+"prompt": "Confront Gero/Android 19?",
+"title": "Gero/Android 19",
+"req": 9,
+"dest": [
+72,
+134,
+18
+],
+"spawns": [
+[
+"/mob/monsters/A19",
+80,
+134,
+18
+]
+],
+"done": "You have already defeated Gero/Android 19"
+},
+"/obj/Quest11Enter": {
+"prompt": "Confront Androids??",
+"title": "Androids",
+"req": 10,
+"dest": [
+93,
+135,
+18
+],
+"spawns": [
+[
+"/mob/monsters/A18",
+106,
+135,
+18
+]
+],
+"done": "You have already defeated the Androids"
+},
+"/obj/Quest12Enter": {
+"prompt": "Confront Cell??",
+"title": "Cell",
+"req": 11,
+"dest": [
+37,
+97,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Cell",
+65,
+103,
+18
+]
+],
+"done": "You have already defeated Cell"
+},
+"/obj/Quest13Enter": {
+"prompt": "Confront ImperfectCell??",
+"title": "ImperfectCell",
+"req": 12,
+"dest": [
+43,
+72,
+18
+],
+"spawns": [
+[
+"/mob/monsters/imperfectCell",
+56,
+72,
+18
+]
+],
+"done": "You have already defeated Cell"
+},
+"/obj/Quest14Enter": {
+"prompt": "Confront PerfectCell??",
+"title": "PerfectCell",
+"req": 13,
+"dest": [
+16,
+95,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Celljr",
+16,
+107,
+18
+],
+[
+"/mob/monsters/Celljr",
+16,
+107,
+18
+],
+[
+"/mob/monsters/Celljr",
+16,
+107,
+18
+],
+[
+"/mob/monsters/Celljr",
+16,
+107,
+18
+],
+[
+"/mob/monsters/Celljr",
+16,
+107,
+18
+]
+],
+"done": "You have already defeated Cell"
+},
+"/obj/Quest15Enter": {
+"prompt": "Confront Yamu and Spopovich??",
+"title": "Majin",
+"req": 14,
+"dest": [
+97,
+63,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Yamu",
+96,
+68,
+18
+],
+[
+"/mob/monsters/Spopovich",
+98,
+68,
+18
+]
+],
+"done": "You have already defeated Yamu/Spopovich"
+},
+"/obj/Quest16Enter": {
+"prompt": "Confront PuiPui??",
+"title": "Majin",
+"req": 15,
+"dest": [
+74,
+72,
+18
+],
+"spawns": [
+[
+"/mob/monsters/PuiPui",
+74,
+77,
+18
+]
+],
+"done": "You have already defeated PuiPui"
+},
+"/obj/Quest17Enter": {
+"prompt": "Confront Yakon??",
+"title": "Majin",
+"req": 16,
+"dest": [
+14,
+34,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Yakon",
+14,
+59,
+18
+]
+],
+"done": "You have already defeated Yakon"
+},
+"/obj/Quest19Enter": {
+"prompt": "Confront Majin Vegeta??",
+"title": "Majin Vegeta",
+"req": 18,
+"dest": [
+15,
+12,
+18
+],
+"spawns": [
+[
+"/mob/monsters/MajinVegeta",
+15,
+27,
+18
+]
+],
+"done": "You have already defeated Majin Vegeta"
+},
+"/obj/Quest18Enter": {
+"prompt": "Confront Dabura??",
+"title": "Majin",
+"req": 17,
+"dest": [
+40,
+43,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Dabura",
+40,
+50,
+18
+]
+],
+"done": "You have already defeated Dabura"
+},
+"/obj/Quest20Enter": {
+"prompt": "Confront Babidi??",
+"title": "Majin",
+"req": 19,
+"dest": [
+40,
+20,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Babidi",
+40,
+26,
+18
+]
+],
+"done": "You have already defeated Babidi"
+},
+"/obj/Quest21Enter": {
+"prompt": "Confront FatBuu??",
+"title": "Buu",
+"req": 20,
+"dest": [
+61,
+44,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Fatbuu",
+61,
+55,
+18
+]
+],
+"done": "You have already defeated FatBuu"
+},
+"/obj/Quest22Enter": {
+"prompt": "Confront SkinnyBuu??",
+"title": "Buu",
+"req": 21,
+"dest": [
+62,
+16,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Skinnybuu",
+62,
+34,
+18
+]
+],
+"done": "You have already defeated SkinnyBuu"
+},
+"/obj/Quest23Enter": {
+"prompt": "Confront SuperBuu??",
+"title": "Buu",
+"req": 22,
+"dest": [
+79,
+51,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Superbuu",
+90,
+51,
+18
+]
+],
+"done": "You have already defeated SuperBuu"
+},
+"/obj/Quest24Enter": {
+"prompt": "Confront KidBuu??",
+"title": "Buu",
+"req": 23,
+"dest": [
+86,
+21,
+18
+],
+"spawns": [
+[
+"/mob/monsters/Kidbuu",
+85,
+34,
+18
+]
+],
+"done": "You have already defeated KidBuu"
+}
+},
+"bosses": {
+"Saibaman": {
+"quest": 2,
+"zenni": 50,
+"warp": [
+47,
+155,
+18
+],
+"bonus": 300,
+"msgs": [
+"You have defeated a Saibaman!",
+"All the Saibamen have been defeated!!"
+],
+"spawn": [
+"/mob/monsters/Nappa",
+46,
+171,
+18
+]
+},
+"Nappa(NPC)": {
+"quest": 2,
+"zenni": 1500,
+"warp": [
+65,
+155,
+18
+],
+"bonus": 300,
+"msgs": [
+"You have defeated Nappa!",
+"Vegeta: Nappa your pathetic."
+],
+"spawn": [
+"/mob/monsters/Vegeta",
+64,
+171,
+18
+]
+},
+"Vegeta(NPC)": {
+"quest": 2,
+"zenni": 3000,
+"warp": [
+139,
+132,
+1
+],
+"bonus": 500,
+"msgs": [
+"You have defeated Vegeta!",
+"Vegeta: Damn...how can this be",
+"*Vegeta Crawls into his space pod and blasts away*"
+],
+"spawn": null
+},
+"Kiwi(NPC)": {
+"quest": 3,
+"zenni": 2000,
+"warp": [
+94,
+43,
+5
+],
+"bonus": 300,
+"msgs": [
+"You have defeated Kiwi!",
+"Kiwi has been defeated!!"
+],
+"spawn": null
+},
+"Dodoria(NPC)": {
+"quest": 4,
+"zenni": 3000,
+"warp": [
+16,
+24,
+5
+],
+"bonus": 400,
+"msgs": [
+"You have defeated Dodoria!",
+"Dodoria has been defeated!!"
+],
+"spawn": null
+},
+"Zarbon(NPC)": {
+"quest": 6,
+"zenni": 4000,
+"warp": [
+10,
+164,
+5
+],
+"bonus": 400,
+"msgs": [
+"You have defeated Zarbon!",
+"Zarbon has been defeated!!"
+],
+"spawn": null
+},
+"Guldo(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Guldo!"
+],
+"spawn": [
+"/mob/monsters/Recoom",
+142,
+145,
+18
+]
+},
+"Recoom(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Recoom!"
+],
+"spawn": [
+"/mob/monsters/Burter",
+146,
+118,
+18
+]
+},
+"Jeice(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Jeice!"
+],
+"spawn": [
+"/mob/monsters/Ginyu",
+142,
+92,
+18
+]
+},
+"Burter(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Burter!"
+],
+"spawn": [
+"/mob/monsters/Ginyu",
+142,
+92,
+18
+]
+},
+"Ginyu(NPC)": {
+"quest": 7,
+"zenni": 10000,
+"warp": [
+149,
+162,
+5
+],
+"bonus": 8000,
+"msgs": [
+"You have defeated the Ginyu Force!!"
+],
+"spawn": null
+},
+"Friezaform1(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Frieza's first form!!",
+"Freiza: Fool your going to pay now."
+],
+"spawn": [
+"/mob/monsters/Frieza2",
+170,
+139,
+18
+]
+},
+"Friezaform2(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Frieza's second form!!",
+"Freiza: I can't believe i have to transform again to defeat you!!."
+],
+"spawn": [
+"/mob/monsters/Frieza3",
+170,
+116,
+18
+]
+},
+"Friezaform3(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Frieza's third form!!",
+"Freiza: Now you have done it, i will transform to my final and most powerfull form!!!."
+],
+"spawn": [
+"/mob/monsters/Frieza4",
+166,
+86,
+18
+]
+},
+"Friezaform4(NPC)": {
+"quest": 8,
+"zenni": 10000,
+"warp": [
+167,
+18,
+5
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Frieza's final form!!",
+"You receive 10000 zenni for defeating Frieza's final form!!",
+"Frieza: How can..this..BE!!"
+],
+"spawn": null
+},
+"Friezabot(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Frieza!",
+"King Cold: How can this be?!."
+],
+"spawn": [
+"/mob/monsters/KingCold",
+52,
+134,
+18
+]
+},
+"Kingcold(NPC)": {
+"quest": 9,
+"zenni": 10000,
+"warp": [
+153,
+202,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated King Cold!!!!",
+"You receive 10000 zenni for defeating Frieza and King Cold!!"
+],
+"spawn": null
+},
+"19(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Android 19!",
+"Gero: How is this possible?!."
+],
+"spawn": [
+"/mob/monsters/A20",
+80,
+120,
+18
+]
+},
+"20(NPC)": {
+"quest": 10,
+"zenni": 8000,
+"warp": [
+168,
+16,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Dr.Gero!!!!",
+"You receive 8000 zenni for defeating Dr.Gero!!"
+],
+"spawn": null
+},
+"18(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Android 18!",
+"Android 18: Wow this one is tough.",
+"Android 17: Hmm, my turn."
+],
+"spawn": [
+"/mob/monsters/A17",
+106,
+116,
+18
+]
+},
+"17(NPC)": {
+"quest": null,
+"zenni": 0,
+"warp": null,
+"bonus": 0,
+"msgs": [
+"You have defeated Android 17!",
+"Android 17: Damnit, how is he so strong..",
+"Android 18: See what i mean.",
+"Android 16: *Sight* I guess I will have to do this."
+],
+"spawn": [
+"/mob/monsters/A16",
+106,
+95,
+18
+]
+},
+"16(NPC)": {
+"quest": 11,
+"zenni": 12000,
+"warp": [
+227,
+215,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Android 16!!!!",
+"You receive 12000 zenni for defeating the Androids!!",
+"Android 17: Shit lets get the hell out of here.",
+"Android 16: This doesnt make any sense..",
+"Android 18: He ruined my good jeans.."
+],
+"spawn": null
+},
+"Cell1(NPC)": {
+"quest": 12,
+"zenni": 5000,
+"warp": [
+131,
+219,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Cell!!!!",
+"You receive 5000 zenni for defeating Cell!!",
+"Cell:Damn, you wont defeat me after i absorb those androids",
+"*Cell Escapes and is heading for the Androids!*"
+],
+"spawn": null
+},
+"Cell2(NPC)": {
+"quest": 13,
+"zenni": 5000,
+"warp": [
+249,
+53,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Cell's Second form!!!!!",
+"You receive 5000 zenni for defeating Cell!!",
+"Cell:Ahh, i can't loose now!,I'm to close to perfection..",
+"*Cell Escapes and is heading for Android 18!!*"
+],
+"spawn": null
+},
+"Celljr(NPC)": {
+"quest": null,
+"zenni": 500,
+"warp": null,
+"bonus": 300,
+"msgs": [
+"You have defeated a Cell Jr!",
+"All the Celljr's have been defeated!!"
+],
+"spawn": [
+"/mob/monsters/perfectCell",
+16,
+81,
+18
+]
+},
+"Cell3(NPC)": {
+"quest": 14,
+"zenni": 15000,
+"warp": [
+173,
+216,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Cell's Perfect Form!!!!!",
+"Cell: AHHHHHH!!!",
+"*Cell Breaks apart and Dies*",
+"You receive 15000 zenni for defeating Cell!!"
+],
+"spawn": null
+},
+"Raditz(NPC)": {
+"quest": 1,
+"zenni": 1000,
+"warp": [
+264,
+237,
+1
+],
+"bonus": 300,
+"msgs": [
+"You have defeated Raditz!"
+],
+"spawn": null
+},
+"Puipui(NPC)": {
+"quest": 16,
+"zenni": 3000,
+"warp": [
+89,
+144,
+10
+],
+"bonus": 10000,
+"msgs": [
+"You have defeated Puipui!"
+],
+"spawn": null
+},
+"Spopovich(NPC)": {
+"quest": 15,
+"zenni": 0,
+"warp": [
+84,
+77,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Spopovich!"
+],
+"spawn": null
+},
+"Yamu(NPC)": {
+"quest": 15,
+"zenni": 0,
+"warp": [
+84,
+77,
+1
+],
+"bonus": 0,
+"msgs": [
+"You have defeated Yamu!"
+],
+"spawn": null
+},
+"Yakon(NPC)": {
+"quest": 17,
+"zenni": 5000,
+"warp": [
+89,
+128,
+10
+],
+"bonus": 15000,
+"msgs": [
+"You have defeated Yakon!"
+],
+"spawn": null
+},
+"Dabura(NPC)": {
+"quest": 18,
+"zenni": 7000,
+"warp": [
+89,
+112,
+10
+],
+"bonus": 20000,
+"msgs": [
+"You have defeated Dabura!"
+],
+"spawn": null
+},
+"MajinVegeta(NPC)": {
+"quest": 19,
+"zenni": 10000,
+"warp": [
+184,
+258,
+1
+],
+"bonus": 25000,
+"msgs": [
+"You have defeated Majin Vegeta!",
+"Vegeta:What.. Have i done."
+],
+"spawn": null
+},
+"Babidi(NPC)": {
+"quest": 20,
+"zenni": 10000,
+"warp": [
+97,
+74,
+1
+],
+"bonus": 25000,
+"msgs": [
+"You have defeated Babidi!",
+"Babidi: Ahh you think you have won, but look in the sky, Buu has escaped, and without my restraint will destroy the universe!"
+],
+"spawn": null
+},
+"Fatbuu(NPC)": {
+"quest": 21,
+"zenni": 10000,
+"warp": [
+98,
+78,
+1
+],
+"bonus": 30000,
+"msgs": [
+"You have defeated Fat Buu!",
+"Buu: You make Buu, ANGRY!",
+"*Steam comes bursting out of Buu's back and a second Buu is formed*",
+"FatBuu:No..No no no no no no ",
+"FatBuu:I need to get out of here!!",
+"*FatBuu flies away*"
+],
+"spawn": null
+},
+"Skinnybuu(NPC)": {
+"quest": 22,
+"zenni": 10000,
+"warp": [
+72,
+190,
+1
+],
+"bonus": 30000,
+"msgs": [
+"You have defeated Skinny Buu!",
+"Skinny Buu: Ah your strong...",
+"*Skinny Buu uses Food Change on Fat buu and turns him into a Cookie*",
+"FatBuu:AHHH",
+"*Skinny Buu eats Fat Buu.*",
+"*Skinny Buu transforms into Super Buu!*"
+],
+"spawn": null
+},
+"Superbuu(NPC)": {
+"quest": 23,
+"zenni": 15000,
+"warp": [
+15,
+14,
+12
+],
+"bonus": 50000,
+"msgs": [
+"You have defeated Super Buu!",
+"SuperBuu: AHHH!!",
+"*SuperBuu Emits a lot of steam*",
+"*The steam rises and a new Buu is born.*",
+"Kaoshin:Oh no. he's reached his most powerfull form, he is pure evil now..",
+"*Kid Buu taunts you and then uses Instant Transmission and disapears*"
+],
+"spawn": null
+},
+"Kidbuu(NPC)": {
+"quest": 24,
+"zenni": 30000,
+"warp": [
+3,
+126,
+10
+],
+"bonus": 100000,
+"msgs": [
+"You have defeated Kid Buu!",
+"KidBuu: NOOOOOOO!!!!",
+"*Buu breaks apart into thousands of pieces and disapears*"
+],
+"spawn": null
+},
+"Saiya-jin (NPC)": {
+"quest": null,
+"zenni": 2500,
+"warp": null,
+"bonus": 0,
+"msgs": [],
+"spawn": [
+"/mob/monsters/Raditz",
+25,
+138,
+1
+]
+}
+}
+},
+"npcs": {
+"/mob/Baba": [
+{
+"verb": "Return_To_Earth",
+"opts": [
+[
+"Go",
+74,
+35,
+10
+]
+],
+"text": [
+"<b>You may now return to earth!"
+]
+}
+],
+"/mob/CCPod": [
+{
+"verb": "Enter_SpacePod",
+"opts": [
+[
+"Go",
+109,
+18,
+3
+]
+],
+"text": []
+}
+],
+"/mob/Controlls": [
+{
+"verb": "Pilot_Spacepod",
+"opts": [
+[
+"Go",
+21,
+71,
+17
+]
+],
+"text": []
+},
+{
+"verb": "Set_Destination",
+"opts": [
+[
+"Namek",
+76,
+82,
+5
+],
+[
+"Earth",
+131,
+270,
+22
+],
+[
+"Dark",
+60,
+58,
+19
+]
+],
+"text": [
+"You will arive on namek soon, please enjoy the ride.(If you choose a new destination the flight will start over)",
+"You dont know where Namek is.",
+"You will arive on Earth soon, please enjoy the ride.(If you choose a new destination the flight will start over)"
+]
+}
+],
+"/mob/DarknessGuard": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"You've been blacklisted, get out of here!",
+"Your free to roam the planet, keep out of trouble."
+]
+}
+],
+"/mob/DrMyu": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Good, now you have enough power to infest people, as soon as a player is knocked out you can infest him, if you infesta saiyajin or half saiyajin you will be able to transform even further.",
+"Ah, welcome my Tsufurujin Friend.",
+"The Tsufurujin are not strong people, but they have brilliant minds, thanks to this machine, i can even the playing field against those Saiyajins."
+]
+}
+],
+"/mob/ElderKaoshin": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"You need to revert from Super Saiyan first."
+]
+},
+{
+"verb": "Return_to_Kaoshins_planet",
+"opts": [
+[
+"Go",
+22,
+127,
+10
+]
+],
+"text": []
+}
+],
+"/mob/MrSatan": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Heh,hows it going small fry."
+]
+}
+],
+"/mob/NPCs/Bulma": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"<b>You need 1000 zenni!",
+"<b>You get a Dragon Radar!",
+"There are 7 Dragonballs hidden around Earth, leaving the main map will cause you to drop whatever Dragonballs you have.  Dying will also cause you to drop Dragonballs, So with a DragonRadar you can hunt out each Dragonball and choose from many incredible wishes such as Immortality, Power, Wealth, Entrance to the sacred Kaoshin planet, or something silly. "
+]
+}
+],
+"/mob/SpacePod": [
+{
+"verb": "Enter_SpacePod",
+"opts": [
+[
+"Go",
+109,
+18,
+3
+]
+],
+"text": []
+}
+],
+"/mob/ZSword": [
+{
+"verb": "Pull",
+"opts": [
+[
+"Go",
+9,
+113,
+3
+]
+],
+"text": [
+"You pulled the sword out. It is incredilby heavy. Apon taking it out a strange old Kai is released.",
+"You got the Z-Sword!!",
+"Your not strong enough"
+]
+}
+],
+"/mob/Zordon": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Good work power rangers, *Zordon Powers you up*"
+]
+}
+],
+"/mob/bubb/bubbles": [
+{
+"verb": "GM_Help_Area",
+"opts": [
+[
+"Go",
+123,
+104,
+3
+]
+],
+"text": []
+}
+],
+"/mob/bubb/spike": [
+{
+"verb": "GM_Help_Area",
+"opts": [
+[
+"Go",
+123,
+104,
+3
+]
+],
+"text": []
+}
+],
+"/mob/bubb/spike2": [
+{
+"verb": "GM_Help_Area",
+"opts": [
+[
+"Go",
+123,
+104,
+3
+]
+],
+"text": []
+}
+],
+"/mob/bubb/x": [
+{
+"verb": "GM_Help_Area",
+"opts": [
+[
+"Go",
+123,
+104,
+3
+]
+],
+"text": []
+}
+],
+"/mob/bubb/x2": [
+{
+"verb": "GM_Help_Area",
+"opts": [
+[
+"Go",
+123,
+104,
+3
+]
+],
+"text": []
+}
+],
+"/mob/helperthree": [
+{
+"verb": "Talk",
+"opts": [
+[
+"I'm done training here",
+74,
+35,
+10
+]
+],
+"text": [
+"Hello you, your power has increased so much since you started training here, you are on the road to becoming a great martial arts master like myself.",
+"Well, you've gotten pretty strong, but still have much work ahead of yourself. Goodluck you.",
+"Very well, you are one of my best students, you have great potential. Goodluck you."
+]
+}
+],
+"/mob/kaioshin": [
+{
+"verb": "Return_To_Kaios",
+"opts": [
+[
+"Go",
+95,
+117,
+2
+]
+],
+"text": []
+},
+{
+"verb": "Learn",
+"opts": [],
+"text": [
+"You learn the Fusion dance!",
+"You already know it",
+"You aren't strong enough(2,000,000pl req)"
+]
+}
+],
+"/mob/melp/Shopkeeper": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"<b>insufficient funds</b>",
+"<b>You got a Gi!!",
+"<b>insufficient funds</b>"
+]
+}
+],
+"/mob/melp/Shopkeeper2": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"<b>You need 2000 zenni!",
+"<b>You get Class I Scouter!",
+"<b>You need 4000 zenni!"
+]
+}
+],
+"/mob/melp/Shopkeeper3": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"<b>You need 10000 zenni!",
+"<b>You get Custom Gi!!",
+"<b>You need 10000 zenni!"
+]
+}
+],
+"/mob/melp/Shopkeeper4": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"<b>You need 100 zenni!",
+"<b>You need 300 zenni!",
+"<b>You need 800 zenni!"
+]
+}
+],
+"/mob/melp/Shopkeeper5": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"That was a corrupt icon"
+]
+}
+],
+"/mob/melp/Shopkeeper_Saiyajin": [
+{
+"verb": "Buy",
+"opts": [],
+"text": [
+"You bought a you for you",
+"You dont have enough zenni!",
+"Your inventory is full"
+]
+}
+],
+"/mob/monsters/demon/randomperson2/Female": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"I will kill you..",
+"What do you want.You fappy bastard!",
+"Do I know you, Maggot!? Don't mess with me! "
+]
+}
+],
+"/mob/monsters/demon/randomperson2/Male": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"I will kill you..",
+"What do you want.You fappy bastard!",
+"Do I know you, Maggot!? Don't mess with me! "
+]
+}
+],
+"/mob/monsters/people/randomperson/Female": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Excuse me i have to be going.",
+"What do you want.",
+"Do i know you?"
+]
+}
+],
+"/mob/monsters/people/randomperson/Male": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Excuse me i have to be going.",
+"What do you want.",
+"Do i know you?"
+]
+}
+],
+"/mob/other/Dummy": [
+{
+"verb": "Train",
+"opts": [],
+"text": [
+"<b>You are currently training. Please select 'None' on the training screen.",
+"<b>You begin training your punches.",
+"<b>You are currently training. Please select 'None' on the training screen."
+]
+}
+],
+"/mob/other/Gero": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Greetings, I am Doctor Gero.",
+"You arent an Android."
+]
+},
+{
+"verb": "Learn",
+"opts": [],
+"text": [
+"you are to weak.",
+"You need to be a bit stronger.",
+"You need to be a bit stronger."
+]
+}
+],
+"/mob/other/Goku": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"Greetings, I am Goku.",
+"You must be a human to learn Unlock Potential",
+"You can learn currently: Unlock Potential"
+]
+},
+{
+"verb": "Learn",
+"opts": [],
+"text": [
+"Your power is already unlocked.",
+"You need to be a bit stronger.",
+"You learn unlock potential!"
+]
+}
+],
+"/mob/other/Tienshinhan": [
+{
+"verb": "Talk",
+"opts": [],
+"text": [
+"This is the secret Quest Gateway, if you arent Masterdan then shame on you."
+]
+}
+],
+"/mob/other/Yemma": [
+{
+"verb": "Decision",
+"opts": [
+[
+"King Kais",
+74,
+2,
+2
+],
+[
+"Heaven",
+69,
+6,
+4
+]
+],
+"text": [
+"You are a good hearted person, you may continue to heaven or if you want you can try to run snake way to try to convince King Kai to train you.",
+"<b>After speaking to King Yemma you have decided to continue to Snake Way in search of king kai.",
+" <b>After speaking to King Yemma you have decided to continue to Heaven."
+]
+}
+],
+"/mob/tester/kingkai": [
+{
+"verb": "Return_To_Earth",
+"opts": [
+[
+"Go",
+74,
+35,
+10
+]
+],
+"text": [
+"<b>You may now return to earth!",
+"<b>Sorry but your still dead, talk to Baba to go back to Earth Temporarily, and get the dragonballs to wish you back to life."
+]
+},
+{
+"verb": "Train_me",
+"opts": [],
+"text": [
+"<b>Ill teach you a very usefull ability, Instant Transmission, Remember any player or NPC, and you can use IT to teleport to them! as long as your alive."
+]
+},
+{
+"verb": "Complete_mission",
+"opts": [],
+"text": [
+"<b> Good work, you have cleared all the enraged souls, here is your reward..",
+"<b> You gain 10000, zenni, and your concentration increases!!"
+]
+}
+],
+"/obj/Blood_Bandits": [
+{
+"verb": "Look",
+"opts": [],
+"text": [
+"Welcome Blood Bandit,.. Owner: Skyler"
+]
+}
+],
+"/obj/DarknessControlls": [
+{
+"verb": "Blacklist_Player",
+"opts": [],
+"text": [
+"They are part of Darkness and must be removed before blacklisting.",
+"You dont have the rights to do that."
+]
+},
+{
+"verb": "UnBlacklist_Player",
+"opts": [],
+"text": [
+"You dont have the rights to do that."
+]
+}
+],
+"/obj/DarknessDemonController": [
+{
+"verb": "Get",
+"opts": [],
+"text": [
+"Your inventory is full"
+]
+}
+],
+"/obj/Eviltank": [
+{
+"verb": "Check",
+"opts": [],
+"text": [
+"This tank is almost full... with that sort of evil energy you could become much stronger.",
+"The evil floods into your body, you can now summon this evil to transform",
+"It seems to be a tank of pure evil, extracted from washed souls."
+]
+}
+],
+"/obj/GardenMap": [
+{
+"verb": "Look",
+"opts": [],
+"text": [
+"'Welcome to Gekisen Garden,  Where you are treated as a member, not a number.' - Headmaster",
+"Guild house created by 'Gunblader'",
+"North - Barber and shops"
+]
+}
+],
+"/obj/Gravitron": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/Gravitronfive": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/Gravitronfour": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/Gravitronfourspecial": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/Gravitronthree": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/Gravitrontwo": [
+{
+"verb": "Gravity",
+"opts": [],
+"text": [
+"<b>Thats not possible.",
+"<b>You turn off the gravity....",
+"<b>Please set the gravity to 0."
+]
+},
+{
+"verb": "Gravity_Type",
+"opts": [],
+"text": [
+"Switched Gravity Type to Pulse",
+"Switched Gravity Type to Gradual"
+]
+}
+],
+"/obj/HeavyPBag": [
+{
+"verb": "HitPunchingBag",
+"opts": [],
+"text": [
+"Not while flying.",
+"Not while resting",
+"You feel to weak to.."
+]
+}
+],
+"/obj/Machine": [
+{
+"verb": "HitPunchingBagLikeAMuthaFeckaYeahPeepah",
+"opts": [],
+"text": [
+"Not while flying.",
+"Not while resting",
+"You got some Zenni from that last hit."
+]
+}
+],
+"/obj/Order_Of_Chaos": [
+{
+"verb": "Look",
+"opts": [],
+"text": [
+"Welcome To Order Of Chaos... Owner: Koyoto"
+]
+}
+],
+"/obj/PBag": [
+{
+"verb": "HitPunchingBag",
+"opts": [],
+"text": [
+"Not while flying.",
+"Not while resting",
+"You feel to weak to.."
+]
+}
+],
+"/obj/Quest10Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+72,
+134,
+18
+]
+],
+"text": [
+"It isnt time to fight Gero/Android 19",
+"You have already defeated Gero/Android 19"
+]
+}
+],
+"/obj/Quest11Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+93,
+135,
+18
+]
+],
+"text": [
+"It isnt time to fight the Androids",
+"You have already defeated the Androids"
+]
+}
+],
+"/obj/Quest12Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+37,
+97,
+18
+]
+],
+"text": [
+"It isnt time to fight Cell",
+"You have already defeated Cell"
+]
+}
+],
+"/obj/Quest13Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+43,
+72,
+18
+]
+],
+"text": [
+"It isnt time to fight Cell",
+"You have already defeated Cell"
+]
+}
+],
+"/obj/Quest14Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+16,
+95,
+18
+]
+],
+"text": [
+"It isnt time to fight Cell",
+"You have already defeated Cell"
+]
+}
+],
+"/obj/Quest15Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+97,
+63,
+18
+]
+],
+"text": [
+"It isnt time to fight Yamu/Spopovich",
+"You have already defeated Yamu/Spopovich"
+]
+}
+],
+"/obj/Quest16Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+74,
+72,
+18
+]
+],
+"text": [
+"It isnt time to fight PuiPui",
+"You have already defeated PuiPui"
+]
+}
+],
+"/obj/Quest17Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+14,
+34,
+18
+]
+],
+"text": [
+"It isnt time to fight Yakon",
+"You have already defeated Yakon"
+]
+}
+],
+"/obj/Quest18Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+40,
+43,
+18
+]
+],
+"text": [
+"It isnt time to fight Dabura",
+"You have already defeated Dabura"
+]
+}
+],
+"/obj/Quest19Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+15,
+12,
+18
+]
+],
+"text": [
+"It isnt time to fight Majin Vegeta",
+"You have already defeated Majin Vegeta"
+]
+}
+],
+"/obj/Quest1Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+8,
+164,
+18
+]
+],
+"text": [
+"You have already defeated Raditz"
+]
+}
+],
+"/obj/Quest20Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+40,
+20,
+18
+]
+],
+"text": [
+"It isnt time to fight Babidi",
+"You have already defeated Babidi"
+]
+}
+],
+"/obj/Quest21Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+61,
+44,
+18
+]
+],
+"text": [
+"It isnt time to fight FatBuu",
+"You have already defeated FatBuu"
+]
+}
+],
+"/obj/Quest22Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+62,
+16,
+18
+]
+],
+"text": [
+"It isnt time to fight SkinnyBuu",
+"You have already defeated SkinnyBuu"
+]
+}
+],
+"/obj/Quest23Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+79,
+51,
+18
+]
+],
+"text": [
+"It isnt time to fight SuperBuu",
+"You have already defeated SuperBuu"
+]
+}
+],
+"/obj/Quest24Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+86,
+21,
+18
+]
+],
+"text": [
+"It isnt time to fight KidBuu",
+"You have already defeated KidBuu"
+]
+}
+],
+"/obj/Quest2Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+27,
+155,
+18
+]
+],
+"text": [
+"It isnt time to fight Vegeta and Nappa",
+"You have already defeated Vegeta and Nappa"
+]
+}
+],
+"/obj/Quest3Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+79,
+166,
+18
+]
+],
+"text": [
+"It isnt time to fight Kiwi",
+"You have already defeated Kiwi"
+]
+}
+],
+"/obj/Quest4Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+99,
+160,
+18
+]
+],
+"text": [
+"It isnt time to fight Dodoria",
+"You have already defeated Dodoria"
+]
+}
+],
+"/obj/Quest5Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+118,
+164,
+18
+]
+],
+"text": [
+"It isnt time to fight Zarbon",
+"You have already defeated Zarbon"
+]
+}
+],
+"/obj/Quest7Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+142,
+155,
+18
+]
+],
+"text": [
+"It isnt time to fight the Ginyu Force",
+"You have already defeated the Ginyu Force"
+]
+}
+],
+"/obj/Quest7Enter2": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+142,
+155,
+18
+]
+],
+"text": [
+"It isnt time to fight the Ginyu Force",
+"You have already defeated the Ginyu Force"
+]
+}
+],
+"/obj/Quest8Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+162,
+165,
+18
+]
+],
+"text": [
+"It isnt time to fight Frieza",
+"You have already defeated Frieza"
+]
+}
+],
+"/obj/Quest9Enter": [
+{
+"verb": "Fight",
+"opts": [
+[
+"Yes",
+7,
+132,
+18
+]
+],
+"text": [
+"It isnt time to fight Frieza/King Cold",
+"You have already defeated Friezabot/King Cold"
+]
+}
+],
+"/obj/Sign": [
+{
+"verb": "Writeinpaper",
+"opts": [],
+"text": [
+"What would you like to write?",
+"This is Finalized and cannot be changed"
+]
+},
+{
+"verb": "Finalize",
+"opts": [],
+"text": [
+"Please give it a name",
+"This is Finalized and cannot be changed"
+]
+},
+{
+"verb": "Readpaper",
+"opts": [],
+"text": [
+"you"
+]
+},
+{
+"verb": "ReadSign",
+"opts": [],
+"text": [
+"you"
+]
+},
+{
+"verb": "Destroy",
+"opts": [],
+"text": [
+"This Sign cannot be destroyed"
+]
+},
+{
+"verb": "Get",
+"opts": [],
+"text": [
+"Your inventory is full"
+]
+}
+],
+"/obj/Sign2": [
+{
+"verb": "Readpaper",
+"opts": [],
+"text": [
+"This is the Advanced Meditation area"
+]
+},
+{
+"verb": "ReadSign",
+"opts": [],
+"text": [
+"This is the Advanced Meditation area]"
+]
+}
+],
+"/obj/SilentCurse": [
+{
+"verb": "Look",
+"opts": [],
+"text": [
+"'Welcome you, to Silent Curse. The Guild Of Dreams.",
+"Guild Owned By Testament, Co-Owned By DRWarrior",
+"Guild items to be given out fairly."
+]
+}
+],
+"/obj/SpeedBag": [
+{
+"verb": "HitPunchingBag",
+"opts": [],
+"text": [
+"Not while flying.",
+"Not while resting",
+"You feel to weak to.."
+]
+}
+],
+"/obj/SuperPBag": [
+{
+"verb": "HitPunchingBag",
+"opts": [],
+"text": [
+"Not while flying.",
+"Not while resting",
+"You feel to weak to.."
+]
+}
+],
+"/obj/WeightTraining100": [
+{
+"verb": "Lift",
+"opts": [],
+"text": [
+"Not while flying.",
+"You feel to weak too."
+]
+}
+],
+"/obj/WeightTraining1000": [
+{
+"verb": "Lift",
+"opts": [],
+"text": [
+"Not while flying.",
+"You feel to weak too."
+]
+}
+],
+"/obj/WeightTraining100k": [
+{
+"verb": "Lift",
+"opts": [],
+"text": [
+"Not while flying.",
+"You feel to weak too."
+]
+}
+],
+"/obj/WeightTraining10k": [
+{
+"verb": "Lift",
+"opts": [],
+"text": [
+"Not while flying.",
+"You feel to weak too."
+]
+}
+],
+"/obj/WeightTraining1M": [
+{
+"verb": "Lift",
+"opts": [],
+"text": [
+"Not while flying.",
+"You feel to weak too."
+]
+}
+]
+},
+"mobs": {
+"/mob/characters/TestDummy": {
+"name": "TestDummy",
+"icon": 467,
+"state": "",
+"powerlevel": 1000000,
+"maxpowerlevel": 1000000,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/android": {
+"name": "android",
+"powerlevel": 1000,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/bioandroidcell": {
+"name": "bioandroidcell",
+"icon": 203,
+"state": "",
+"powerlevel": 540,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/bioandroidone": {
+"name": "bioandroidone",
+"icon": 467,
+"state": "",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/bioandroidthree": {
+"name": "bioandroidthree",
+"icon": 201,
+"state": "",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/bioandroidtwo": {
+"name": "bioandroidtwo",
+"icon": 202,
+"state": "",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/changling": {
+"name": "changling",
+"icon": 224,
+"state": "",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/demon": {
+"name": "demon",
+"icon": 468,
+"state": "",
+"powerlevel": 100,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/halfbreed": {
+"name": "halfbreed",
+"icon": 467,
+"state": "",
+"powerlevel": 800,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/halfieh": {
+"name": "halfieh",
+"icon": 467,
+"state": "",
+"powerlevel": 5,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/halfies": {
+"name": "halfies",
+"icon": 467,
+"state": "",
+"powerlevel": 5,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/humanjin": {
+"name": "humanjin",
+"icon": 467,
+"state": "",
+"powerlevel": 5,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/namekjin": {
+"name": "namekjin",
+"icon": 474,
+"state": "",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/saiyajin": {
+"name": "saiyajin",
+"icon": 467,
+"state": "",
+"powerlevel": 120,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/characters/tsufurujin": {
+"name": "tsufurujin",
+"icon": 467,
+"state": "",
+"powerlevel": 100,
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/A16": {
+"name": "A16",
+"icon": 23,
+"state": "",
+"powerlevel": 60080000,
+"maxpowerlevel": 600280000,
+"strength": 18000,
+"hp": 1000,
+"maxhp": 150,
+"race": "16(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/A17": {
+"name": "A17",
+"icon": 181,
+"state": "",
+"powerlevel": 506000000,
+"maxpowerlevel": 502600000,
+"strength": 16000,
+"hp": 920,
+"maxhp": 150,
+"race": "17(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/A18": {
+"name": "A18",
+"icon": 182,
+"state": "",
+"powerlevel": 500400000,
+"maxpowerlevel": 500400000,
+"strength": 13000,
+"hp": 910,
+"maxhp": 150,
+"race": "18(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/A19": {
+"name": "A19",
+"icon": 183,
+"state": "",
+"powerlevel": 180900000,
+"maxpowerlevel": 190900000,
+"strength": 16000,
+"hp": 840,
+"maxhp": 150,
+"race": "19(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/A20": {
+"name": "A20",
+"icon": 184,
+"state": "",
+"powerlevel": 140100000,
+"maxpowerlevel": 192100000,
+"strength": 18000,
+"hp": 800,
+"maxhp": 150,
+"race": "20(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Babidi": {
+"name": "Babidi",
+"icon": 25,
+"state": "",
+"powerlevel": 4600000,
+"maxpowerlevel": 4600000,
+"strength": 3000,
+"hp": 300,
+"maxhp": 150,
+"race": "Babidi(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Bardock": {
+"name": "Bardock",
+"icon": 27,
+"state": "",
+"powerlevel": 19400,
+"maxpowerlevel": 19400,
+"strength": 1940,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Brolly": {
+"name": "Brolly",
+"icon": 34,
+"state": "",
+"powerlevel": 1081250000,
+"maxpowerlevel": 2200000000,
+"strength": 9250,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Burter": {
+"name": "Burter",
+"icon": 35,
+"state": "",
+"powerlevel": 100000,
+"maxpowerlevel": 100000,
+"strength": 2000,
+"hp": 150,
+"maxhp": 150,
+"race": "Burter(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Celipa": {
+"name": "Celipa",
+"icon": 51,
+"state": "Celipa",
+"powerlevel": 4100,
+"maxpowerlevel": 4100,
+"strength": 420,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Cell": {
+"name": "Cell",
+"icon": 203,
+"state": "",
+"powerlevel": 605000000,
+"maxpowerlevel": 690000000,
+"strength": 50000,
+"hp": 1000,
+"maxhp": 150,
+"race": "Cell1(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Celljr": {
+"name": "Celljr",
+"icon": 42,
+"state": "",
+"powerlevel": 2000000,
+"maxpowerlevel": 466055274,
+"strength": 19000,
+"hp": 850,
+"maxhp": 150,
+"race": "Celljr(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Chozou": {
+"name": "Chozou",
+"icon": 51,
+"state": "Chozou",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingChozou(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Dabura": {
+"name": "Dabura",
+"icon": 49,
+"state": "",
+"powerlevel": 700000000,
+"maxpowerlevel": 900000000,
+"strength": 60000,
+"hp": 1200,
+"maxhp": 150,
+"race": "Dabura(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/DarknessDemon": {
+"name": "DarknessDemon",
+"icon": 69,
+"state": "",
+"powerlevel": 30000000,
+"maxpowerlevel": 30000000,
+"strength": 99900,
+"hp": 150,
+"maxhp": 150,
+"race": "Enemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Dodoria": {
+"name": "Dodoria",
+"icon": 341,
+"state": "",
+"powerlevel": 31000,
+"maxpowerlevel": 31000,
+"strength": 3100,
+"hp": 150,
+"maxhp": 150,
+"race": "Dodoria(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/FatJanemba": {
+"name": "FatJanemba",
+"icon": 55,
+"state": "",
+"powerlevel": 18000000,
+"maxpowerlevel": 18000000,
+"strength": 90000,
+"hp": 400,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Fatbuu": {
+"name": "Fatbuu",
+"icon": 38,
+"state": "",
+"powerlevel": 900000000,
+"maxpowerlevel": 1800000000,
+"strength": 72000,
+"hp": 2000,
+"maxhp": 150,
+"race": "Fatbuu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Frieza1": {
+"name": "Frieza1",
+"icon": 56,
+"state": "",
+"powerlevel": 450000,
+"maxpowerlevel": 450000,
+"strength": 4000,
+"hp": 250,
+"maxhp": 150,
+"race": "Friezaform1(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Frieza2": {
+"name": "Frieza2",
+"icon": 57,
+"state": "",
+"powerlevel": 600000,
+"maxpowerlevel": 1000000,
+"strength": 8000,
+"hp": 350,
+"maxhp": 150,
+"race": "Friezaform2(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Frieza3": {
+"name": "Frieza3",
+"icon": 58,
+"state": "",
+"powerlevel": 800000,
+"maxpowerlevel": 1100000,
+"strength": 9000,
+"hp": 400,
+"maxhp": 150,
+"race": "Friezaform3(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Frieza4": {
+"name": "Frieza4",
+"icon": 59,
+"state": "",
+"powerlevel": 1100000,
+"maxpowerlevel": 120000000,
+"strength": 20000,
+"hp": 650,
+"maxhp": 150,
+"race": "Friezaform4(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Friezabot": {
+"name": "Friezabot",
+"icon": 60,
+"state": "",
+"powerlevel": 1700000,
+"maxpowerlevel": 125000000,
+"strength": 20000,
+"hp": 700,
+"maxhp": 150,
+"race": "Friezabot(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/FutureTrunks": {
+"name": "FutureTrunks",
+"icon": 51,
+"state": "Trunks2",
+"powerlevel": 1,
+"maxpowerlevel": 400000001,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingTrunks(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Ginyu": {
+"name": "Ginyu",
+"icon": 41,
+"state": "Ginyu",
+"powerlevel": 230000,
+"maxpowerlevel": 230000,
+"strength": 2000,
+"hp": 150,
+"maxhp": 150,
+"race": "Ginyu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Gohan": {
+"name": "Gohan",
+"icon": 51,
+"state": "Gohan",
+"powerlevel": 1,
+"maxpowerlevel": 900000001,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingGohan(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Goten": {
+"name": "Goten",
+"icon": 51,
+"state": "Goten",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingGoten(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Guldo": {
+"name": "Guldo",
+"icon": 376,
+"state": "",
+"powerlevel": 60000,
+"maxpowerlevel": 60000,
+"strength": 5000,
+"hp": 150,
+"maxhp": 150,
+"race": "Guldo(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Henchman": {
+"name": "Henchman",
+"icon": 351,
+"state": "henchmen",
+"powerlevel": 9000,
+"maxpowerlevel": 9000,
+"strength": 300,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Janemba": {
+"name": "Janemba",
+"icon": 68,
+"state": "",
+"powerlevel": 25000000,
+"maxpowerlevel": 25000000,
+"strength": 100000,
+"hp": 500,
+"maxhp": 150,
+"race": "Janemba(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Jeice": {
+"name": "Jeice",
+"icon": 72,
+"state": "",
+"powerlevel": 100000,
+"maxpowerlevel": 100000,
+"strength": 2000,
+"hp": 150,
+"maxhp": 150,
+"race": "Jeice(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/KidTrunks": {
+"name": "KidTrunks",
+"icon": 51,
+"state": "Trunks5",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingKidTrunks(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Kidbuu": {
+"name": "Kidbuu",
+"icon": 37,
+"state": "",
+"powerlevel": 900000000,
+"maxpowerlevel": 9000000000,
+"strength": 99000,
+"hp": 3300,
+"maxhp": 150,
+"race": "Kidbuu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/KingCold": {
+"name": "KingCold",
+"icon": 452,
+"state": "",
+"powerlevel": 110000000,
+"maxpowerlevel": 500000000,
+"strength": 40000,
+"hp": 900,
+"maxhp": 150,
+"race": "Kingcold(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/KingVegeta": {
+"name": "KingVegeta",
+"icon": 453,
+"state": "",
+"powerlevel": 21400,
+"maxpowerlevel": 21400,
+"strength": 2140,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Kiwi": {
+"name": "Kiwi",
+"icon": 74,
+"state": "",
+"powerlevel": 24400,
+"maxpowerlevel": 24400,
+"strength": 1840,
+"hp": 150,
+"maxhp": 150,
+"race": "Kiwi(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Krillin": {
+"name": "Krillin",
+"icon": 51,
+"state": "Krillin",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingKrillin(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/MajinVegeta": {
+"name": "MajinVegeta",
+"icon": 138,
+"state": "",
+"powerlevel": 7000000,
+"maxpowerlevel": 1160000000,
+"strength": 63000,
+"hp": 1500,
+"maxhp": 150,
+"race": "MajinVegeta(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Mutant": {
+"name": "Mutant",
+"icon": 472,
+"state": "",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingMutant(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Nappa": {
+"name": "Nappa",
+"icon": 76,
+"state": "",
+"powerlevel": 8400,
+"maxpowerlevel": 8400,
+"strength": 740,
+"hp": 150,
+"maxhp": 150,
+"race": "Nappa(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Panboukin": {
+"name": "Panboukin",
+"icon": 51,
+"state": "Panboukin",
+"powerlevel": 7400,
+"maxpowerlevel": 7400,
+"strength": 740,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Piccolo": {
+"name": "Piccolo",
+"icon": 51,
+"state": "Piccolo",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingPiccolo(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/PuiPui": {
+"name": "PuiPui",
+"icon": 488,
+"state": "",
+"powerlevel": 1470000,
+"maxpowerlevel": 1470000,
+"strength": 4000,
+"hp": 150,
+"maxhp": 150,
+"race": "Puipui(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Putty": {
+"name": "Putty",
+"icon": 80,
+"state": "",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingPutty(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Putty2": {
+"name": "Putty2",
+"icon": 80,
+"state": "",
+"powerlevel": 1000000,
+"maxpowerlevel": 1000000,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "Enemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Raditz": {
+"name": "Raditz",
+"icon": 490,
+"state": "raditz",
+"powerlevel": 1400,
+"maxpowerlevel": 1400,
+"strength": 120,
+"hp": 150,
+"maxhp": 150,
+"race": "Raditz(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Recoom": {
+"name": "Recoom",
+"icon": 83,
+"state": "",
+"powerlevel": 130000,
+"maxpowerlevel": 130000,
+"strength": 4900,
+"hp": 150,
+"maxhp": 150,
+"race": "Recoom(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Skinnybuu": {
+"name": "Skinnybuu",
+"icon": 36,
+"state": "",
+"powerlevel": 1000000000,
+"maxpowerlevel": 2050000000,
+"strength": 78000,
+"hp": 3000,
+"maxhp": 150,
+"race": "Skinnybuu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Spopovich": {
+"name": "Spopovich",
+"icon": 553,
+"state": "",
+"powerlevel": 360000,
+"maxpowerlevel": 360000,
+"strength": 3500,
+"hp": 150,
+"maxhp": 150,
+"race": "Spopovich(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Superbuu": {
+"name": "Superbuu",
+"icon": 39,
+"state": "",
+"powerlevel": 800000000,
+"maxpowerlevel": 2400000000,
+"strength": 87000,
+"hp": 3200,
+"maxhp": 150,
+"race": "Superbuu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Tien": {
+"name": "Tien",
+"icon": 51,
+"state": "Tien",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingTien(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Toma": {
+"name": "Toma",
+"icon": 131,
+"state": "",
+"powerlevel": 8400,
+"maxpowerlevel": 8400,
+"strength": 840,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Totepo": {
+"name": "Totepo",
+"icon": 51,
+"state": "Totepo",
+"powerlevel": 7100,
+"maxpowerlevel": 7100,
+"strength": 720,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Trunks": {
+"name": "Trunks",
+"icon": 51,
+"state": "Trunks2",
+"powerlevel": 12500000,
+"maxpowerlevel": 12500000,
+"strength": 1250000,
+"hp": 150,
+"maxhp": 150,
+"race": "Trunks(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Vegeta": {
+"name": "Vegeta",
+"icon": 583,
+"state": "",
+"powerlevel": 12500,
+"maxpowerlevel": 12500,
+"strength": 1250,
+"hp": 150,
+"maxhp": 150,
+"race": "Vegeta(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Yakon": {
+"name": "Yakon",
+"icon": 594,
+"state": "",
+"powerlevel": 30100000,
+"maxpowerlevel": 35100000,
+"strength": 5000,
+"hp": 150,
+"maxhp": 150,
+"race": "Yakon(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Yamcha": {
+"name": "Yamcha",
+"icon": 51,
+"state": "Yamcha2",
+"powerlevel": 1,
+"maxpowerlevel": 1,
+"strength": 0,
+"hp": 150,
+"maxhp": 150,
+"race": "TrainingYamcha(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Yamu": {
+"name": "Yamu",
+"icon": 145,
+"state": "",
+"powerlevel": 390000,
+"maxpowerlevel": 390000,
+"strength": 3000,
+"hp": 150,
+"maxhp": 150,
+"race": "Yamu(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/Zarbon": {
+"name": "Zarbon",
+"icon": 177,
+"state": "",
+"powerlevel": 61400,
+"maxpowerlevel": 61400,
+"strength": 3140,
+"hp": 150,
+"maxhp": 150,
+"race": "Zarbon(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/bman": {
+"name": "bman",
+"icon": 467,
+"state": "",
+"powerlevel": 1000,
+"maxpowerlevel": 1000,
+"strength": 25,
+"hp": 150,
+"maxhp": 150,
+"race": "Multiform",
+"ki": 2,
+"maxki": 0
+},
+"/mob/monsters/demon": {
+"name": "demon",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/demon/randomperson2": {
+"name": "randomperson2",
+"powerlevel": 8000000,
+"maxpowerlevel": 15000000,
+"strength": 19080,
+"hp": 1200,
+"maxhp": 150,
+"race": "Demon(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/demon/randomperson2/Female": {
+"name": "Demon(NPC)",
+"icon": 356,
+"state": "",
+"powerlevel": 8000000,
+"maxpowerlevel": 15000000,
+"strength": 19080,
+"hp": 1200,
+"maxhp": 150,
+"race": "Demon(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/demon/randomperson2/Male": {
+"name": "Demon(NPC)",
+"icon": 468,
+"state": "",
+"powerlevel": 8000000,
+"maxpowerlevel": 15000000,
+"strength": 19080,
+"hp": 1200,
+"maxhp": 150,
+"race": "Demon(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange": {
+"name": "freerange",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/Celljr": {
+"name": "Celljr",
+"icon": 42,
+"state": "",
+"powerlevel": 200000000,
+"maxpowerlevel": 400000000,
+"strength": 4500,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/Henchman": {
+"name": "Henchman",
+"icon": 351,
+"state": "henchmen",
+"powerlevel": 19000,
+"maxpowerlevel": 19000,
+"strength": 1000,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/Henchman2": {
+"name": "Henchman2",
+"icon": 352,
+"state": "henchmen",
+"powerlevel": 32000,
+"maxpowerlevel": 32000,
+"strength": 1000,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/Henchman3": {
+"name": "Henchman3",
+"icon": 353,
+"state": "henchmen",
+"powerlevel": 76000,
+"maxpowerlevel": 76000,
+"strength": 1000,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/MajinFighter": {
+"name": "MajinFighter",
+"icon": 461,
+"state": "",
+"powerlevel": 3000000,
+"maxpowerlevel": 3000000,
+"strength": 6500,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/MajinFighter2": {
+"name": "MajinFighter2",
+"icon": 462,
+"state": "",
+"powerlevel": 3700000,
+"maxpowerlevel": 3700000,
+"strength": 7000,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/RRdroid": {
+"name": "RRdroid",
+"icon": 81,
+"state": "",
+"powerlevel": 200000,
+"maxpowerlevel": 200000,
+"strength": 1900,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/RRsoldier": {
+"name": "RRsoldier",
+"icon": 82,
+"state": "",
+"powerlevel": 500000,
+"maxpowerlevel": 500000,
+"strength": 2100,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/saibaman": {
+"name": "saibaman",
+"icon": 501,
+"state": "",
+"powerlevel": 1000,
+"maxpowerlevel": 1000,
+"strength": 80,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/saibaman2": {
+"name": "saibaman2",
+"icon": 503,
+"state": "",
+"powerlevel": 3000,
+"maxpowerlevel": 3000,
+"strength": 240,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/freerange/saibaman3": {
+"name": "saibaman3",
+"icon": 502,
+"state": "",
+"powerlevel": 10000,
+"maxpowerlevel": 10000,
+"strength": 810,
+"hp": 150,
+"maxhp": 150,
+"race": "FreeEnemy(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/imperfectCell": {
+"name": "imperfectCell",
+"icon": 204,
+"state": "",
+"powerlevel": 703050000,
+"maxpowerlevel": 779500000,
+"strength": 25000,
+"hp": 1300,
+"maxhp": 150,
+"race": "Cell2(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/mrsatanmonster": {
+"name": "mrsatanmonster",
+"icon": 51,
+"state": "",
+"powerlevel": 1200,
+"maxpowerlevel": 12,
+"strength": 12,
+"hp": 150,
+"maxhp": 150,
+"race": "Respawnable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/people": {
+"name": "people",
+"hp": 150,
+"maxhp": 150,
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/people/randomperson": {
+"name": "randomperson",
+"powerlevel": 4,
+"maxpowerlevel": 4,
+"hp": 200,
+"maxhp": 150,
+"race": "Killable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/people/randomperson/Female": {
+"name": "(NPC)",
+"icon": 360,
+"state": "",
+"powerlevel": 4,
+"maxpowerlevel": 4,
+"hp": 200,
+"maxhp": 150,
+"race": "Killable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/people/randomperson/Male": {
+"name": "(NPC)",
+"icon": 467,
+"state": "",
+"powerlevel": 4,
+"maxpowerlevel": 4,
+"hp": 200,
+"maxhp": 150,
+"race": "Killable(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/perfectCell": {
+"name": "perfectCell",
+"icon": 205,
+"state": "",
+"powerlevel": 90500000,
+"maxpowerlevel": 900450000,
+"strength": 45000,
+"hp": 1200,
+"maxhp": 150,
+"race": "Cell3(NPC)",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/saibaman": {
+"name": "saibaman",
+"icon": 501,
+"state": "",
+"powerlevel": 1000,
+"maxpowerlevel": 1000,
+"strength": 80,
+"hp": 150,
+"maxhp": 150,
+"race": "Saibaman",
+"ki": 0,
+"maxki": 0
+},
+"/mob/monsters/saibaman2": {
+"name": "saibaman2",
+"icon": 501,
+"state": "",
+"powerlevel": 1000,
+"maxpowerlevel": 1000,
+"strength": 80,
+"hp": 150,
+"maxhp": 150,
+"race": "Enemy(NPC)",
+"ki": 0,
+"maxki": 0
+}
+}
+}

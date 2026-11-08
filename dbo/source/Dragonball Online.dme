@@ -1,0 +1,93 @@
+// DM Environment file for DBOZ.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_INTERNALS
+/*
+FILE: 
+AUTO_FILE_DIR: ON
+*/
+// END_INTERNALS
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+#define FILE_DIR "icons"
+#define FILE_DIR "icons/blackness"
+#define FILE_DIR "icons/deathball"
+#define FILE_DIR "icons/spiritbomb"
+#define FILE_DIR "icons/ssjspiritbomb"
+#define FILE_DIR "music"
+#define FILE_DIR "sounds"
+// END_FILE_DIR
+
+// BEGIN_PREFERENCES
+// END_PREFERENCES
+
+#define NO_CHANNEL 0
+#define SAY_CHANNEL 1
+#define WORLD_CHANNEL 2
+#define ROLEPLAY_CHANNEL 3
+#define GUILD_CHANNEL 4
+#define COMMENT_CHANNEL 5
+#define GM_ENF_CHANNEL 6
+#define GM_CHANNEL 7
+#define GM_ENC_WORLD_CHANNEL 8
+#define YELL_CHANNEL 9
+#define SCOUTER_CHANNEL 10
+#define ADMIN_CHANNEL 11
+
+#define SCOUTER_MAX 999
+
+#define isBasic(x) istype(x,/styles/basic)
+#define isAdept(x) istype(x,/styles/adept)
+#define isAdvanced(x) istype(x,/styles/advanced)
+#define isZanStance(x) istype(x,/styles/zanstances)
+#define isKaiStance(x) istype(x,/styles/kai)
+#define isSwordStance(x) istype(x,/styles/sword)
+#define isNamekStance(x) istype(x,/styles/namek)
+#define isPoleStance(x) istype(x,/styles/powerpole)
+
+// BEGIN_INCLUDE
+#include <dantom\htmllib\htmllib.dme>
+#include <deadron\basecamp\BaseCamp.dme>
+#include <deadron\eventloop\eventloop.dme>
+#include <deadron\geography\Geography.dme>
+#include <deadron\pathfinding\PathFinding.dme>
+#include <deadron\test\Test.dme>
+#include <deadron\texthandling\TextHandling.dme>
+#include "Map.dmp"
+#include "Title.dmp"
+#include "DBO.dms"
+#include "code\Arial7pt.dm"
+#include "code\DmiFonts.dm"
+#include "code\Dragonball Online.dm"
+#include "code\explodeeffect.dm"
+#include "code\Help.dm"
+#include "code\hud.dm"
+#include "code\Mail V2.0.dm"
+#include "code\plan.dm"
+#include "code\quakeeffect.dm"
+#include "code\s_missle.dm"
+#include "code\safety coding.dm"
+#include "code\TimeSys.dm"
+#include "code\turfs.dm"
+#include "code\admin\bansys.dm"
+#include "code\admin\Police.dm"
+#include "code\admin\RemoteAdmin_Include.dm"
+#include "code\combat\battle_system.dm"
+#include "code\combat\physical attack.dm"
+#include "code\combat\styles.dm"
+#include "code\combat\skills\skills.dm"
+#include "code\guilds\guild.dm"
+#include "code\guilds\guildverbs.dm"
+#include "code\guilds\mattguild.dm"
+#include "code\items\dragonballs.dm"
+#include "code\items\namek_dragonballs.dm"
+#include "code\items\objs.dm"
+#include "code\mobs\char_handling.dm"
+#include "code\mobs\mobs.dm"
+#include "code\mobs\monsters.dm"
+#include "code\mobs\vars.dm"
+#include "code\mobs\verbs.dm"
+#include "code\quests\quest.dm"
+// END_INCLUDE
+

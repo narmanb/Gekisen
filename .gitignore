@@ -1,0 +1,6 @@
+android-port/android/.gradle/
+android-port/android/build/
+android-port/android/app/build/
+android-port/android/local.properties
+android-port/tools/__pycache__/
+*.apk
