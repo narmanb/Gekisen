@@ -476,5 +476,13 @@ func run() -> void:
 	var vr: Rect2 = ui.get_viewport().get_visible_rect()
 	print("STICK ", ui.stick.get_global_rect(), " in view ", vr.encloses(ui.stick.get_global_rect()), " ATTACK in view ", vr.encloses(ui.attack_btn.get_global_rect()))
 	await shot("14_continue_resized")
+	var loaded := 0
+	for n in ["punchhit.wav", "kamehameha_fire.wav", "expload.wav", "teleport.wav", "powerup.wav", "aura_full.wav", "strong_hit_01.ogg", "meleeflash.ogg"]:
+		Game._sfx_last.erase(n)
+		Game.sfx(n)
+		if Game._sfx_cache.get(n) != null:
+			loaded += 1
+	print("SOUNDS loaded ", loaded, "/8, playing ", Game._sfx_players.filter(func(a): return a.playing).size())
+	assert(loaded == 8)
 	print("AUTOTEST OK")
 	get_tree().quit()

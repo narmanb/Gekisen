@@ -169,6 +169,7 @@ func _build_hud() -> void:
 	minimap.ui = self
 	hud.add_child(minimap)
 	minimap.visible = bool(logwin._prefs().get("minimap", true))
+	Game.sfx_on = bool(logwin._prefs().get("sound", true))
 	# top-right buttons
 	var tr := HBoxContainer.new()
 	tr.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -1018,6 +1019,14 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
+	v.add_child(_button("Sound On / Off", func():
+		Game.sfx_on = not Game.sfx_on
+		var d: Dictionary = logwin._prefs()
+		d["sound"] = Game.sfx_on
+		var fa := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
+		if fa:
+			fa.store_string(JSON.stringify(d))
+		Game.msg("Sound %s." % ("on" if Game.sfx_on else "off"), Color(0.7, 0.8, 1))))
 	v.add_child(_button("Transformation Aura On / Off", func():
 		Game.P["trans_aura"] = not bool(Game.P.get("trans_aura", true))
 		Game.build_appearance()

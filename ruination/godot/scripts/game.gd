@@ -404,6 +404,61 @@ func _big_aura(p: Dictionary) -> String:
 	return ""
 
 
+# =================================================================== sound
+## The original Ruination only ships aura full.wav (Aura) and a few unused ones, so attacks use
+## the sound set from Gekisen in this repo: punch/kick hits, ki and beam fire, explosions,
+## teleport, power up. Menu -> Sound turns it off.
+var sfx_on := true
+var _sfx_players: Array = []
+var _sfx_cache := {}
+var _sfx_last := {}
+
+
+func sfx(name: String, vol_db := 0.0, min_gap_ms := 60.0) -> void:
+	if not sfx_on or name == "":
+		return
+	if now - float(_sfx_last.get(name, -1e9)) < min_gap_ms:
+		return
+	_sfx_last[name] = now
+	if not _sfx_cache.has(name):
+		var path := "res://sounds/%s" % name
+		_sfx_cache[name] = load(path) if ResourceLoader.exists(path) else null
+	var st = _sfx_cache[name]
+	if st == null:
+		return
+	if _sfx_players.is_empty():
+		for i in 10:
+			var ap := AudioStreamPlayer.new()
+			add_child(ap)
+			_sfx_players.append(ap)
+	var pick: AudioStreamPlayer = _sfx_players[0]
+	for ap in _sfx_players:
+		if not ap.playing:
+			pick = ap
+			break
+	pick.stream = st
+	pick.volume_db = vol_db
+	pick.play()
+
+
+## Which fire sound a blast technique makes.
+func _fire_sfx(t: Dictionary) -> String:
+	var b: String = str(t.get("blast", "")).to_lower()
+	if b.contains("kamehameha"):
+		return "kamehameha_fire.wav"
+	if b.contains("specialbeam"):
+		return "sbc_fire.wav"
+	if b.contains("disk") or b.contains("disc"):
+		return "disc_fire.wav"
+	if b in ["swordslash"]:
+		return "slash.wav"
+	if int(t.get("beam", 0)) == 1:
+		return "basicbeam_fire.wav"
+	if int(t.get("splash", 0)) >= 2:
+		return "spiritbomb_fire.wav"
+	return "burning_fire.wav"
+
+
 func start(p: Dictionary) -> void:
 	session = {}
 	call_deferred("_snapshot_session")
@@ -804,6 +859,7 @@ func melee() -> void:
 	if randf() < 0.1:
 		P["strength_max"] = float(P["strength_max"]) + randi_range(10, 100) + float(P["level"]) / 2.0
 	world.floater(m.x, m.y, m.z, ("CRIT " if crit else "") + fmt(dmg), Color(1, 0.85, 0.3) if not crit else Color(1, 0.4, 0.2))
+	sfx("meleeflash.ogg" if crit else ("punchhit.wav" if randf() < 0.5 else "kickhit.wav"), -2.0 if crit else 0.0)
 	if m.powerlevel <= 0:
 		monster_die(m)
 
@@ -840,6 +896,7 @@ func monster_attack(m: Mob) -> void:
 	if busy != "":
 		stop_busy()
 	world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.3, 0.3))
+	sfx("punchhit.wav" if randf() < 0.5 else "kickhit.wav", -6.0)
 	if float(P["powerlevel"]) <= 0:
 		player_ko(m)
 
@@ -922,6 +979,7 @@ func use_tech(key: String) -> void:
 	match kind:
 		"blast":
 			pe.do_flick("blast", now)
+			sfx(_fire_sfx(t), -3.0)
 			if t.get("spawn", "") == "triple":
 				# Techniques3.dm: one blast in front and one on each side, all flying the same way
 				var dmg := blast_damage(t)
@@ -961,12 +1019,15 @@ func use_tech(key: String) -> void:
 			var stat: String = t.get("stat", "")
 			if int(t.get("toggle", 0)) == 1:
 				toggles[stat] = not toggles.get(stat, false)
+				if stat == "aura" and toggles[stat]:
+					sfx("aura_full.wav", -4.0)      # Aura.dm: usr << sound('aura full.wav')
 				msg("%s %s." % [t.get("name", key), "on" if toggles[stat] else "off"], Color(1, 0.85, 0.4))
 			else:
 				buffs[stat] = {"mult": float(t.get("mult", 1.25)), "until": now + float(t.get("secs", 60)) * 1000.0}
 				msg("%s! (%s boosted for %ds)" % [t.get("name", key), stat, int(t.get("secs", 60))], Color(1, 0.85, 0.4))
 			build_appearance()
 		"heal":
+			sfx("regen.wav", -4.0)
 			var amt: float = cap("powerlevel") * float(t.get("amount", 0.2))
 			P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + amt)
 			if t.has("ki"):
@@ -1037,6 +1098,7 @@ func _push() -> void:
 	pe.do_flick("attack", now)
 	var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 150.0) * 0.4)
 	_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.6, 0.3), "")
+	sfx("strong_hit_01.ogg", -4.0)
 	if not m.dead:
 		_throw(m, pe.dir, randi_range(1, 3))
 
@@ -1059,6 +1121,7 @@ func _power_dash(t: Dictionary) -> void:
 		msg("You can't use this technique while flying", Color(1, 0.4, 0.4))
 		return
 	pe.do_flick("IT", now)
+	sfx("teleport.wav", -4.0)
 	var path: Array = []
 	var x := pe.x
 	var y := pe.y
@@ -1090,7 +1153,8 @@ func _power_dash(t: Dictionary) -> void:
 				return
 			var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0) * 0.6)
 			msg("%s slammed into %s!" % [P["name"], m.name], Color(1, 0.8, 0.4), "combat")
-			_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.5, 0.2), ""))
+			_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.5, 0.2), "")
+			sfx("strong_hit_01.ogg", -2.0))
 
 
 func _after_image(x: int, y: int) -> void:
@@ -1130,6 +1194,8 @@ func _burst_rush() -> void:
 			if m.dead:
 				return
 			pe.do_flick("IT", now)
+			sfx("teleport.wav", -4.0)
+			after(80.0, func(): sfx("punchhit.wav" if randf() < 0.5 else "kickhit.wav"))
 			world.move(pe, m.x + int(sp[0]), m.y + int(sp[1]), m.z, 0, now)
 			P["x"] = pe.x
 			P["y"] = pe.y
@@ -1200,6 +1266,8 @@ func utility(t: Dictionary, key: String) -> void:
 			else:
 				msg("You create a fake moon. It's pretty.", Color(0.8, 0.8, 0.8))
 		"powerup":
+			if busy != "power":
+				sfx("powerup.wav", -3.0)
 			toggle_busy("power")
 		"powerdown":
 			# Power Down.dm: "What percentage do you wish to power down to?"
@@ -1355,6 +1423,8 @@ func update_projectiles() -> void:
 ## (at least 1), then Explosion(splashrange) around it with splashdmg for everyone else.
 func _blast_hit(pr: Mob, hit: Mob, x: int, y: int) -> void:
 	_hit_monster(hit, pr.damage + (roundf(pr.damage * 0.35) if pr.crit else 0.0), Color(1, 0.4, 0.3) if pr.crit else Color(0.5, 0.9, 1), "ki")
+	if pr.crit:
+		sfx("meleeflash.ogg", -4.0)
 	if randf() < 0.1:
 		_skill_exp("ki_power", 1 + int(P["level"]) / 1250)
 	if int(pr.tech.get("splash", 0)) > 0:
@@ -1411,6 +1481,7 @@ func _missiles(t: Dictionary) -> void:
 func _spawn_missile(t: Dictionary, power: float, d: int, ox: int, oy: int, hover: float) -> void:
 	if pe == null:
 		return
+	sfx("burning_fire.wav", -8.0, 90.0)
 	var pr := Mob.new()
 	pr.kind = "proj"
 	pr.x = pe.x + ox
@@ -1474,6 +1545,7 @@ func _bigball(t: Dictionary) -> void:
 		d = 1
 	elif d in [6, 10]:
 		d = 2
+	sfx("bigbang_fire.wav", -2.0)
 	var pre: String = t.get("prefix", "bb")
 	var icon := Data.icon_id(t.get("icon", "burning attack.dmi"))
 	var head: Mob = null
@@ -1589,6 +1661,7 @@ func _wave(t: Dictionary) -> void:
 
 
 func _sew_pulse(cx: int, cy: int, cz: int, r: int, dmg: float) -> void:
+	sfx("expload.wav", -2.0, 150.0)
 	# ExplosionSEW(): every tile in range(r); dmg - kidefcalc/400
 	# Same ground fire + scorch look as Explosive Wave (explosion.dmi is the projectile splash).
 	for dx in range(-r, r + 1):
@@ -1604,6 +1677,7 @@ func _sew_pulse(cx: int, cy: int, cz: int, r: int, dmg: float) -> void:
 
 ## Explosion.dm BasicBoom: fire spreading out ring by ring (one ring per tick), leaving dirt.
 func _basic_boom(cx: int, cy: int, cz: int, power: int) -> void:
+	sfx("expload.wav", -2.0, 150.0)
 	for dx in range(-power + 1, power):
 		for dy in range(-power + 1, power):
 			var dist := maxi(absi(dx), absi(dy))
@@ -1672,6 +1746,7 @@ func _hit_monster(m: Mob, raw: float, col: Color, mode := "melee") -> void:
 ## every monster in it except the one hit takes the splash damage (minus 40% of its defence,
 ## scaled by ki resistance); the shooter takes a tenth if caught in it.
 func _explosion(x: int, y: int, z: int, r: int, dmg: float, skip: Mob) -> void:
+	sfx("expload.wav", -4.0, 150.0)
 	for dx in range(-r, r + 1):
 		for dy in range(-r, r + 1):
 			_boom_fx(x + dx, y + dy, z, "explosion.dmi", 400.0)
@@ -2089,6 +2164,7 @@ func _it_arrive(r: Array) -> void:
 		return
 	teleport(int(r[1]), int(r[2]) - 1, int(r[3]))      # in front of them (they block their own tile)
 	pe.do_flick("IT", now)
+	sfx("teleport.wav")
 	msg("%s appears from nowhere!" % P["name"], Color(0.6, 0.85, 1))
 
 
@@ -2260,6 +2336,7 @@ func _do_transform(n: int) -> void:
 	set_move_dir(0)
 	pe.stun_until = now + ms
 	pe.state = "enrage" if Data.has_state(pe.icon, "enrage") else pe.state
+	sfx("powerup.wav", -2.0)
 	_lightning()
 	after(ms / 2.0, func(): _lightning())
 	after(ms, func():

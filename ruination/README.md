@@ -74,6 +74,11 @@ redrawn by hand.
   own Big Aura (Menu can turn it off); Androids, Bio Androids, Hitmen and Zealots can't revert.
   Counters the port doesn't keep (Majin eats, Demon corrupts, Saibaman/Tuffle infects, Android
   chips, absorbs, assassin kills) count as met.
+* **Sound.** The original Ruination only ships `aura full.wav` (played when Aura turns on) plus a
+  jump sound and Konat's Tapion MIDI, so attacks use the sound set from Gekisen in this repo:
+  punch/kick hits, ki blast and beam fire (Kamehameha, Special Beam Cannon, discs, Big Bang),
+  explosions, teleport (Instant Transmission, Power Dash, Burst Rush), power up (also while
+  transforming) and regenerate. Menu -> Sound On / Off.
 * **Test menu.** The **Test** button (top right) levels you up 1–5,000 times, refills you,
   teaches every technique your race can learn, and teleports you to any NPC, any enemy type
   or typed-in coordinates.
