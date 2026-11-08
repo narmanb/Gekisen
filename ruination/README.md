@@ -94,6 +94,16 @@ redrawn by hand.
   ki volleys, freezes, rushes, drains, waves). The original landing area is mostly safe zone in this
   map, so bosses land on its open, non-safe tiles. Double Sunday uses a sprite drawn for this port
   (`tools/make_custom_sprites.py`, run after `export_icons.py`).
+* **Numbers (new scale, not the original's).** `game.gd` "balance" section: starting powerlevel by
+  race (Human 50, Saiyan 150, Changeling 1,000), monsters squeezed onto a ladder in the same order
+  (bunnies ~8 to God tier in the billions), ratio damage atk^2/(atk+def), exp 100 + 40 x level with a
+  wall at level 1,000, gains K x stat^0.85 x multi/5 from Self Train, levels and kills (mobbing ~4x
+  faster than AFK), transformations x2-x12 (step races x1.5 per form), original levels remapped
+  (/50 up to the wall). `tests/balance.gd` (`-- --balance`) prints growth curves: AFK Self Train
+  reaches ~1 million in ~90 h and a billion in ~400 h; mobbing a billion in ~100 h.
+* **Stat points and rebirth** (`SetMultis.dm`, `Xeno.dm`): 5 points (+1 per rebirth) on the
+  multipliers (max 10 + rebirths) or Stamina at creation; the Omni King rebirths you at level 1,000
+  (+200 per rebirth, up to 2,000) as a new race and gene with more points, exp and gains.
 * **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
   (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
   shows the original game's own update log, extracted by `tools/build_notes.py`.

@@ -1,6 +1,20 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – New numbers, stat points, rebirth[/b][/color]
+- Numbers are much closer to the series: Humans start around 50 powerlevel, Saiyans 150, Changelings 1,000 (genes add or take up to 20%). Reaching a billion takes a long time
+- Monsters are on the same scale and keep their order: bunnies around 8, Saibamen around 120, Saiyan Warriors around 1,500, Super Saiyan mobs around 2.5 million, the strongest God-tier monsters and Beerus' planet in the billions
+- Damage scales with any numbers: attack x attack / (attack + defence). Weaker fighters still do a little, but no more hitting for exactly 1 forever
+- Levels: every level takes a bit more exp than the last; past level 1,000 levels come much slower and give much less. Technique, transformation, teacher and rebirth levels moved to the new scale (battle techniques at level 40)
+- Training gains grow with your stats (Self Train raises the focused stat by more as you get stronger); multipliers speed it up
+- Mobbing is the fastest way to get stronger: every kill raises your Strength, Defence and Ki, more for tougher monsters, and gives more exp; weak monsters give next to nothing
+- Exploding Saibamen and Cells give a tenth of a level per kill instead of a whole one
+- Transformations: Form 1 x2 (Super Saiyan), Form 2 x3, Form 3 x4, Form 4 x6, then x8, x10, x12; step races x1.5 per form, stacking and always on
+- Saga bosses use series powerlevels: Raditz 1,500, Nappa 4,000, Vegeta 18,000, Ginyu 120,000, Frieza 530,000 to 1.8 million (scaled by difficulty)
+- Stat Points (from the original): when you create a character you get 5 points for the Powerlevel, Ki, Strength and Defense multipliers (up to 10 each) or Stamina
+- Rebirth (from the original): talk to the Omni King in the Other World at level 1,000 (+200 per rebirth, up to 2,000). Start over at level 1 as any race and gene, keeping your name and zenni, with +1 stat point and +1 multiplier cap per rebirth, more exp (up to x3) and +10% training and mobbing gains per rebirth
+- Old saves can't carry over to the new numbers; they're kept as a backup and you start a new character
+
 [color=#ffd75e][b]11/8/2026 – Dodgeable homing[/b][/color]
 - Saga bosses' ki volleys fly at the spot you were standing on; stronger bosses' shots re-aim at you once or twice on the way, so moving still gets you out of the way
 - Your Dodge skill now also lets you dodge homing shots (as well as melee); straight blasts and beams can't be dodged

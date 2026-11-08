@@ -143,6 +143,16 @@ func run() -> void:
 	ui._look_step()
 	await wait(0.4)
 	await shot("03_look")
+	# stat points screen (SetMultis.dm)
+	var pts_seen := false
+	ui._points_step(Game.new_player(ui.creation), func(_p): pts_seen = true)
+	ui._points_change("power_multi", 1)
+	ui._points_change("strength_multi", 1)
+	await wait(0.3)
+	await shot("03b_stat_points")
+	print("POINTS left ", ui._pts_p["points"], " power ", ui._pts_p["power_multi"], " str ", ui._pts_p["strength_multi"])
+	ui.create_root.queue_free()
+	ui.create_root = null
 	ui._begin(Game.new_player(ui.creation))
 	await wait(1.0)
 	print("START ", state())
@@ -152,6 +162,23 @@ func run() -> void:
 	await wait(0.3)
 	await shot("04a_train_menu")
 	ui._dialog_pick("Cancel", 4)
+	# --- Omni King (rebirth)
+	var omni := Mob.new()
+	omni.path = "/mob/NPC/Omni_King"
+	omni.name = "Omni King"
+	Game.interact(omni)
+	await wait(0.3)
+	await shot("04r_omni_king_early")
+	while not ui.dialog_queue.is_empty():
+		ui._dialog_pick("OK", 0)
+	var lv_keep: int = Game.P["level"]
+	Game.P["level"] = Game.rebirth_level()
+	Game.interact(omni)
+	await wait(0.3)
+	await shot("04s_omni_king_rebirth")
+	print("REBIRTH at level ", Game.rebirth_level(), " offered ", ui.dialog_queue[0][2] if not ui.dialog_queue.is_empty() else "-")
+	ui._dialog_pick("No", 1)
+	Game.P["level"] = lv_keep
 	# --- test menu
 	ui._test_menu()
 	await wait(0.3)
@@ -185,13 +212,13 @@ func run() -> void:
 	goku.path = "/mob/NPC/SSJ4Goku"
 	goku.name = "SSJ4 Goku"
 	Game.P["learned"].erase("X10_Kamehameha")
-	Game.P["level"] = 9000
+	Game.P["level"] = Game.remap_level(9000)
 	Game._teach(goku)
 	var not_yet: bool = not "X10_Kamehameha" in Game.P["learned"]
 	ui.close_dialogs() if ui.has_method("close_dialogs") else null
 	while not ui.dialog_queue.is_empty():
 		ui._dialog_pick("OK", 0)
-	Game.P["level"] = 10000
+	Game.P["level"] = Game.remap_level(10000)
 	Game._teach(goku)
 	while not ui.dialog_queue.is_empty():
 		ui._dialog_pick("OK", 0)
@@ -297,7 +324,7 @@ func run() -> void:
 			dm.aggro = false
 			dm.next_think = Game.now + 600000.0
 			dummies.append(dm)
-		Game.P["level"] = 5300
+		Game.P["level"] = Game.remap_level(5300)
 		Game.P["ki_max"] = 169961.0 / Game.kc()      # roughly your character in the last screenshot
 		for spec in [["TripleKiBlast", 4, 0.25], ["Kamehameha", 4, 0.5], ["ExplosiveWave", 4, 0.75], ["RapidBlast", 4, 1.6], ["KiShower", 4, 1.6], ["BigBangAttack", 4, 0.35], ["SuperExplosionWave", 4, 1.0], ["PowerDash", 4, 0.35], ["Push", 4, 0.3], ["BurstRush", 4, 0.9]]:
 			Game.cooldowns.clear()
@@ -355,9 +382,10 @@ func run() -> void:
 		var cellm: Mob = Game.spawn_monster("/mob/Monster/ExplosiveMobs/Exploding_Cell", Game.pe.x + 1, Game.pe.y, Game.pe.z)
 		cellm.respawn = false
 		var lv0: int = Game.P["level"]
+		var ex0: float = Game.P["exp"]
 		Game._hit_monster(cellm, 10.0, Color.WHITE, "ki")
-		print("AI cell kill level ", lv0, " -> ", Game.P["level"])
-		assert(int(Game.P["level"]) > lv0)
+		print("AI cell kill level ", lv0, " -> ", Game.P["level"], " exp ", Game.fmt(ex0), " -> ", Game.fmt(Game.P["exp"]))
+		assert(int(Game.P["level"]) > lv0 or float(Game.P["exp"]) > ex0)
 		Game.P["powerlevel"] = Game.cap("powerlevel")
 		# --- sagas: Raditz's Double Sunday, then Vegeta and Nappa land
 		Game.start_saga("villain", "Match my power")
@@ -432,10 +460,10 @@ func run() -> void:
 	await shot("10_stats")
 	ui.toggle_stats()
 	# --- transformation
-	Game.P["level"] = 25000
+	Game.P["level"] = Game.remap_level(25000)
 	Game.skill_gain(false)
 	Game.P["stam"] = 0.0
-	Game.P["level"] = 60000
+	Game.P["level"] = Game.remap_level(60000)
 	Game.transform()
 	await wait(0.3)
 	print("FORM MENU ", ui.dialog_queue[0][2] if not ui.dialog_queue.is_empty() else "none")
@@ -453,7 +481,7 @@ func run() -> void:
 	print("FORM MENU at trans 30 ", ui.dialog_queue[0][2] if not ui.dialog_queue.is_empty() else "none")
 	while not ui.dialog_queue.is_empty():
 		ui._dialog_pick("Cancel", 0)
-	Game.P["level"] = 25000
+	Game.P["level"] = Game.remap_level(25000)
 	Game.P["form"] = 1
 	Game.build_appearance()
 	# --- warp test: walk onto the nearest warp turf on this z

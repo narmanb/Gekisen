@@ -57,6 +57,7 @@ func _ready() -> void:
 	root.add_child(modal_layer)
 	Game.log_msg.connect(_on_log)
 	Game.dialog.connect(_on_dialog)
+	Game.rebirth_requested.connect(start_rebirth)
 	set_game_ui(false)
 	show_title()
 
@@ -1026,14 +1027,15 @@ func _refresh_stats() -> void:
 	s += "Transformation level %d / 100 (%s / %s exp) · Speed %d (transforming takes %.1f s)\n" % [int(Game.trans_lvl()), f.call(P.get("trans_exp", 0)), f.call(P.get("trans_tnl", 75)), int(P.get("trans_speed", 0)), float(P.get("trans_spd", 51)) / 10.0]
 	for fm in Game.forms_for():
 		var i := int(fm["form"])
-		var mult := str(fm["pl"]) + (" + trans lvl/20" if fm.has("pl_t") else "")
+		var mult := str(snappedf(pow(Game.PERM_FORM_MULT, i), 0.01)) + " total" if Game.is_step_race() else str(Game.TEMP_FORM_MULT[mini(i, Game.TEMP_FORM_MULT.size()) - 1])
 		var reqs: Array = []
 		for c in fm.get("req", []):
 			if c[0] == "level":
 				continue
-			reqs.append("%s %s %s" % [str(c[0]).replace("_", " "), c[1], f.call(c[2])])
+			var val: float = Game.ladder(float(c[2])) if c[0] == "powerlevel_max" else float(c[2])
+			reqs.append("%s %s %s" % [str(c[0]).replace("_", " ").replace("powerlevel max", "base powerlevel"), c[1], f.call(roundf(val))])
 		var state := "  [color=yellow](current)[/color]" if int(P["form"]) == i else ("  (ready)" if Game.form_ready(fm) else "")
-		s += "%s — level %s, power x%s%s%s\n" % [Game.form_name(fm), f.call(fm["level"]), mult, (" [" + ", ".join(reqs) + "]") if not reqs.is_empty() else "", state]
+		s += "%s — level %s, power x%s%s%s\n" % [Game.form_name(fm), f.call(Game.form_level(fm)), mult, (" [" + ", ".join(reqs) + "]") if not reqs.is_empty() else "", state]
 	var mins := int(float(P["playtime"]) / 60.0)
 	s += "\nLocation: %s (%d, %d) · Play time %dh %dm" % [Game.zname(int(P["z"])), int(P["x"]), int(P["y"]), mins / 60, mins % 60]
 	stats_label.text = s
@@ -1200,6 +1202,12 @@ func _fullscreen_bg() -> Control:
 
 
 func show_title() -> void:
+	if Game.autostart_save:
+		Game.autostart_save = false
+		var sv := Game.load_save()
+		if not sv.is_empty():
+			_begin(sv)
+			return
 	title_root = _fullscreen_bg()
 	var v := VBoxContainer.new()
 	v.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -1250,6 +1258,17 @@ func _begin(p: Dictionary) -> void:
 	set_game_ui(true)
 	Game.start(p)
 	Game.save()
+
+
+## Rebirth: pick a new race, gene and look (name kept), then stat points; the new character is
+## saved and the game reloads straight into it.
+func start_rebirth(old: Dictionary) -> void:
+	set_game_ui(false)
+	creation = {"race": old["race"], "gene": "", "gender": old.get("gender", "Male"), "skin": old.get("skin", "Tan"),
+		"hair": old.get("hair", "Goku"), "variant": "", "name": old["name"], "rebirths": int(old.get("rebirths", 0)) + 1,
+		"carry": {"zenni": old.get("zenni", 0), "kills": old.get("kills", 0), "playtime": old.get("playtime", 0)}}
+	create_root = _fullscreen_bg()
+	_race_step()
 
 
 func _start_creation() -> void:
@@ -1505,4 +1524,81 @@ func _on_start() -> void:
 		_name_err.text = "Only letters A-Z are allowed, 2-15 characters."
 		return
 	creation["name"] = n.substr(0, 1).to_upper() + n.substr(1)
-	_begin(Game.new_player(creation))
+	var np := Game.new_player(creation)
+	for k in creation.get("carry", {}):
+		np[k] = creation["carry"][k]
+	if creation.has("carry"):
+		np["moden"] = int(np["moden"]) + int(np["rebirths"])       # Xeno.dm: moden += rebirths
+		_points_step(np, func(p):
+			Game.P = p
+			Game.save()
+			Game.running = false
+			Game.autostart_save = true
+			get_tree().reload_current_scene())
+	else:
+		_points_step(np, func(p): _begin(p))
+
+
+## SetMultis.dm: spend your stat points (5, +1 per rebirth) on the Powerlevel, Ki, Strength and
+## Defense multipliers (each up to 10 + rebirths; you may also take points out of your race's base
+## down to 1) or on Stamina (+200 each, 600-2,000). Multipliers speed up training, levels and mobbing.
+var _pts_p: Dictionary
+var _pts_done: Callable
+
+
+func _points_step(p: Dictionary, done: Callable) -> void:
+	_pts_p = p
+	_pts_done = done
+	if create_root == null:
+		create_root = _fullscreen_bg()
+	_refresh_points()
+
+
+func _refresh_points() -> void:
+	var p := _pts_p
+	var v := _clear_create()
+	var cap := 10 + int(p.get("rebirths", 0))
+	v.add_child(_label("Stat Points", 28, GOLD))
+	v.add_child(_label("%s %s · %d point%s left%s" % [p["gene"], p["race"], int(p["points"]), "" if int(p["points"]) == 1 else "s",
+		(" · rebirth %d" % int(p["rebirths"])) if int(p.get("rebirths", 0)) > 0 else ""], 18, Color(0.85, 0.88, 1)))
+	v.add_child(_label("Multipliers make Self Train, levels and mobbing raise that stat faster (max %d each). Stamina lets you train longer before resting." % cap, 15, Color(0.7, 0.75, 0.9)))
+	for row in [["Powerlevel", "power_multi"], ["Ki", "ki_multi"], ["Strength", "strength_multi"], ["Defense", "defence_multi"], ["Stamina", "stam_max"]]:
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 12)
+		v.add_child(h)
+		var l := _label(row[0], 20)
+		l.custom_minimum_size = Vector2(160, 0)
+		h.add_child(l)
+		var val := _label(str(int(p[row[1]])), 20, GOLD)
+		val.custom_minimum_size = Vector2(80, 0)
+		h.add_child(val)
+		h.add_child(_button("–", _points_change.bind(row[1], -1), 20))
+		h.add_child(_button("+", _points_change.bind(row[1], 1), 20))
+	var nav := HBoxContainer.new()
+	nav.alignment = BoxContainer.ALIGNMENT_END
+	v.add_child(nav)
+	var go := _button("Done", func():
+		if int(_pts_p["points"]) > 0:
+			return
+		_pts_done.call(_pts_p), 22)
+	go.disabled = int(p["points"]) > 0
+	nav.add_child(go)
+
+
+func _points_change(key: String, dirn: int) -> void:
+	var p := _pts_p
+	var cap := 10 + int(p.get("rebirths", 0))
+	if dirn > 0 and int(p["points"]) <= 0:
+		return
+	if key == "stam_max":
+		var nv := float(p[key]) + 200.0 * dirn
+		if nv < 600.0 or nv > 2000.0:
+			return
+		p[key] = nv
+	else:
+		var nv2 := float(p[key]) + dirn
+		if nv2 < 1.0 or nv2 > cap:
+			return
+		p[key] = nv2
+	p["points"] = int(p["points"]) - dirn
+	_refresh_points()

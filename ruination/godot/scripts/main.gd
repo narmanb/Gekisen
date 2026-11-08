@@ -18,3 +18,5 @@ func _ready() -> void:
 	if tests.has("--autotest"):
 		var t = load("res://tests/autotest.gd").new()
 		add_child(t)
+	elif tests.has("--balance"):
+		add_child(load("res://tests/balance.gd").new())

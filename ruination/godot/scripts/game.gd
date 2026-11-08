@@ -5,6 +5,8 @@ extends Node
 
 signal log_msg(text: String, color: Color, cat: String)
 signal dialog(title: String, text: String, options: Array, cb: Callable)
+signal rebirth_requested(old: Dictionary)
+var autostart_save := false       # after a rebirth: skip the title and load the new character
 
 const SAVE_PATH := "user://ruination_save.json"
 const SPAWN := Vector3i(395, 252, 7)
@@ -14,7 +16,7 @@ const SKILL_NAMES := {"melee": "Melee", "block": "Block", "dodge": "Dodge", "cou
 	"critical": "Critical", "durability": "Durability", "ki_control": "Ki Control", "ki_cast": "Ki Cast",
 	"ki_power": "Ki Power", "ki_use": "Ki Use", "ki_res": "Ki Resistance", "reflect": "Reflect", "weapon": "Weapon"}
 const FOCUS := ["Strength", "Defense", "Ki", "Powerlevel", "Exp"]
-const PK_LEVEL := 2000
+const PK_LEVEL := 40              # the original's 2,000 on the new level scale (remap_level)
 const BASE_ACTIONS := ["attack", "talk", "selftrain", "meditate", "rest", "transform", "revert", "focus"]
 ## Techniques that are actions rather than attacks: they live in the action panel, not on the hotbar by default.
 const UTILITY_KINDS := ["utility"]
@@ -31,6 +33,73 @@ const HAIRS := {"Bald": "", "Goku": "hair - goku.dmi", "Vegeta": "hair - vegeta.
 const MODES := [[1000, 0.1, "Super Easy"], [2000, 0.1, "Easy"], [3500, 0.25, "Medium"], [5000, 0.5, "Hard"],
 	[7500, 1.0, "Hardcore"], [10000, 1.5, "Expert"], [13500, 2.0, "Sensei"], [18000, 3.0, "Master"],
 	[25000, 4.0, "Grandmaster"], [35000, 5.0, "Legendary"], [50000, 6.0, "Mythical"], [75000, 8.0, "Godly"]]
+
+# =================================================================== balance
+## Series-like numbers (replacing the original's runaway scale). Tune here.
+## Starting powerlevel shown on screen, by race; genes shift it by up to +-20%.
+const START_PL := {"Human": 50, "Saiyan": 150, "Half Saiyan": 120, "Namekian": 100, "Android": 300,
+	"Bio Android": 250, "Changeling": 1000, "Majin": 200, "Demon": 200, "Kai": 120, "Tuffle": 100,
+	"Saibaman": 80, "Alien": 90, "Heran": 150, "Konat": 100, "Feline": 120, "Dragon": 300,
+	"Bio Warrior": 150, "Majin Wizard": 100, "Majin Incarnate": 120}
+const LEVEL_WALL := 1000           # past this, levels come much slower and give little
+const K_TRAIN := 0.0015            # Self Train: gain = K * stat^0.85 * multi/5 per stat tick
+const K_LEVEL := 0.02              # level-up gain per stat
+const K_KILL := 0.012             # mobbing: stat gain per kill (scaled by how tough the monster is)
+const TEMP_FORM_MULT := [2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0]   # Form 1.. (Super Saiyan = x2)
+const PERM_FORM_MULT := 1.5        # step races: each form x1.5, stacking, always on
+## Original monster powerlevel -> new powerlevel (log-linear between points; keeps every monster in
+## the same order). Bunnies ~8, Saibamen ~120, Saiyan Warriors ~1,500, Super Saiyan mobs ~2.5 million,
+## God-tier and Beerus' planet into the billions.
+const LADDER := [[1500.0, 8.0], [5000.0, 30.0], [10000.0, 120.0], [40000.0, 400.0], [300000.0, 1500.0],
+	[450000.0, 5000.0], [3.0e6, 18000.0], [7.5e7, 120000.0], [4.0e8, 1.0e6], [1.0e10, 2.5e6],
+	[6.0e10, 6.0e7], [2.0e11, 2.0e8], [4.5e13, 5.0e9]]
+
+
+func ladder(old: float) -> float:
+	if old <= LADDER[0][0]:
+		return maxf(1.0, old * LADDER[0][1] / LADDER[0][0])
+	for i in range(1, LADDER.size()):
+		if old <= LADDER[i][0] or i == LADDER.size() - 1:
+			var a: Array = LADDER[i - 1]
+			var b: Array = LADDER[i]
+			var t := (log(old) - log(a[0])) / (log(b[0]) - log(a[0]))
+			return exp(log(a[1]) + t * (log(b[1]) - log(a[1])))
+	return old
+
+
+## Original level -> new level: /50 up to 50,000 (the wall at 1,000), then 250 old levels per new one.
+func remap_level(old: float) -> int:
+	if old <= 50000.0:
+		return int(round(old / 50.0))
+	return LEVEL_WALL + int(round((old - 50000.0) / 250.0))
+
+
+func grow(stat: float, k: float) -> float:
+	return k * pow(maxf(stat, 1.0), 0.85)
+
+
+## Rebirth bonus to training and mob gains (+10% per rebirth).
+func gain_mult() -> float:
+	return 1.0 + 0.1 * float(P.get("rebirths", 0))
+
+
+func exp_mult() -> float:
+	return minf(3.0, 1.0 + 0.4 * float(P.get("rebirths", 0)))      # BuildCharRebirth: expm +0.4, max 3
+
+
+static func level_tnl(lv: int) -> float:
+	var t := 100.0 + 40.0 * lv
+	if lv >= LEVEL_WALL:
+		t *= pow(1.01, lv - LEVEL_WALL)
+	return roundf(t)
+
+
+## Damage that scales with any numbers: attack^2 / (attack + defence). Equal attack and defence ->
+## half the attack; far stronger defence -> a small fraction; far weaker -> nearly all of it.
+static func ratio_dmg(atk: float, def: float) -> float:
+	atk = maxf(atk, 0.0)
+	return atk * atk / maxf(atk + maxf(def, 0.0), 0.000001)
+
 
 var now := 0.0
 var world: Node2D
@@ -170,13 +239,17 @@ func spawn_monster(p: String, x: int, y: int, z: int, t := {}) -> Mob:
 	m.kind = "monster"
 	m.path = p
 	m.layer = 4.0
-	m.level = _num(d.get("level", 1))
-	m.powerlevel_max = maxf(1.0, _num(d.get("powerlevel_max", d.get("powerlevel", 10))))
+	m.level = remap_level(_num(d.get("level", 1)))
+	# original stats squeezed onto the new ladder; every stat scales with the powerlevel
+	var old_pl := maxf(1.0, _num(d.get("powerlevel_max", d.get("powerlevel", 10))))
+	var new_pl := ladder(old_pl)
+	var sc := new_pl / old_pl
+	m.powerlevel_max = roundf(new_pl)
 	m.powerlevel = m.powerlevel_max
-	m.strength = maxf(1.0, _num(d.get("strength", 1)))
-	m.defence = maxf(0.0, _num(d.get("defence", 1)))
+	m.strength = maxf(1.0, _num(d.get("strength", 1)) * sc)
+	m.defence = maxf(0.0, _num(d.get("defence", 1)) * sc)
 	m.durability = _num(d.get("durability", 100))
-	m.kidefense = _num(d.get("kidefense", 2))
+	m.kidefense = _num(d.get("kidefense", 2)) * sc
 	m.critical = _num(d.get("critical", 0))
 	m.ai = "peaceful" if p.begins_with("/mob/Monster/Peaceful") else "main"
 	if p.begins_with("/mob/Monster/BeerusMobs"):
@@ -193,7 +266,7 @@ func spawn_monster(p: String, x: int, y: int, z: int, t := {}) -> Mob:
 	m.ki_res = _num(d.get("ki_res", 10))
 	m.dodge = _num(d.get("dodge", 0))
 	m.block = _num(d.get("block", 0))
-	m.exp_reward = _num(d.get("exp", 0))
+	m.exp_reward = roundf(10.0 * sqrt(m.powerlevel_max))
 	m.zenni_reward = _num(d.get("zenni", 0))
 	m.race = str(d.get("race", ""))
 	m.home = Vector3i(x, y, z)
@@ -248,6 +321,21 @@ func new_player(o: Dictionary) -> Dictionary:
 	for s in rs:
 		if p["skills"].has(s):
 			p["skills"][s][0] = float(rs[s])
+	# starting stats: the shown powerlevel (base x Ki Control%) matches START_PL for the race
+	var genef := 1.0
+	for k in gm:
+		genef += 0.1 * float(gm[k])
+	genef = clampf(genef, 0.8, 1.2)
+	var raw := float(START_PL.get(p["race"], 100)) * genef / (float(p["skills"]["ki_control"][0]) / 100.0)
+	raw = roundf(raw)
+	for k in ["ki_max", "strength_max", "defence_max"]:
+		p[k] = raw
+	p["tnl"] = level_tnl(1)
+	p["powerlevel"] = raw * float(p["skills"]["ki_control"][0]) / 100.0
+	p["ki"] = p["powerlevel"]
+	p["points"] = 5 + int(o.get("rebirths", 0))
+	p["rebirths"] = int(o.get("rebirths", 0))
+	p["balance_v"] = 1
 	p["hotbar"] = ["t:KiBlast"]
 	p["hotbar_v"] = HOTBAR_VERSION
 	return p
@@ -594,7 +682,7 @@ func kc() -> float:
 
 func pl_max() -> float:
 	var calc: float = float(P["strength_max"]) * 0.2 + float(P["ki_max"]) * 0.2 + float(P["defence_max"]) * 0.6
-	return maxf(300.0, calc + float(P["pl_bonus"]))
+	return maxf(1.0, calc + float(P["pl_bonus"]))
 
 
 func cap(stat: String) -> float:
@@ -792,7 +880,9 @@ func tech_cost(t: Dictionary) -> float:
 		return 0.0
 	var curki: float = float(P["ki_max"]) * kc()
 	var extra := float(c[2]) * 1.2 if c.size() > 2 else 0.0     # "+(N*usr.kiuse)" costs
-	return roundf(curki * float(c[0]) * 1.2 + float(c[1]) + extra)
+	# flat parts were written for the original's numbers: squeezed onto the same ladder as monsters
+	var flat := float(c[1]) + extra
+	return roundf(curki * float(c[0]) * 1.2 + (ladder(flat) if flat > 0.0 else 0.0))
 
 
 func cooldown_left(id: String) -> float:
@@ -868,7 +958,7 @@ func melee() -> void:
 	# AttackNormal
 	var attack := cap("strength") * (skill("melee") / 100.0) * randf_range(0.6, 1.0)
 	var defense := m.defence * (m.durability / 100.0) * randf_range(0.85, 1.0)
-	var dmg := attack - defense
+	var dmg := ratio_dmg(attack, defense)
 	var crit := randf() * 100.0 < 1.0 + skill("critical") / 10.0
 	if crit:
 		dmg *= 1.2
@@ -907,7 +997,7 @@ func monster_attack(m: Mob) -> void:
 	else:
 		var attack := m.strength + m.powerlevel * 0.1
 		var defense := cap("defence") * (skill("durability") / 100.0) + maxf(float(P["powerlevel"]), 0.0) * 0.01
-		dmg = maxf(1.0, attack - defense)
+		dmg = maxf(1.0, ratio_dmg(attack, defense))
 		if randf() * 100.0 < skill("dodge") / 5.0:
 			_skill_exp("dodge", 5 + int(P["level"]) / 250)
 			pe.do_flick("IT", now)
@@ -927,7 +1017,7 @@ func monster_attack(m: Mob) -> void:
 				monster_die(m)
 			return
 		elif randf() * 100.0 < m.critical:
-			dmg = maxf(1.0, (m.strength + m.powerlevel * 0.1) * 2.0 - defense)
+			dmg = maxf(1.0, ratio_dmg((m.strength + m.powerlevel * 0.1) * 2.0, defense))
 			crit = true
 	if toggles.get("shield", false):
 		dmg *= 0.65
@@ -955,10 +1045,21 @@ func monster_die(m: Mob) -> void:
 		return
 	if m.ai == "saga":
 		after(10.0, func(): _saga_boss_down(m))
-	var e := m.exp_reward
+	# tougher monsters (relative to you) give more; weak ones next to nothing
+	var tough := clampf(m.powerlevel_max / maxf(cap("powerlevel"), 1.0), 0.05, 2.0)
+	var e := roundf(m.exp_reward * tough * exp_mult())
 	var z := m.zenni_reward
 	if buffs.has("exp"):
 		e *= float(buffs["exp"]["mult"])
+	# mobbing: the best way to get stronger
+	var gains: Array = []
+	for pair in [["strength_max", "strength_multi", "Strength"], ["defence_max", "defence_multi", "Defense"], ["ki_max", "ki_multi", "Ki"]]:
+		var g := roundf(grow(float(P[pair[0]]), K_KILL / 3.0) * float(P[pair[1]]) / 5.0 * tough * gain_mult())
+		if g >= 1.0:
+			P[pair[0]] = float(P[pair[0]]) + g
+			gains.append("%s +%s" % [pair[2], fmt(g)])
+	if not gains.is_empty():
+		tick(", ".join(gains))
 	P["exp"] = float(P["exp"]) + e
 	P["zenni"] = float(P["zenni"]) + z
 	msg("You defeated %s! +%s exp, +%s zenni" % [m.name, fmt(e), fmt(z)], Color(0.5, 1, 0.5), "combat")
@@ -1081,18 +1182,19 @@ func _spawn_saga_boss(key: String, fi: int, x: int, y: int, z: int) -> Mob:
 		m.strength = cap("strength") * 0.9 * k
 		m.defence = cap("defence") * 0.9 * k
 		m.kidefense = cap("ki") * 0.02 * k
-		m.exp_reward = float(P["tnl"]) * 3.0
+		m.exp_reward = roundf(50.0 * sqrt(m.powerlevel_max))
 	else:
+		# series-like powerlevels from sagas.json (per form for Frieza), scaled by difficulty
 		var mult: float = SAGA_DIFF.get(diff, 1.0)
-		var lv := float(b["level"])
-		var pl := (lv * lv * 500.0 + randf_range(1, 1000)) * mult * grow
-		m.level = lv * mult
-		m.powerlevel_max = pl
+		var pls: Array = b.get("pls", [])
+		var pl := float(pls[fi] if fi < pls.size() else b.get("pl", 1000)) * mult * (randf_range(0.97, 1.03))
+		m.level = float(remap_level(float(b["level"]) * 50.0))
+		m.powerlevel_max = roundf(pl)
 		m.ki_max = pl * 0.9
 		m.kidefense = pl * 0.85
-		m.strength = (lv * lv * 200.0 + randf_range(1, 1000)) * mult * grow
+		m.strength = pl * 0.4
 		m.defence = m.strength
-		m.exp_reward = m.level * (50.0 if mult < 1.0 else 20.0)
+		m.exp_reward = roundf(50.0 * sqrt(pl))
 	m.powerlevel = m.powerlevel_max
 	m.ki = m.ki_max
 	m.durability = 100.0
@@ -1187,13 +1289,13 @@ func _saga_punch(m: Mob) -> void:
 		return
 	m.do_flick("attack", now)
 	var defense := cap("defence") + maxf(float(P["powerlevel"]), 0.0) * 0.1 + 1.0
-	var dmg := maxf(1.0, m.strength + m.powerlevel * 0.1 - defense)
+	var dmg := maxf(1.0, ratio_dmg(m.strength + m.powerlevel * 0.1, defense))
 	if _dodge_roll():
 		return
 	if randf() * 100.0 < skill("block") / 5.0:
 		dmg /= 4.0
 	elif randf() * 100.0 < m.critical:
-		dmg = maxf(1.0, (m.strength + m.powerlevel * 0.1) * 2.0 - defense)
+		dmg = maxf(1.0, ratio_dmg((m.strength + m.powerlevel * 0.1) * 2.0, defense))
 	if now < m.drain_until:
 		m.powerlevel = minf(m.powerlevel_max, m.powerlevel + dmg * 0.3)
 		m.ki = minf(m.ki_max, m.ki + dmg * 0.3)
@@ -1215,8 +1317,8 @@ func _hit_player(raw: float, by: Mob, mode: String) -> void:
 	if Data.is_safe(pe.x, pe.y, pe.z):
 		return
 	var dmg := raw
-	if mode == "ki":      # ki attack on a player: minus defence*0.4*ki_res% (ProjectilesJustin.dm dmg())
-		dmg = raw - roundf(cap("defence") * 0.4 * skill("ki_res") / 100.0)
+	if mode == "ki":      # ki attack on you: against your defence x 0.4 x Ki Resistance%
+		dmg = ratio_dmg(raw, cap("defence") * 0.4 * skill("ki_res") / 100.0)
 	if toggles.get("shield", false):
 		dmg *= 0.65
 	if buffs.has("barrier"):
@@ -1398,13 +1500,11 @@ func _exploding_reward(m: Mob) -> void:
 		P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.10)
 		P["stam"] = maxf(0.0, float(P["stam"]) - float(P["stam_max"]) * 0.08)
 	if randf() < (0.35 if cell else 0.25):
-		var st := minf(roundf(randf_range(100, 5000) + float(P["level"]) / 2.0), 500000.0 if cell else 350000.0)
-		P["pl_bonus"] = float(P["pl_bonus"]) + st
-		P["ki_max"] = float(P["ki_max"]) + st
-		P["strength_max"] = float(P["strength_max"]) + st
-		P["defence_max"] = float(P["defence_max"]) + st
-		tick("All stats +%s" % fmt(st), true)
-	P["exp"] = float(P["exp"]) + float(P["tnl"]) + (float(P["tnl"]) + 10.0 if cell and randi_range(1, 3) == 3 else 0.0)
+		for k in ["ki_max", "strength_max", "defence_max"]:
+			P[k] = float(P[k]) + roundf(grow(float(P[k]), K_KILL) * gain_mult())
+		tick("All stats up!", true)
+	# the original gave a whole level per kill; now a tenth of one
+	P["exp"] = float(P["exp"]) + float(P["tnl"]) * (0.2 if cell and randi_range(1, 3) == 3 else 0.1)
 	msg("You defeated %s!" % m.name, Color(0.5, 1, 0.5), "combat")
 	level_up()
 	monsters.erase(m)
@@ -1588,8 +1688,8 @@ func _push() -> void:
 	if m == null:
 		return
 	pe.do_flick("attack", now)
-	var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 150.0) * 0.4)
-	_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.6, 0.3), "")
+	var dmg := maxf(1.0, roundf(ratio_dmg(cap("strength") * skill("melee") / 100.0, m.defence * m.durability / 150.0) * 0.4))
+	_hit_monster(m, dmg + int(P["level"]) * 0.5, Color(1, 0.6, 0.3), "")
 	sfx("strong_hit_01.ogg", -4.0)
 	if not m.dead:
 		_throw(m, pe.dir, randi_range(1, 3))
@@ -1643,9 +1743,9 @@ func _power_dash(t: Dictionary) -> void:
 		after(300.0 + path.size() * step_ms, func():
 			if m.dead:
 				return
-			var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0) * 0.6)
+			var dmg := maxf(1.0, roundf(ratio_dmg(cap("strength") * skill("melee") / 100.0, m.defence * m.durability / 100.0) * 0.6))
 			msg("%s slammed into %s!" % [P["name"], m.name], Color(1, 0.8, 0.4), "combat")
-			_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.5, 0.2), "")
+			_hit_monster(m, dmg + int(P["level"]) * 0.5, Color(1, 0.5, 0.2), "")
 			sfx("strong_hit_01.ogg", -2.0))
 
 
@@ -2049,10 +2149,9 @@ func _missile_step(pr: Mob) -> void:
 	for m in world.at(nx, ny, pr.z):
 		if m.kind == "monster" and not m.dead:
 			# damage = (your PL + power*0.6-1.0) - (their PL + kidefense*ki_res/100), at least power
-			var dmg := maxf(pr.power, roundf((float(P["powerlevel"]) + pr.power * randf_range(0.6, 1.0)) - (m.powerlevel + m.kidefense * m.ki_res / 100.0)))
-			_hit_monster(m, dmg, Color(0.6, 0.85, 1), "")
+			_hit_monster(m, pr.power * randf_range(0.6, 1.0) * 2.0, Color(0.6, 0.85, 1), "ki")
 			if not m.dead:      # ExplodeDamage(): the blast goes off on the target as well
-				_hit_monster(m, maxf(1.0, pr.power - roundf(m.kidefense * m.ki_res)), Color(1, 0.7, 0.3), "")
+				_hit_monster(m, pr.power, Color(1, 0.7, 0.3), "ki")
 			_boom_fx(nx, ny, pr.z, "explosion.dmi", 400.0)
 			_kill_proj(pr)
 			return
@@ -2142,11 +2241,10 @@ func _bigball_hits(pr: Mob) -> void:
 			var pw: float = pr.pow_left[i]
 			if pw <= 0:
 				continue
-			var dmg := maxf(roundf(pw / 4.0), roundf(pw * randf_range(0.8, 1.2) - (m.powerlevel + m.kidefense * m.ki_res / 100.0)))
+			total += pw * randf_range(0.8, 1.2) / 9.0
 			pr.pow_left[i] = pw - maxf(m.powerlevel, 0.0)
-			total += dmg
 		if total > 0:
-			_hit_monster(m, total, Color(1, 0.75, 0.3), "")
+			_hit_monster(m, total * 3.0, Color(1, 0.75, 0.3), "ki")
 
 
 # =================================================================== explosion techniques
@@ -2267,12 +2365,12 @@ func _hit_monster(m: Mob, raw: float, col: Color, mode := "melee") -> void:
 		return
 	var dmg := raw
 	match mode:
-		"ki":       # ki blast direct hit (dmg(): Damage - kidefense*ki_res/100)
-			dmg = raw - m.kidefense * (m.ki_res / 100.0)
-		"splash":   # Explosion(): dmg - defence*0.4*ki_res/100
-			dmg = raw - roundf(m.defence * 0.4 * (m.ki_res / 100.0))
+		"ki":       # ki blast direct hit, against kidefense x ki_res%
+			dmg = ratio_dmg(raw, m.kidefense * (m.ki_res / 100.0))
+		"splash":   # Explosion(): against defence x 0.4 x ki_res%
+			dmg = ratio_dmg(raw, m.defence * 0.4 * (m.ki_res / 100.0))
 		"melee":
-			dmg = raw - m.defence * 0.04
+			dmg = ratio_dmg(raw, m.defence * 0.04)
 	dmg = maxf(1.0, roundf(dmg))
 	m.powerlevel -= dmg
 	m.target = pe
@@ -2546,41 +2644,25 @@ func busy_tick() -> void:
 				stop_busy()
 
 
+## Self Train: exp (5-20 x (1 + level/100)) every tick; about one tick in six raises the focused stat by
+## K_TRAIN x stat^0.85 x multi/5, so gains get bigger as you grow (and faster with rebirths and gravity).
 func self_train_tick() -> void:
 	var lvl := float(P["level"])
 	var moden := float(P["moden"])
-	var expgain := roundf((randf_range(5, 20) + lvl / 250.0) * 1.2 * 4.0) + 1.0
+	var expgain := roundf(randf_range(5, 20) * (1.0 + lvl / 100.0)) * exp_mult()
 	var zen := roundf(randf_range(15, 600) + lvl / 2.0)
-	# Character_Up: stat gains in the chosen focus
-	var lg := minf(lvl, 200000.0)
-	lg = randf_range(lg * 0.3, lg * 0.5)
 	var focus: String = P["focus"]
 	var boosted := gravtrain > 0.0 or buffs.has("exp")
 	if randf() < 0.66 and randf() < 0.25:
-		var g := 0.0
-		match focus:
-			"Powerlevel":
-				g = maxf(roundf((randf_range(2, 6) + lg * moden) * float(P["power_multi"]) / 5.0 / 15.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
-				P["pl_bonus"] = float(P["pl_bonus"]) + g
-				tick("Powerlevel +%s" % fmt(g), boosted)
-			"Ki":
-				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["ki_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
-				P["ki_max"] = float(P["ki_max"]) + g
-				tick("Ki +%s" % fmt(g), boosted)
-			"Strength":
-				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["strength_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
-				P["strength_max"] = float(P["strength_max"]) + g
-				tick("Strength +%s" % fmt(g), boosted)
-			"Defense":
-				g = maxf(roundf((randf_range(1, 4) + lg * moden) * float(P["defence_multi"]) / 5.0 / 20.0 * 0.65), randf_range(10, 25)) * (1.0 + gravtrain)
-				P["defence_max"] = float(P["defence_max"]) + g
-				tick("Defense +%s" % fmt(g), boosted)
-			"Exp":
-				expgain *= 1.5
-	if randf() < 1.0 / 12.0:
-		var k: String = ["ki_max", "strength_max", "defence_max"][randi() % 3]
-		P[k] = float(P[k]) + 4.0
-		tick("%s +4" % {"ki_max": "Ki", "strength_max": "Strength", "defence_max": "Defense"}[k])
+		var key: String = {"Powerlevel": "pl_bonus", "Ki": "ki_max", "Strength": "strength_max", "Defense": "defence_max"}.get(focus, "")
+		if key != "":
+			var mkey: String = {"pl_bonus": "power_multi", "ki_max": "ki_multi", "strength_max": "strength_multi", "defence_max": "defence_multi"}[key]
+			var base := pl_max() if key == "pl_bonus" else float(P[key])
+			var g := maxf(1.0, roundf(grow(base, K_TRAIN) * float(P[mkey]) / 5.0 * gain_mult() * randf_range(0.8, 1.2) * (1.0 + gravtrain)))
+			P[key] = float(P[key]) + g
+			tick("%s +%s" % [focus, fmt(g)], boosted)
+		elif focus == "Exp":
+			expgain *= 1.5
 	if buffs.has("exp"):
 		expgain *= float(buffs["exp"]["mult"])
 	if gravtrain > 0.0:
@@ -2634,32 +2716,34 @@ func _skill_exp(s: String, amount: float) -> void:
 
 
 # =================================================================== levels
+## Levels: exp needed = 100 + 40 x level, and past LEVEL_WALL it also grows 1% per level. Each
+## level adds a little Ki, Strength and Defence (K_LEVEL x stat^0.85 x multi/5), a tenth of that past
+## the wall. Modes (Easy ... Godly) come at the original's levels on the new scale.
 func level_up() -> void:
 	var leveled := false
 	var guard := 0
 	while float(P["exp"]) >= float(P["tnl"]) and guard < 5000:
 		guard += 1
-		var L := float(P["level"])
-		var kg := (randf_range(1, 4) + L * 0.1 * float(P["ki_multi"]) / 5.0) / 2.0
-		var sg := (randf_range(1, 4) + L * 0.1 * float(P["strength_multi"]) / 5.0) / 2.0
-		var dg := (randf_range(1, 4) + L * 0.1 * float(P["defence_multi"]) / 5.0) / 2.0
+		var past_wall := int(P["level"]) >= LEVEL_WALL
+		var f := (0.1 if past_wall else 1.0) * gain_mult()
 		P["exp"] = float(P["exp"]) - float(P["tnl"])
 		P["level"] = int(P["level"]) + 1
-		P["ki_max"] = float(P["ki_max"]) + kg
-		P["strength_max"] = float(P["strength_max"]) + sg
-		P["defence_max"] = float(P["defence_max"]) + dg
-		P["tnl"] = float(P["tnl"]) + float(P["expup"])
+		P["ki_max"] = float(P["ki_max"]) + roundf(grow(float(P["ki_max"]), K_LEVEL) * float(P["ki_multi"]) / 5.0 * f)
+		P["strength_max"] = float(P["strength_max"]) + roundf(grow(float(P["strength_max"]), K_LEVEL) * float(P["strength_multi"]) / 5.0 * f)
+		P["defence_max"] = float(P["defence_max"]) + roundf(grow(float(P["defence_max"]), K_LEVEL) * float(P["defence_multi"]) / 5.0 * f)
+		P["tnl"] = level_tnl(int(P["level"]))
 		leveled = true
 		var lv := int(P["level"])
 		var mi := int(P["modes"])
-		if mi < MODES.size() and lv >= int(MODES[mi][0]):
-			P["expup"] = float(P["expup"]) + float(MODES[mi][1])
+		if mi < MODES.size() and lv >= remap_level(MODES[mi][0]):
 			P["moden"] = int(P["moden"]) + 1
 			P["mode"] = MODES[mi][2]
 			P["modes"] = mi + 1
 			msg("Training Information: you have entered %s Mode!" % P["mode"], Color(0.4, 0.6, 1))
 		if lv == PK_LEVEL:
 			msg("You can now use battle techniques and fight monsters!", Color(1, 0.75, 0.2))
+		if lv == LEVEL_WALL:
+			msg("Level %s: from here levels come slowly and give much less. Train and fight to grow." % fmt(LEVEL_WALL), Color(1, 0.75, 0.2))
 	if leveled:
 		skill_gain(false)
 
@@ -2675,7 +2759,7 @@ func skill_gain(silent: bool, ignore_level := false) -> void:
 			continue
 		if e.has("gene") and e["gene"] != P["gene"]:
 			continue
-		if int(P["level"]) < int(e["level"]) and not ignore_level:
+		if int(P["level"]) < remap_level(e["level"]) and not ignore_level:
 			continue
 		var req = e.get("req")
 		if req == "weapon":
@@ -2779,14 +2863,15 @@ func _on_it_pick(_c: String, i: int) -> void:
 	if i == 0:
 		return
 	var r: Array = _it_rows[i - 1]
-	if float(P["ki"]) < 500.0:
+	var it_cost := roundf(cap("ki") * 0.05)       # the original's 500 Ki, as a share of your Ki
+	if float(P["ki"]) < it_cost:
 		msg("You do not have enough Ki!", Color(1, 0.5, 0.4))
 		return
 	if busy != "" or it_busy:
 		msg("You are already doing something.", Color(1, 0.5, 0.4))
 		return
 	var ms := 3000.0 if P.get("gene", "") != "Yardrat" else 1500.0
-	P["ki"] = float(P["ki"]) - 500.0
+	P["ki"] = float(P["ki"]) - it_cost
 	it_busy = true
 	it_lock_until = now + ms + 600.0 + 6000.0
 	set_move_dir(0)
@@ -2881,17 +2966,15 @@ func trans_lvl() -> float:
 	return _tdef("trans_lvl", 0.0)
 
 
-func form_mult(key: String) -> float:
+## New multipliers (the original's x10-x85 are gone): menu forms x2, x3, x4, x6, x8, x10, x12 by form
+## number; step races x1.5 per form, stacking and always on. Same for powerlevel, Ki, Strength, Defence.
+func form_mult(_key: String) -> float:
 	var cur := int(P.get("form", 0))
 	if cur <= 0:
 		return 1.0
-	var fl := forms_for()
-	var stack := int(fl[0].get("stack", 0)) == 1
-	var m := 1.0
-	for i in range(0 if stack else cur - 1, mini(cur, fl.size())):
-		var f: Dictionary = fl[i]
-		m *= float(f.get(key, 1)) + float(f.get(key + "_t", 0)) * trans_lvl()
-	return m
+	if is_step_race():
+		return pow(PERM_FORM_MULT, cur)
+	return TEMP_FORM_MULT[mini(cur, TEMP_FORM_MULT.size()) - 1]
 
 
 func form_name(f: Dictionary) -> String:
@@ -2909,18 +2992,28 @@ func can_revert() -> bool:
 
 ## The menu lines' conditions. Counters this port doesn't keep (eats, corrupts, infects, chips,
 ## absorbs, assassin kills, karma) count as met.
+func form_level(f: Dictionary) -> int:
+	return remap_level(float(f.get("level", 0)))
+
+
 func form_ready(f: Dictionary) -> bool:
-	if int(P["level"]) < int(f.get("level", 0)):
+	if int(P["level"]) < form_level(f):
 		return false
 	for c in f.get("req", []):
 		var v: String = c[0]
 		var have: float
-		match v:
-			"level": have = float(P["level"])
-			"trans_lvl": have = trans_lvl()
-			"powerlevel_max": have = pl_max()
-			_: continue
 		var want := float(c[2])
+		match v:
+			"level":
+				have = float(P["level"])
+				want = float(remap_level(want))
+			"trans_lvl":
+				have = trans_lvl()
+			"powerlevel_max":
+				have = pl_max()
+				want = ladder(want)
+			_:
+				continue
 		var ok := true
 		match str(c[1]):
 			">=": ok = have >= want
@@ -2957,7 +3050,7 @@ func transform() -> void:
 		elif cur >= fl.size():
 			msg("You are already at your strongest form.", Color(0.8, 0.8, 0.8))
 		else:
-			msg("You need level %s for your next form (%s gene)." % [fmt(fl[cur]["level"]), P["gene"]], Color(1, 0.5, 0.4))
+			msg("You need level %s for your next form (%s gene)." % [fmt(form_level(fl[cur])), P["gene"]], Color(1, 0.5, 0.4))
 		return
 	if is_step_race():
 		_do_transform(int(opts[0]["form"]))
@@ -3113,6 +3206,9 @@ func interact(o: Mob = null) -> void:
 	if o.gravity > 0:
 		grav_machine_menu(o)
 		return
+	if o.path == "/mob/NPC/Omni_King":
+		_omni_king(o)
+		return
 	if TEACHERS.has(o.path) and _teach(o):
 		return
 	var d: Dictionary = Data.mobs.get(o.path, {})
@@ -3141,6 +3237,29 @@ const TEACHERS := {
 }
 
 
+## Rebirth (Mobs/Xeno.dm, Omni King): from the original's level 50,000 (+50,000 per rebirth, capped at
+## 300,000), on the new level scale. Reset to level 1 with a new race and gene; keep your name, zenni,
+## kills and play time. Each rebirth: +1 stat point and +1 multiplier cap (BuildCharRebirth), +40% exp
+## (up to x3) and +10% to training and mobbing gains.
+func rebirth_level() -> int:
+	return remap_level(minf(50000.0 * (int(P.get("rebirths", 0)) + 1), 300000.0))
+
+
+func _omni_king(o: Mob) -> void:
+	var need := rebirth_level()
+	var r := int(P.get("rebirths", 0))
+	if int(P["level"]) < need:
+		ask(o.name, "Hi! When you have grown strong enough I will grant you a new life, with greater potential!\n\nNext rebirth: level %s.\nYou have rebirthed %d time%s." % [fmt(need), r, "" if r == 1 else "s"], ["OK"], func(_c, _i): pass)
+		return
+	ask(o.name, "Would you like to rebirth?\n\nYou start again at level 1 as any race and gene, without your techniques or transformations. You keep your name and zenni.\nRebirth %d gives you %d stat points (multipliers up to %d), x%s exp and +%d%% training and mobbing gains." % [r + 1, 5 + r + 1, 10 + r + 1, str(snappedf(minf(3.0, 1.0 + 0.4 * (r + 1)), 0.1)), 10 * (r + 1)],
+		["Yes", "No"], func(c: String, _i: int):
+			if c == "Yes":
+				end_saga(true)
+				stop_busy()
+				revert(true)
+				rebirth_requested.emit(P.duplicate(true)))
+
+
 func _teachable(e: Array, ignore_level := false) -> bool:
 	if Data.tech(e[0]).is_empty() or e[0] in P["learned"]:
 		return false
@@ -3148,7 +3267,7 @@ func _teachable(e: Array, ignore_level := false) -> bool:
 		return false
 	if e.size() > 3 and P.get("gene", "") != e[3]:
 		return false
-	return ignore_level or int(P["level"]) >= int(e[1])
+	return ignore_level or int(P["level"]) >= remap_level(e[1])
 
 
 ## Returns true if the teacher said something (taught you, or told you what level to reach).
@@ -3161,8 +3280,8 @@ func _teach(o: Mob) -> bool:
 			return true
 	var next_lv := 0
 	for e in lst:
-		if _teachable(e, true) and (next_lv == 0 or int(e[1]) < next_lv):
-			next_lv = int(e[1])
+		if _teachable(e, true) and (next_lv == 0 or remap_level(e[1]) < next_lv):
+			next_lv = remap_level(e[1])
 	if next_lv > 0:
 		ask(o.name, "Get to level %s and I'll teach you something." % fmt(next_lv), ["OK"], func(_c, _i): pass)
 		return true
@@ -3298,6 +3417,10 @@ func load_save() -> Dictionary:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return {}
 	var v = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	if v is Dictionary and int(v.get("balance_v", 0)) < 1:
+		# saves from before the new numbers can't carry over: keep them as a backup, start fresh
+		DirAccess.rename_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path("user://ruination_save_old_numbers.json"))
+		return {}
 	return v if v is Dictionary else {}
 
 

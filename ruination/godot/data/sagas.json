@@ -1,5 +1,5 @@
 {
- "_about": "Saga lines from Mobs/Sagas/Sagas.dm SAGA_CHECK (sagas_evil = villains for good players, sagas_good = Z fighters for evil players). Each part spawns its bosses together in the original saga area; a boss with several forms comes back as the next form when beaten (the original's 'Frieza: Form 2' ... episodes). Levels and sprites from the /mob/Saga types; moves are new (the original saga AI was commented out). Trimmed to the Saiyan and Frieza sagas for now.",
+ "_about": "Saga lines from Mobs/Sagas/Sagas.dm SAGA_CHECK (sagas_evil = villains for good players, sagas_good = Z fighters for evil players). Each part spawns its bosses together in the original saga area; a boss with several forms comes back as the next form when beaten (the original's 'Frieza: Form 2' ... episodes). Levels and sprites from the /mob/Saga types; moves are new (the original saga AI was commented out). Trimmed to the Saiyan and Frieza sagas for now. Powerlevels (\"pl\", \"pls\" per form) are series-like and scaled by the difficulty.",
  "area": [
   393,
   466,
@@ -20,7 +20,8 @@
    "moves": [
     "double_sunday",
     "blast"
-   ]
+   ],
+   "pl": 1500
   },
   "Nappa": {
    "name": "Nappa",
@@ -34,7 +35,8 @@
    "moves": [
     "break_cannon",
     "giant_storm"
-   ]
+   ],
+   "pl": 4000
   },
   "Vegeta": {
    "name": "Vegeta",
@@ -48,7 +50,8 @@
    "moves": [
     "galick_gun",
     "blast"
-   ]
+   ],
+   "pl": 18000
   },
   "Jeice": {
    "name": "Jeice",
@@ -62,7 +65,8 @@
    "moves": [
     "crusher_ball",
     "blast"
-   ]
+   ],
+   "pl": 30000
   },
   "Burter": {
    "name": "Burter",
@@ -76,7 +80,8 @@
    "moves": [
     "space_mach",
     "blast"
-   ]
+   ],
+   "pl": 30000
   },
   "Recoom": {
    "name": "Recoome",
@@ -90,7 +95,8 @@
    "moves": [
     "eraser_gun",
     "rush"
-   ]
+   ],
+   "pl": 40000
   },
   "Guldo": {
    "name": "Guldo",
@@ -104,7 +110,8 @@
    "moves": [
     "time_freeze",
     "blast"
-   ]
+   ],
+   "pl": 12000
   },
   "Ginyu": {
    "name": "Captain Ginyu",
@@ -118,7 +125,8 @@
    "moves": [
     "milky_cannon",
     "blast"
-   ]
+   ],
+   "pl": 120000
   },
   "Frieza": {
    "name": "Frieza",
@@ -149,6 +157,13 @@
     "death_beam",
     "death_ball",
     "volley"
+   ],
+   "pls": [
+    530000,
+    1000000,
+    1300000,
+    1500000,
+    1800000
    ]
   },
   "Goku1": {
@@ -163,7 +178,8 @@
    "moves": [
     "kamehameha",
     "rush"
-   ]
+   ],
+   "pl": 420
   },
   "Piccolo1": {
    "name": "Piccolo",
@@ -177,7 +193,8 @@
    "moves": [
     "masenko_piccolo",
     "blast"
-   ]
+   ],
+   "pl": 400
   },
   "Goku2": {
    "name": "Goku",
@@ -191,7 +208,8 @@
    "moves": [
     "kamehameha",
     "rush"
-   ]
+   ],
+   "pl": 8000
   },
   "Piccolo2": {
    "name": "Piccolo",
@@ -205,7 +223,8 @@
    "moves": [
     "masenko_piccolo",
     "blast"
-   ]
+   ],
+   "pl": 3500
   },
   "Gohan1": {
    "name": "Gohan",
@@ -219,7 +238,8 @@
    "moves": [
     "masenko",
     "blast"
-   ]
+   ],
+   "pl": 2800
   },
   "Choutzu1": {
    "name": "Chiaotzu",
@@ -233,7 +253,8 @@
    "moves": [
     "telekinesis",
     "blast"
-   ]
+   ],
+   "pl": 600
   },
   "Krillin1": {
    "name": "Krillin",
@@ -247,7 +268,8 @@
    "moves": [
     "destructo_disc",
     "blast"
-   ]
+   ],
+   "pl": 1800
   },
   "Tien1": {
    "name": "Tien",
@@ -261,7 +283,8 @@
    "moves": [
     "tri_beam",
     "solar_flare"
-   ]
+   ],
+   "pl": 1800
   },
   "Yamcha1": {
    "name": "Yamcha",
@@ -275,7 +298,8 @@
    "moves": [
     "wolf_fang_fist",
     "blast"
-   ]
+   ],
+   "pl": 1500
   },
   "Gohan2": {
    "name": "Gohan",
@@ -289,7 +313,8 @@
    "moves": [
     "masenko",
     "blast"
-   ]
+   ],
+   "pl": 200000
   },
   "Krillin2": {
    "name": "Krillin",
@@ -303,7 +328,8 @@
    "moves": [
     "destructo_disc",
     "solar_flare"
-   ]
+   ],
+   "pl": 75000
   },
   "Goku3": {
    "name": "Goku",
@@ -317,7 +343,8 @@
    "moves": [
     "kamehameha",
     "rush"
-   ]
+   ],
+   "pl": 600000
   },
   "Vegeta2": {
    "name": "Vegeta",
@@ -331,7 +358,8 @@
    "moves": [
     "galick_gun",
     "volley"
-   ]
+   ],
+   "pl": 500000
   },
   "Goku4": {
    "name": "Super Saiyan Goku",
@@ -345,7 +373,8 @@
    "moves": [
     "kamehameha",
     "rush"
-   ]
+   ],
+   "pl": 2000000
   }
  },
  "lines": {
