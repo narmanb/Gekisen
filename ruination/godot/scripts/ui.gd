@@ -693,7 +693,7 @@ func _build_stick() -> void:
 
 func _modal_open() -> bool:
 	return dialog_panel != null and is_instance_valid(dialog_panel) or create_root != null or title_root != null \
-		or coord_panel != null and is_instance_valid(coord_panel)
+		or coord_panel != null and is_instance_valid(coord_panel) or server_panel != null and is_instance_valid(server_panel)
 
 
 func _input(event: InputEvent) -> void:
@@ -1065,7 +1065,8 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
-	_menu_row(v, [["Sagas", func(): menu_panel.visible = false; saga_menu()]])
+	_menu_row(v, [["Sagas", func(): menu_panel.visible = false; saga_menu()],
+		["Server Options", func(): menu_panel.visible = false; server_options()]])
 	_menu_row(v, [["Update Notes", func(): show_notes(false)], ["Legacy Update Notes", func(): show_notes(true)]])
 	_menu_row(v, [["Sound On / Off", func(): _toggle_sound()], ["Trans. Aura On / Off", func(): _toggle_trans_aura()]])
 	var hm := HBoxContainer.new()
@@ -1103,7 +1104,7 @@ func saga_menu() -> void:
 		["Villain Saga (Raditz to Frieza)", "Hero Saga (Goku and Piccolo to Super Saiyan Goku)", "Cancel"], func(c: String, i: int):
 			if i < 2:
 				var line := "villain" if i == 0 else "hero"
-				Game.ask("Saga Difficulty", "The original difficulties scale the bosses' level-based strength (Raditz is level 500: 125 million powerlevel on Medium). Match my power makes each boss a bit stronger than you.",
+				Game.ask("Saga Difficulty", "Difficulty scales the bosses' powerlevels (Raditz is 1,500 on Medium: a quarter on Pathetic, 3.5x on Extreme). Match my power makes each boss a bit stronger than you.",
 					["Match my power", "Pathetic", "Easy", "Medium", "Hard", "Extreme", "Cancel"], func(c2: String, _i2: int):
 						if c2 != "Cancel":
 							Game.start_saga(line, c2)))
@@ -1540,8 +1541,10 @@ func _on_start() -> void:
 
 
 ## SetMultis.dm / Gold Glory.dmf "multis": spend your stat points (5, +1 per rebirth) on the Ki,
-## Strength and Defense multipliers (each up to 10 + rebirths; you may also take points out of your
-## race's base down to 1) or on Stamina (+200 each, 600-2,000). The Powerlevel multiplier stays at
+## Strength and Defense multipliers (each capped at 10 + rebirths, counting the race's base, so
+## nobody can stack everything into one offensive stat) or on Stamina (+200 each, 600-2,000).
+## Unlike the original you can't take points out of your race's base (that let players move
+## Defense into Ki); "–" only takes back points you've put in. The Powerlevel multiplier stays at
 ## your race's value (the live window has no Powerlevel buttons). Multipliers speed up training,
 ## levels and mobbing.
 var _pts_p: Dictionary
@@ -1549,6 +1552,7 @@ var _pts_done: Callable
 
 
 func _points_step(p: Dictionary, done: Callable) -> void:
+	p["points_base"] = {"ki_multi": p["ki_multi"], "strength_multi": p["strength_multi"], "defence_multi": p["defence_multi"], "stam_max": p["stam_max"]}
 	_pts_p = p
 	_pts_done = done
 	if create_root == null:
@@ -1563,7 +1567,10 @@ func _refresh_points() -> void:
 	v.add_child(_label("Stat Points", 28, GOLD))
 	v.add_child(_label("%s %s · %d point%s left%s" % [p["gene"], p["race"], int(p["points"]), "" if int(p["points"]) == 1 else "s",
 		(" · rebirth %d" % int(p["rebirths"])) if int(p.get("rebirths", 0)) > 0 else ""], 18, Color(0.85, 0.88, 1)))
-	v.add_child(_label("Multipliers make Self Train, levels and mobbing raise that stat faster (max %d each). Stamina lets you train longer before resting." % cap, 15, Color(0.7, 0.75, 0.9)))
+	var info := _label("Multipliers make Self Train, levels and mobbing raise that stat faster. Each multiplier is capped at %d including your race's base (+1 per rebirth). Stamina lets you train longer before resting." % cap, 15, Color(0.7, 0.75, 0.9))
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.custom_minimum_size = Vector2(900, 0)
+	v.add_child(info)
 	v.add_child(_label("Powerlevel multiplier (set by your race): %d" % int(p["power_multi"]), 16, Color(0.75, 0.8, 0.95)))
 	# Gold Glory.dmf "multis": the live window only has Ki, Strength, Defense and Stamina
 	for row in [["Ki", "ki_multi"], ["Strength", "strength_multi"], ["Defense", "defence_multi"], ["Stamina", "stam_max"]]:
@@ -1578,6 +1585,8 @@ func _refresh_points() -> void:
 		h.add_child(val)
 		h.add_child(_button("–", _points_change.bind(row[1], -1), 20))
 		h.add_child(_button("+", _points_change.bind(row[1], 1), 20))
+		if row[1] != "stam_max":
+			h.add_child(_label("max %d" % cap, 15, Color(0.6, 0.65, 0.8)))
 	var nav := HBoxContainer.new()
 	nav.alignment = BoxContainer.ALIGNMENT_END
 	v.add_child(nav)
@@ -1594,15 +1603,62 @@ func _points_change(key: String, dirn: int) -> void:
 	var cap := 10 + int(p.get("rebirths", 0))
 	if dirn > 0 and int(p["points"]) <= 0:
 		return
+	var base := float(p.get("points_base", {}).get(key, 0.0))
 	if key == "stam_max":
 		var nv := float(p[key]) + 200.0 * dirn
-		if nv < 600.0 or nv > 2000.0:
+		if nv < maxf(600.0, base) or nv > 2000.0:
+			if dirn > 0:
+				Game.msg("Your stamina can't be raised any further.", Color(1, 0.8, 0.4))
 			return
 		p[key] = nv
 	else:
 		var nv2 := float(p[key]) + dirn
-		if nv2 < 1.0 or nv2 > cap:
+		if nv2 < maxf(1.0, base):
+			return
+		if nv2 > cap:
+			Game.msg("You can only put %d points into this multiplier." % cap, Color(1, 0.8, 0.4))
 			return
 		p[key] = nv2
 	p["points"] = int(p["points"]) - dirn
 	_refresh_points()
+
+
+## Menu -> Server Options: Exp, Zenni and Stat Gains rates (10%-1000%, default 100%). Stored with
+## the game, not the character; in multiplayer these will be the host's settings.
+var server_panel: PanelContainer
+
+
+func server_options() -> void:
+	if server_panel:
+		server_panel.queue_free()
+	server_panel = PanelContainer.new()
+	server_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	server_panel.custom_minimum_size = Vector2(420, 0)
+	_offs(server_panel, Vector2(-210, -150))
+	root.add_child(server_panel)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	server_panel.add_child(v)
+	v.add_child(_label("Server Options", 22, GOLD))
+	v.add_child(_label("Rates for everyone playing on this game (100% is normal).", 14, Color(0.7, 0.75, 0.9)))
+	for r in Game.SERVER_RATES:
+		var h := HBoxContainer.new()
+		h.add_theme_constant_override("separation", 10)
+		v.add_child(h)
+		var l := _label(r[1], 18)
+		l.custom_minimum_size = Vector2(130, 0)
+		h.add_child(l)
+		var val := _label("%d%%" % int(Game.server[r[0]]), 18, GOLD)
+		val.custom_minimum_size = Vector2(80, 0)
+		h.add_child(val)
+		h.add_child(_button("–", func(): Game.server_step(r[0], -1); server_options(), 18))
+		h.add_child(_button("+", func(): Game.server_step(r[0], 1); server_options(), 18))
+	var b := HBoxContainer.new()
+	b.add_theme_constant_override("separation", 8)
+	v.add_child(b)
+	b.add_child(_button("Reset to 100%", func():
+		for r in Game.SERVER_RATES:
+			Game.server[r[0]] = 100
+		Game.save_server()
+		server_options(), 16))
+	b.add_child(_button("Close", func(): server_panel.queue_free(); server_panel = null, 16))

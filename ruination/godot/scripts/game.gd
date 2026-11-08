@@ -82,11 +82,54 @@ func grow(stat: float, k: float) -> float:
 
 ## Rebirth bonus to training and mob gains (+10% per rebirth).
 func gain_mult() -> float:
-	return 1.0 + 0.1 * float(P.get("rebirths", 0))
+	return (1.0 + 0.1 * float(P.get("rebirths", 0))) * server_rate("gains")
 
 
 func exp_mult() -> float:
-	return minf(3.0, 1.0 + 0.4 * float(P.get("rebirths", 0)))      # BuildCharRebirth: expm +0.4, max 3
+	return minf(3.0, 1.0 + 0.4 * float(P.get("rebirths", 0))) * server_rate("exp")      # BuildCharRebirth: expm +0.4, max 3
+
+
+## Server options: Exp, Zenni and Gains rates in percent (default 100%). Kept apart from the save
+## (user://server_options.json) because they belong to whoever runs the game: the host, once
+## multiplayer exists. Menu -> Server Options changes them.
+const SERVER_PATH := "user://server_options.json"
+const SERVER_RATES := [["exp", "Exp"], ["zenni", "Zenni"], ["gains", "Stat Gains"]]
+const SERVER_STEPS := [10, 25, 50, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000]
+var server := {"exp": 100, "zenni": 100, "gains": 100}
+
+
+func _ready() -> void:
+	load_server()
+
+
+func server_rate(k: String) -> float:
+	return float(server.get(k, 100)) / 100.0
+
+
+func load_server() -> void:
+	if not FileAccess.file_exists(SERVER_PATH):
+		return
+	var d = JSON.parse_string(FileAccess.get_file_as_string(SERVER_PATH))
+	if d is Dictionary:
+		for k in server:
+			if d.has(k):
+				server[k] = clampi(int(d[k]), SERVER_STEPS[0], SERVER_STEPS[-1])
+
+
+func save_server() -> void:
+	var fa := FileAccess.open(SERVER_PATH, FileAccess.WRITE)
+	if fa:
+		fa.store_string(JSON.stringify(server))
+
+
+## Next/previous step of a rate (10% ... 1000%).
+func server_step(k: String, dirn: int) -> void:
+	var cur := int(server[k])
+	var i := SERVER_STEPS.find(cur)
+	if i < 0:
+		i = SERVER_STEPS.find(100)
+	server[k] = SERVER_STEPS[clampi(i + dirn, 0, SERVER_STEPS.size() - 1)]
+	save_server()
 
 
 static func level_tnl(lv: int) -> float:
@@ -1080,7 +1123,7 @@ func monster_die(m: Mob) -> void:
 	# tougher monsters (relative to you) give more; weak ones next to nothing
 	var tough := clampf(m.powerlevel_max / maxf(cap("powerlevel"), 1.0), 0.05, 2.0)
 	var e := roundf(m.exp_reward * tough * exp_mult())
-	var z := m.zenni_reward
+	var z := roundf(m.zenni_reward * server_rate("zenni"))
 	if buffs.has("exp"):
 		e *= float(buffs["exp"]["mult"])
 	# mobbing: the best way to get stronger
@@ -1536,7 +1579,7 @@ func _exploding_reward(m: Mob) -> void:
 			P[k] = float(P[k]) + roundf(grow(float(P[k]), K_KILL) * gain_mult())
 		tick("All stats up!", true)
 	# the original gave a whole level per kill; now a tenth of one
-	P["exp"] = float(P["exp"]) + float(P["tnl"]) * (0.2 if cell and randi_range(1, 3) == 3 else 0.1)
+	P["exp"] = float(P["exp"]) + float(P["tnl"]) * (0.2 if cell and randi_range(1, 3) == 3 else 0.1) * server_rate("exp")
 	msg("You defeated %s!" % m.name, Color(0.5, 1, 0.5), "combat")
 	level_up()
 	monsters.erase(m)
@@ -2705,6 +2748,7 @@ func self_train_tick() -> void:
 		P["tp"] = float(P["tp"]) + tpg
 		tick("Training points +%s" % fmt(tpg), boosted)
 	if randf() < 0.15:
+		zen = roundf(zen * server_rate("zenni"))
 		P["zenni"] = float(P["zenni"]) + zen
 		tick("Zenni +%s" % fmt(zen))
 	fatigue(2)

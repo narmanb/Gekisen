@@ -107,8 +107,12 @@ redrawn by hand.
   (`MULTI_TOTAL`, `PERM_MULTI_TOTAL`). `-- --balance --multis` prints them all.
 * **Stat points and rebirth** (`SetMultis.dm`, `Xeno.dm`): 5 points (+1 per rebirth) on the
   Ki, Strength and Defense multipliers (max 10 + rebirths) or Stamina at creation, like the live
-  "multis" window in `Gold Glory.dmf` (the Powerlevel multiplier comes only from the race); the Omni King rebirths you at level 1,000
+  "multis" window in `Gold Glory.dmf` (the Powerlevel multiplier comes only from the race). The cap
+  counts the race's base (`max = 10 + rebirths`); points can't be taken out of the race's base; the Omni King rebirths you at level 1,000
   (+200 per rebirth, up to 2,000) as a new race and gene with more points, exp and gains.
+* **Server options.** Menu -> Server Options sets Exp, Zenni and Stat Gains rates (10%-1000%,
+  default 100%), saved in `user://server_options.json` apart from the character (`Game.server`,
+  applied through `exp_mult`, `gain_mult` and the zenni rewards). Meant to become the host's settings.
 * **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
   (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
   shows the original game's own update log, extracted by `tools/build_notes.py`.

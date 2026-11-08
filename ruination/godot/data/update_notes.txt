@@ -1,6 +1,11 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Server options, stat point cap[/b][/color]
+- Menu > Server Options: Exp, Zenni and Stat Gains rates from 10% to 1000% (100% is normal). They belong to the game, not your character, and will be the host's settings once multiplayer is in
+- Stat points: each multiplier is capped at 10 counting your race's base (+1 per rebirth), like the original, so you can't pour everything into one stat. You can no longer take points out of your race's base to move them elsewhere; "–" only takes back points you put in
+- Saga difficulty text shows the new powerlevels
+
 [color=#ffd75e][b]11/8/2026 – Faster training, stat points fixed[/b][/color]
 - Training is faster: Self Train gives about twice the exp and more stats, so Super Saiyan (level 400) comes after about 9-10 hours instead of 15-20
 - Stat points now work like the later original: they only go on the Ki, Strength and Defense multipliers (or Stamina); the Powerlevel multiplier comes from your race

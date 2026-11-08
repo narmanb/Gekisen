@@ -151,6 +151,25 @@ func run() -> void:
 	await wait(0.3)
 	await shot("03b_stat_points")
 	print("POINTS left ", ui._pts_p["points"], " ki ", ui._pts_p["ki_multi"], " str ", ui._pts_p["strength_multi"])
+	# can't take points out of the race's base, and each multiplier stops at 10
+	var def0: float = ui._pts_p["defence_multi"]
+	ui._points_change("defence_multi", -1)
+	assert(ui._pts_p["defence_multi"] == def0, "took a point out of the race base")
+	for i in 20:
+		ui._points_change("ki_multi", 1)
+	assert(ui._pts_p["ki_multi"] <= 10.0, "ki multiplier over the cap")
+	print("POINTS CAP ki ", ui._pts_p["ki_multi"], " left ", ui._pts_p["points"])
+	# server options: rates step and scale exp
+	var e100: float = Game.exp_mult()
+	Game.server_step("exp", 1)
+	assert(Game.server["exp"] == 125 and absf(Game.exp_mult() - e100 * 1.25) < 0.001, "exp rate")
+	Game.server["exp"] = 100
+	ui.server_options()
+	await wait(0.2)
+	await shot("03c_server_options")
+	ui.server_panel.queue_free()
+	ui.server_panel = null
+	Game.save_server()
 	ui.create_root.queue_free()
 	ui.create_root = null
 	ui._begin(Game.new_player(ui.creation))
