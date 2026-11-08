@@ -1,5 +1,7 @@
 # Gekisen – single-player Android port
 
+> **Archived.** Dragonball Ruination (`ruination/`) is the main game in this repo. This port is kept as it is and only builds when its workflow is started by hand.
+
 This folder turns the original BYOND game in the repository root into a
 single-player game that runs on Android (as an APK) and in any modern browser.
 

@@ -1,5 +1,7 @@
 # DBZ Savages – single-player Godot port
 
+> **Archived.** Dragonball Ruination (`ruination/`) is the main game in this repo. This port is kept as it is and only builds when its workflow is started by hand.
+
 `source/` holds the original BYOND project (Zeta.dme, by DragonSlayer4000, 2002–2004).
 `godot/` is a Godot 4.3 remake of it. The remake builds into an Android APK, and the same
 project can be exported to Windows, Linux, macOS, iOS or the Web. The player save files and

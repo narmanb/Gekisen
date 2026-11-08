@@ -1,5 +1,7 @@
 # Dragonball Online v1.3 – single-player Godot port
 
+> **Archived.** Dragonball Ruination (`ruination/`) is the main game in this repo. This port is kept as it is and only builds when its workflow is started by hand.
+
 `source/` holds the original BYOND project (Dragonball Online v1.3, by DBOTeam). `godot/` is a
 Godot 4.3 remake that builds into an Android APK. The BYOND hub password in the original
 source was blanked out.

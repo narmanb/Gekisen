@@ -1,10 +1,8 @@
 name: Build Android APK
 
+# Archived: Dragonball Ruination is the main game in this repo. This port only builds
+# when started by hand (Actions tab -> Run workflow).
 on:
-  push:
-    paths:
-      - 'android-port/**'
-      - '.github/workflows/android.yml'
   workflow_dispatch:
 
 permissions:

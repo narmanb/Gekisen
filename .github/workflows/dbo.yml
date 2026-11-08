@@ -1,12 +1,8 @@
 name: Build Dragonball Online APK (Godot)
 
+# Archived: Dragonball Ruination is the main game in this repo. This port only builds
+# when started by hand (Actions tab -> Run workflow).
 on:
-  push:
-    paths:
-      - 'dbo/godot/**'
-      - 'dbo/tools/*.sh'
-      - 'dbo/tools/*.py'
-      - '.github/workflows/dbo.yml'
   workflow_dispatch:
 
 permissions:
