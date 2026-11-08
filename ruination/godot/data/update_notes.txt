@@ -1,6 +1,15 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Monster AI[/b][/color]
+- Monsters behave like the original: they stand still until you come within 12 tiles, then chase you quickly and attack about once a second; more than 13 tiles away they lose you and stay where they are (no more wandering home and healing)
+- Monster attacks use the original formula, including their own critical hits (double damage); your dodge, block and counter work as before, and countering hits back for 130%
+- Peaceful monsters only fight back once you attack them
+- Killed monsters come back together every 2.5 minutes, like the original's respawner
+- Dr. Gero's Lab: Exploding Saibamen and Exploding Cells glow red when they get close, then blow up, taking a big chunk of your powerlevel if you're caught in the blast (Saibamen 2-3 tiles, Cells 2-4); killing one first gives a full level, a chance of a boost to every stat and a chance to restore 10% of your powerlevel and Ki
+- The Exploding Saibaman Boss keeps its distance and sends up to 15 exploding pawns at you
+- Beerus' planet: its monsters hit for a percentage of your max powerlevel (less the higher your defence multiplier) every 2.6 seconds
+
 [color=#ffd75e][b]11/8/2026 – Update notes, wave sizes[/b][/color]
 - Added Update Notes and Legacy Update Notes (the original game's update log) to the Menu
 - Explosive Wave is smaller: its two fire rings reach 1 and then 2 tiles, and it damages everything within 2 tiles

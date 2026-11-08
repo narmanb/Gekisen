@@ -323,6 +323,39 @@ func run() -> void:
 			print("DUMMY at ", dm.x - Game.pe.x, ",", dm.y - Game.pe.y, " took ", Game.fmt(dm.powerlevel_max - dm.powerlevel))
 			dm.dead = true
 			Game.world.remove(dm)
+		# --- monster AI: a Goon chases and punches, an Exploding Saibaman glows and blows up,
+		# killing an Exploding Cell gives a level
+		Game.P["powerlevel"] = Game.cap("powerlevel")
+		var goon: Mob = Game.spawn_monster("/mob/Monster/MainMobs/Goon_1", Game.pe.x - 6, Game.pe.y + 4, Game.pe.z)
+		var pl0: float = Game.P["powerlevel"]
+		await wait(3.0)
+		print("AI goon awake=", goon.awake, " dist=", maxi(absi(goon.x - Game.pe.x), absi(goon.y - Game.pe.y)), " PL lost=", Game.fmt(pl0 - Game.P["powerlevel"]))
+		assert(goon.awake and maxi(absi(goon.x - Game.pe.x), absi(goon.y - Game.pe.y)) <= 1)
+		goon.dead = true
+		Game.world.remove(goon)
+		Game.monsters.erase(goon)
+		Game.P["powerlevel"] = Game.cap("powerlevel")
+		var sb: Mob = Game.spawn_monster("/mob/Monster/ExplosiveMobs/Exploding_Saibaman", Game.pe.x + 7, Game.pe.y, Game.pe.z)
+		sb.respawn = false
+		pl0 = Game.P["powerlevel"]
+		var shot_taken := false
+		for i in 60:
+			await wait(0.1)
+			if not shot_taken and sb.state == "exploding" and maxi(absi(sb.x - Game.pe.x), absi(sb.y - Game.pe.y)) <= 4:
+				await shot("05m_exploding_close")
+				shot_taken = true
+			if sb.dead:
+				break
+		await shot("05m_exploded")
+		print("AI saiba exploded=", sb.dead, " PL lost=", Game.fmt(pl0 - Game.P["powerlevel"]), " of max ", Game.fmt(Game.pl_max()))
+		assert(sb.dead)
+		var cellm: Mob = Game.spawn_monster("/mob/Monster/ExplosiveMobs/Exploding_Cell", Game.pe.x + 1, Game.pe.y, Game.pe.z)
+		cellm.respawn = false
+		var lv0: int = Game.P["level"]
+		Game._hit_monster(cellm, 10.0, Color.WHITE, "ki")
+		print("AI cell kill level ", lv0, " -> ", Game.P["level"])
+		assert(int(Game.P["level"]) > lv0)
+		Game.P["powerlevel"] = Game.cap("powerlevel")
 		# --- beams: head starts in front, real trail, diagonals (8-dir Kamehameha, rotated 4-dir ones)
 		for m in Game.monsters:          # clear the area so the shots fly their full length
 			if m.z == Game.pe.z and maxi(absi(m.x - Game.pe.x), absi(m.y - Game.pe.y)) <= 20:

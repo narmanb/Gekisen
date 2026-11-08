@@ -177,6 +177,19 @@ func spawn_monster(p: String, x: int, y: int, z: int, t := {}) -> Mob:
 	m.defence = maxf(0.0, _num(d.get("defence", 1)))
 	m.durability = _num(d.get("durability", 100))
 	m.kidefense = _num(d.get("kidefense", 2))
+	m.critical = _num(d.get("critical", 0))
+	m.ai = "peaceful" if p.begins_with("/mob/Monster/Peaceful") else "main"
+	if p.begins_with("/mob/Monster/BeerusMobs"):
+		m.ai = "beerus"
+	elif p.ends_with("Exploding_SaibamanBoss"):
+		m.ai = "explode_boss"
+	elif p.ends_with("Exploding_Cell"):
+		m.ai = "explode_cell"
+		m.stun_until = now + randf_range(3500.0, 4300.0)     # New(): frozen for 3.5-4.3 s
+	elif p.begins_with("/mob/Monster/ExplosiveMobs"):
+		m.ai = "explode"
+		if not p.ends_with("Pawns"):
+			m.stun_until = now + randf_range(2400.0, 2700.0)
 	m.ki_res = _num(d.get("ki_res", 10))
 	m.dodge = _num(d.get("dodge", 0))
 	m.block = _num(d.get("block", 0))
@@ -864,38 +877,59 @@ func melee() -> void:
 		monster_die(m)
 
 
+## AttackMOB(): damage = (str + PL*0.1) - (your defence * durability% + your PL * 1%), at least 1.
+## You dodge with Dodge/5 % chance, block (1/4 damage) with Block/5 %, counter with Counter/5 %;
+## otherwise the monster lands a critical (double: (str + PL*0.1)*2 - defence) with its Critical %.
+## Beerus mobs (AttackMOB2) instead take 4-35% of your max powerlevel, less with a higher defence multiplier.
 func monster_attack(m: Mob) -> void:
 	if pe.flying or Data.is_safe(pe.x, pe.y, pe.z):
 		return
 	m.do_flick("attack", now)
-	var attack := m.strength + m.powerlevel * 0.1
-	var defense := cap("defence") * (skill("durability") / 100.0) + cap("powerlevel") * 0.01
-	var dmg := maxf(1.0, attack - defense)
+	var dmg: float
+	var crit := false
+	if m.ai == "beerus":
+		var dm := int(P["defence_multi"])
+		var lohi := [15, 35]
+		if dm >= 5 and dm <= 6:
+			lohi = [15, 30]
+		elif dm >= 7:
+			lohi = {7: [15, 25], 8: [15, 23], 9: [15, 21], 10: [15, 19], 11: [13, 19], 12: [11, 17], 13: [11, 15], 14: [8, 15], 15: [6, 14], 16: [5, 13], 17: [5, 11], 18: [4, 11]}.get(dm, [4, 10])
+		dmg = cap("powerlevel") * randi_range(int(lohi[0]), int(lohi[1])) / 100.0
+	else:
+		var attack := m.strength + m.powerlevel * 0.1
+		var defense := cap("defence") * (skill("durability") / 100.0) + maxf(float(P["powerlevel"]), 0.0) * 0.01
+		dmg = maxf(1.0, attack - defense)
+		if randf() * 100.0 < skill("dodge") / 5.0:
+			_skill_exp("dodge", 5 + int(P["level"]) / 250)
+			pe.do_flick("IT", now)
+			world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
+			return
+		if randf() * 100.0 < skill("block") / 5.0:
+			_skill_exp("block", 5 + int(P["level"]) / 250)
+			dmg /= 4.0
+			world.floater(m.x, m.y, m.z, "Block", Color(0.7, 0.9, 1))
+		elif randf() * 100.0 < skill("counter") / 5.0:
+			_skill_exp("counter", 5 + int(P["level"]) / 250)
+			var cdmg := roundf(dmg * 1.3)
+			m.powerlevel -= cdmg
+			world.floater(m.x, m.y, m.z, "Counter " + fmt(cdmg), Color(1, 0.8, 0.3))
+			sfx("kickhit.wav")
+			if m.powerlevel <= 0:
+				monster_die(m)
+			return
+		elif randf() * 100.0 < m.critical:
+			dmg = maxf(1.0, (m.strength + m.powerlevel * 0.1) * 2.0 - defense)
+			crit = true
 	if toggles.get("shield", false):
 		dmg *= 0.65
 	if buffs.has("barrier"):
 		dmg *= 0.5
-	if randf() * 100.0 < skill("dodge") / 5.0:
-		_skill_exp("dodge", 5 + int(P["level"]) / 250)
-		world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
-		return
-	if randf() * 100.0 < skill("block") / 5.0:
-		dmg /= 4.0
-		_skill_exp("block", 5 + int(P["level"]) / 250)
-	if randf() * 100.0 < skill("counter") / 10.0:
-		_skill_exp("counter", 5 + int(P["level"]) / 250)
-		var cdmg := maxf(1.0, cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0)
-		m.powerlevel -= cdmg
-		world.floater(m.x, m.y, m.z, "Counter " + fmt(cdmg), Color(1, 0.8, 0.3))
-		if m.powerlevel <= 0:
-			monster_die(m)
-			return
 	P["powerlevel"] = float(P["powerlevel"]) - roundf(dmg)
 	last_hurt = now
 	_skill_exp("durability", 1 + int(P["level"]) / 1500)
 	if busy != "":
 		stop_busy()
-	world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.3, 0.3))
+	world.floater(pe.x, pe.y, pe.z, ("CRIT " if crit else "") + fmt(dmg), Color(1, 0.3, 0.3))
 	sfx("punchhit.wav" if randf() < 0.5 else "kickhit.wav", -6.0)
 	if float(P["powerlevel"]) <= 0:
 		player_ko(m)
@@ -907,6 +941,9 @@ func monster_die(m: Mob) -> void:
 	m.dead = true
 	world.remove(m)
 	P["kills"] = int(P["kills"]) + 1
+	if m.ai in ["explode", "explode_cell"]:
+		_exploding_reward(m)
+		return
 	var e := m.exp_reward
 	var z := m.zenni_reward
 	if buffs.has("exp"):
@@ -919,7 +956,35 @@ func monster_die(m: Mob) -> void:
 	var home := m.home
 	monsters.erase(m)
 	if m.respawn:
-		after(randf_range(45000, 60000), func(): spawn_monster(path, home.x, home.y, home.z))
+		# Ruination2.dm *_Repopulate(): everything killed comes back together every 150 s
+		var wait := 150000.0 - fmod(now, 150000.0)
+		after(wait, func(): spawn_monster(path, home.x, home.y, home.z))
+
+
+## ExplodingSaibaReward / ExplodingCellReward (Death.dm): a full level of exp each kill, a
+## chance of +100-5,000 + level/2 to every stat (Saibamen 25%, cells 35%) and of getting 10% of
+## your powerlevel and Ki back. They come back after about 3.5 minutes.
+func _exploding_reward(m: Mob) -> void:
+	var cell := m.ai == "explode_cell"
+	if randf() < (0.05 if cell else 0.10):
+		P["powerlevel"] = minf(cap("powerlevel"), float(P["powerlevel"]) + cap("powerlevel") * 0.10)
+		P["ki"] = minf(cap("ki"), float(P["ki"]) + cap("ki") * 0.10)
+		P["stam"] = maxf(0.0, float(P["stam"]) - float(P["stam_max"]) * 0.08)
+	if randf() < (0.35 if cell else 0.25):
+		var st := minf(roundf(randf_range(100, 5000) + float(P["level"]) / 2.0), 500000.0 if cell else 350000.0)
+		P["pl_bonus"] = float(P["pl_bonus"]) + st
+		P["ki_max"] = float(P["ki_max"]) + st
+		P["strength_max"] = float(P["strength_max"]) + st
+		P["defence_max"] = float(P["defence_max"]) + st
+		tick("All stats +%s" % fmt(st), true)
+	P["exp"] = float(P["exp"]) + float(P["tnl"]) + (float(P["tnl"]) + 10.0 if cell and randi_range(1, 3) == 3 else 0.0)
+	msg("You defeated %s!" % m.name, Color(0.5, 1, 0.5), "combat")
+	level_up()
+	monsters.erase(m)
+	if m.respawn:
+		var path := m.path
+		var home := m.home
+		after((200000.0 if cell else 195000.0) + randf_range(0, 20000.0), func(): spawn_monster(path, home.x, home.y, home.z))
 
 
 func player_ko(by: Mob, reason := "") -> void:
@@ -1761,9 +1826,14 @@ func _explosion(x: int, y: int, z: int, r: int, dmg: float, skip: Mob) -> void:
 
 
 # =================================================================== monster AI
+## Monster AI.dm / Monsters Peaceful.dm / ExplosiveSaibas.dm / ExplosiveCells.dm / beerus.dm.
+## Monsters sleep where they stand until you come near (12 tiles; 16 in Gero's Lab and on Beerus'
+## planet; peaceful ones only once you hit them), then chase you a step every 0.2 s and attack when
+## next to you (every 1.1 s; Beerus mobs every 2.6 s). More than 13 tiles away they lose you and
+## stand still again. Exploding Saibamen / Cells glow within 6 tiles and blow up within 2 / 3.
 func think(m: Mob) -> void:
-	m.next_think = now + (randf_range(380.0, 650.0) if (m.target or m.aggro) else randf_range(1500.0, 3500.0))
-	if now < m.stun_until:
+	m.next_think = now + 200.0
+	if now < m.stun_until or m.explode_r < 0:
 		return
 	if now < m.dot_until:
 		_hit_monster(m, m.dot_amount, Color(0.6, 1, 0.4))
@@ -1772,25 +1842,119 @@ func think(m: Mob) -> void:
 	var dx := pe.x - m.x
 	var dy := pe.y - m.y
 	var dist := maxi(absi(dx), absi(dy))
-	var can_hunt := not Data.is_safe(pe.x, pe.y, pe.z) and not traveling
-	var engaged := m.target == pe or (m.aggro and dist <= 12 and int(P["level"]) >= PK_LEVEL and can_hunt)
-	if engaged and dist <= 14 and can_hunt:
-		if dist <= 1:
-			m.dir = dir_to(dx, dy)
-			if now >= m.next_attack:
-				m.next_attack = now + randf_range(900.0, 1400.0)
-				monster_attack(m)
+	var can_hunt := not Data.is_safe(pe.x, pe.y, pe.z) and not traveling and int(P["level"]) >= PK_LEVEL
+	var wake := 16 if m.ai in ["beerus", "explode", "explode_boss", "explode_cell"] else 12
+	if not m.awake:
+		if m.target == pe or (m.ai != "peaceful" and dist <= wake and can_hunt):
+			m.awake = true
 		else:
-			_chase(m, dx, dy)
+			m.next_think = now + randf_range(600.0, 1200.0)
+			return
+	var lose := 20 if m.ai.begins_with("explode") else 13
+	if dist > lose or not can_hunt or pe.z != m.z:
+		m.awake = false
+		m.target = null
+		if m.ai.begins_with("explode"):
+			m.state = ""
 		return
-	m.target = null
-	if m.powerlevel < m.powerlevel_max:
-		m.powerlevel = minf(m.powerlevel_max, m.powerlevel + m.powerlevel_max * 0.05)
-	if randf() < 0.35:
-		var d: int = [1, 2, 4, 8][randi() % 4]
-		if absi(m.x - m.home.x) > 5 or absi(m.y - m.home.y) > 5:
-			d = dir_to(m.home.x - m.x, m.home.y - m.y)
-		_step_mob(m, d)
+	m.target = pe
+	match m.ai:
+		"explode", "explode_cell":
+			m.state = "exploding" if dist <= 6 else ""
+			if dist <= (3 if m.ai == "explode_cell" else 2):
+				_mob_explode(m)
+				return
+			_chase(m, dx, dy)
+			m.next_think = now + (100.0 if m.ai == "explode_cell" else 200.0)
+		"explode_boss":
+			# keeps its distance and sends pawns at you; walks closer when you're over 7 tiles away
+			if dist <= 1 and randf() < 0.05:
+				_mob_explode(m)
+				return
+			if dist < 4:
+				_chase(m, dx, dy)
+			elif now >= m.next_attack:
+				var pawns := 0
+				for o in monsters:
+					if not o.dead and o.path.ends_with("Pawns") and maxi(absi(o.x - m.x), absi(o.y - m.y)) <= 15:
+						pawns += 1
+				if pawns < 15:
+					var pw := spawn_monster("/mob/Monster/ExplosiveMobs/Exploding_Saibaman_Pawns", m.x, m.y, m.z)
+					pw.awake = true
+					pw.target = pe
+					pw.respawn = false
+					m.next_attack = now + 1000.0
+				else:
+					m.next_attack = now + 5000.0
+				if dist > 7:
+					_chase(m, dx, dy)
+			m.next_think = now + 400.0
+		_:
+			if dist <= 1:
+				m.dir = dir_to(dx, dy)
+				if now >= m.next_attack:
+					m.next_attack = now + (2600.0 if m.ai == "beerus" else (1000.0 if m.ai == "peaceful" else 1100.0))
+					monster_attack(m)
+			else:
+				_chase(m, dx, dy)
+
+
+## MobExplode(): grows and fades for 0.3-0.9 s, leaves a corpse, and the corpse's blast
+## (range 2-3, cells 2-4) takes max powerlevel / range / (1-3) from you if you're caught in it.
+func _mob_explode(m: Mob) -> void:
+	var cell := m.ai == "explode_cell"
+	m.explode_r = -1
+	m.state = "explodetime"
+	var grow := randf_range(300.0, 600.0 if cell else 900.0)
+	var steps := 6
+	for i in steps:
+		var k := float(i + 1) / steps
+		after(grow * k, func():
+			m.scale = 1.0 + (2.0 if cell else 1.5) * k
+			m.fade = 1.0 - k)
+	after(grow, func():
+		if m.dead:
+			return
+		var x := m.x
+		var y := m.y
+		var z := m.z
+		m.dead = true
+		world.remove(m)
+		monsters.erase(m)
+		var corpse := Mob.new()
+		corpse.kind = "fx"
+		corpse.x = x
+		corpse.y = y
+		corpse.z = z
+		corpse.from_x = x
+		corpse.from_y = y
+		corpse.icon = Data.icon_id("cellexplode.dmi" if cell else "saibamanexplode.dmi")
+		corpse.state = "dead"
+		corpse.dir = [1, 2, 4, 8][randi() % 4]
+		corpse.layer = 3.5
+		corpse.dense = false
+		world.add(corpse)
+		after(11000.0, func(): world.remove(corpse))
+		var r := randi_range(2, 4) if cell else randi_range(2, 3)
+		for ddx in range(-r, r + 1):
+			for ddy in range(-r, r + 1):
+				_boom_fx(x + ddx, y + ddy, z, "explosion.dmi", 250.0)
+		sfx("expload.wav", -3.0, 120.0)
+		if pe.z == z and maxi(absi(pe.x - x), absi(pe.y - y)) <= r and not Data.is_safe(pe.x, pe.y, pe.z):
+			var dmg := pl_max() / r / randi_range(1, 3)
+			if cell and randf() < 0.15:
+				dmg *= 1.2
+			elif not cell and randf() < 0.35:
+				dmg *= 0.7
+			P["powerlevel"] = float(P["powerlevel"]) - roundf(dmg)
+			last_hurt = now
+			world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.3, 0.3))
+			if float(P["powerlevel"]) <= 0:
+				player_ko(null, "You were blown up by %s!" % ("a swarm of hostile cell juniors" if cell else "an exploding saibaman"))
+		if m.respawn:
+			var path := m.path
+			var home := m.home
+			after((200000.0 if cell else 195000.0) + randf_range(0, 20000.0), func(): spawn_monster(path, home.x, home.y, home.z)))
 
 
 func _chase(m: Mob, dx: int, dy: int) -> void:
@@ -1811,7 +1975,7 @@ func _step_mob(m: Mob, d: int) -> bool:
 		return false
 	if Data.turf(nx, ny, m.z).has("enter"):
 		return false
-	world.move(m, nx, ny, m.z, 280, now)
+	world.move(m, nx, ny, m.z, 200, now)
 	return true
 
 

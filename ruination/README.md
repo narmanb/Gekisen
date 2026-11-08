@@ -79,6 +79,13 @@ redrawn by hand.
   punch/kick hits, ki blast and beam fire (Kamehameha, Special Beam Cannon, discs, Big Bang),
   explosions, teleport (Instant Transmission, Power Dash, Burst Rush), power up (also while
   transforming) and regenerate. Menu -> Sound On / Off.
+* **Monster AI follows the original** (`Monster AI.dm`, `Monsters Peaceful.dm`, `ExplosiveSaibas.dm`,
+  `ExplosiveCells.dm`, `beerus.dm`): sleep until you're within 12 tiles (16 in Gero's Lab and on
+  Beerus' planet), chase a step every 0.2 s, attack every 1.1 s (Beerus mobs 2.6 s, % of your max
+  powerlevel), lose you past 13 tiles; AttackMOB damage with monster criticals; exploding mobs
+  glow and blow up (the corpse's blast hurts), give a level per kill; the Saibaman Boss spawns
+  pawns; everything killed respawns together every 150 s. Saga bosses aren't in: in the original
+  they only appear when an admin starts a saga, and their fighting AI is commented out.
 * **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
   (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
   shows the original game's own update log, extracted by `tools/build_notes.py`.

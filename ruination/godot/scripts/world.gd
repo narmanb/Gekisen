@@ -169,6 +169,12 @@ func draw_mob(m: Mob, pos: Vector2, now: float) -> void:
 	if not m.flick.is_empty() and fl.is_empty():
 		m.flick = {}
 	var p := pos + Vector2(m.pixel_x, -m.pixel_y)
+	if m.scale != 1.0 or m.fade != 1.0:
+		var half2 := Vector2(T, T) / 2.0
+		draw_set_transform_matrix(Transform2D(Vector2(m.scale, 0), Vector2(0, m.scale), p + half2))
+		_sprite(m.icon, m.state, m.dir, -half2, now, moving, fl, m.fade)
+		draw_set_transform_matrix(Transform2D.IDENTITY)
+		return
 	if m.rot != 0.0 or m.stretch != 1.0 or m.face >= 0:
 		# rotated / stretched sprite (beams fired diagonally with a 4-direction sprite)
 		var half := Vector2(T, T) / 2.0

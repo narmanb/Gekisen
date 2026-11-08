@@ -25,7 +25,7 @@ MAXX = MAXY = 500
 MAXZ = 12
 
 STAT_VARS = ['level', 'powerlevel', 'powerlevel_max', 'ki', 'ki_max', 'strength', 'defence',
-             'exp', 'zenni', 'race', 'melee', 'block', 'dodge', 'counter', 'durability', 'ki_res', 'kidefense']
+             'exp', 'zenni', 'race', 'melee', 'block', 'dodge', 'counter', 'durability', 'ki_res', 'kidefense', 'critical']
 
 
 def load_tree():
