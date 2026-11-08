@@ -1174,8 +1174,8 @@ func update_projectiles() -> void:
 func _kill_proj(pr: Mob) -> void:
 	pr.dead = true
 	world.remove(pr)
-	var tr: Array = pr.trail
-	after(250, func(): _remove_all(tr))
+	_remove_all(pr.trail)        # the trail goes with the head (ProjectilesJustin.dm: del(T) on Del)
+	pr.trail = []
 
 
 func _remove_all(lst: Array) -> void:
