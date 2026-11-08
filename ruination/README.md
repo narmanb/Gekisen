@@ -25,9 +25,9 @@ redrawn by hand.
   battle techniques are added to empty slots automatically. Any action or technique can go
   on it: open **Skills**, tap something, then tap a slot. Tap **Cancel placing** (or close
   the book) to back out. Hold a slot to clear it.
-* **Action panel.** The round buttons above the Attack button hold Talk, Self Train,
-  Meditate, Rest, Transform and Revert, plus Fly, Power Up, Sense and Instant Transmission
-  once you learn them. A button lights up while it is active.
+* **Action panel.** The dragon balls above the Attack button hold Talk, plus Transform,
+  Revert, Fly, Power Up, Power Down and Sense once you can use them. A button lights up while
+  it is active. Self Train, Meditate and Rest are under the **Train** button.
 * **Message window.** Training stat ticks (Powerlevel +X, Ki +X, Strength +X, Training
   points, skill exp) are listed like the original's second output pane: red when boosted.
   Drag it by its title bar, resize it from the corner, minimise it, and switch between a dark
@@ -35,6 +35,13 @@ redrawn by hand.
   and Gains (what you've gained this session, with rates per hour). It remembers its layout.
 * **Minimap.** Tap it to cycle small / medium / large, drag it to move it; it remembers
   where you left it. Menu turns it on or off or resets its place.
+* **Beams.** As in `ProjectilesJustin.dm`, a beam's head appears on the tile in front of you and
+  leaves its trail sprite (`kamehamehat`, `masenkot`, ...) behind it. Diagonal beams turn the
+  straight sprite 45° and stretch the trail pieces so the beam stays one line.
+* **Instant Transmission** works like `Instant Transmittion.dm`: pick an NPC's energy signal,
+  pay 500 Ki and stand still while you lock on (3 s, 1.5 s for Yardrats), then appear next to
+  them. Not from Dr. Gero's Lab and beyond, and not with gravity on. Put it on the hotbar from
+  Skills.
 * **Test menu.** The **Test** button (top right) levels you up 1–5,000 times, refills you,
   teaches every technique your race can learn, and teleports you to any NPC, any enemy type
   or typed-in coordinates.
@@ -43,7 +50,7 @@ redrawn by hand.
 * **Dragon hotbar.** A Shenron-themed bar with 9 slots per page (3 pages); tap the dragon
   ball on its back to switch pages. Side buttons are dragon balls, named underneath, and only appear once you
   have that ability (Transform when a form is unlocked, Revert while transformed, Fly,
-  Power Up, Power Down, Sense, Instant Transmission). The **Train** button at the top opens
+  Power Up, Power Down, Sense). The **Train** button at the top opens
   Self Train, Meditate, Rest and Training Focus.
 * **Touch controls.** There's a joystick, a big Attack button and the hotbar. On a
   keyboard: arrows/WASD to move, 1–0 for slots, Space to attack, Tab to change bar,

@@ -162,6 +162,19 @@ func run() -> void:
 	await wait(0.5)
 	await shot("04w_learned_all")
 	print("LEARNED ", Game.P["learned"].size(), " panel ", Game.panel_actions())
+	# --- instant transmission: NPC list, ki cost, lock-on, arrival
+	Game.it_lock_until = 0.0
+	Game.P["ki"] = 1000.0
+	Game.use_tech("InstantTransmission")
+	await wait(0.3)
+	await shot("04y_it_menu")
+	var it_n: int = Game._it_rows.size()
+	var it_target: Array = Game._it_rows[0]
+	Game.P["ki"] = 1000.0         # the per-second tick caps Ki at its max; the test character's max is under 500
+	ui._dialog_pick("x", 1)
+	await wait(4.0)
+	print("IT ", it_n, " targets -> ", it_target, " now at ", Game.pe.x, ",", Game.pe.y, ",", Game.pe.z)
+	assert(Game.pe.z == int(it_target[3]) and absi(Game.pe.x - int(it_target[1])) <= 6)
 	Game.teleport(399, 247, 7)
 	await wait(0.4)
 	await shot("04b_bed")
@@ -229,6 +242,25 @@ func run() -> void:
 				await shot("08_" + k.substr(2))
 				await wait(0.8)
 		print("AFTER TECHS ", state())
+		# --- beams: head starts in front, real trail, diagonals (8-dir Kamehameha, rotated 4-dir ones)
+		for m in Game.monsters:          # clear the area so the shots fly their full length
+			if m.z == Game.pe.z and maxi(absi(m.x - Game.pe.x), absi(m.y - Game.pe.y)) <= 20:
+				m.dead = true
+				Game.world.remove(m)
+		Game.test_teleport(Game.pe.x, Game.pe.y - 3, Game.pe.z)
+		for b in [["Kamehameha", 4], ["Kamehameha", 5], ["SpecialBeamCannon", 9], ["Masenko", 6], ["GalickGun", 1]]:
+			Game.cooldowns.clear()
+			Game.P["ki"] = Game.cap("ki")
+			Game.pe.dir = b[1]
+			Game.use_tech(b[0])
+			if b[1] == 4:
+				for fi in 4:
+					await wait(0.06)
+					await shot("04z_head_%d" % fi)
+			await wait(0.3)
+			await shot("04x_beam_%s_%d" % [b[0], b[1]])
+			await wait(1.2)
+
 	# --- skills book + assign to hotbar
 	ui.toggle_book()
 	await wait(0.4)

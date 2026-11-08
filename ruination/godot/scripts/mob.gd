@@ -62,6 +62,10 @@ var steps := 0
 var next_step := 0.0
 var tech := {}
 var trail: Array = []
+var face := -1              # sprite direction override (diagonal beams drawn from a straight sprite)
+var rot := 0.0              # sprite rotation in radians around the tile centre
+var stretch := 1.0          # sprite x-scale (diagonal trail pieces are longer)
+var trail_state := ""
 
 
 func pos(now: float) -> Vector2:

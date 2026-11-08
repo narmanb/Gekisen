@@ -1016,8 +1016,7 @@ func utility(t: Dictionary, key: String) -> void:
 				txt += "%s (lvl %s) PL %s\n" % [m.name, fmt(m.level), fmt(m.powerlevel)]
 			ask("Sense", txt if txt != "" else "You sense no one nearby.", ["OK"], func(_c, _i): pass)
 		"teleport":
-			pe.do_flick("IT", now)
-			teleport(SPAWN.x, SPAWN.y, SPAWN.z)
+			instant_transmission()
 		"dash":
 			for i in 3:
 				var nx: int = pe.x + Data.DIR_DX[pe.dir]
@@ -1091,8 +1090,29 @@ func fire(owner: Mob, t: Dictionary, dmg: float, d: int) -> void:
 	pr.tech = t
 	pr.steps = int(t.get("range", 18))
 	pr.next_step = now + 30
+	if t.get("beam", 0):
+		_setup_beam(pr)
 	world.add(pr)
 	projectiles.append(pr)
+
+
+const DIR_ANGLE := {4: 0.0, 5: -PI / 4, 1: -PI / 2, 9: -PI * 3 / 4, 8: PI, 10: PI * 3 / 4, 2: PI / 2, 6: PI / 4}
+
+
+## Beams (ProjectilesJustin.dm): the head appears on the tile in front of the shooter and leaves
+## a trail piece ("<state>t") on every tile it passes. Diagonal shots turn the straight sprite 45°
+## and stretch the trail pieces so they join up.
+func _setup_beam(pr: Mob) -> void:
+	pr.invisible = true          # shown once it reaches the tile in front (first step)
+	for cand in [pr.state + "t", pr.state + " trail"]:
+		if Data.has_state(pr.icon, cand):
+			pr.trail_state = cand
+			break
+	# Diagonals always use the east-facing sprite turned 45°: even the 8-direction beam sprites'
+	# diagonal frames don't join up from tile to tile.
+	if pr.dir in [5, 6, 9, 10]:
+		pr.face = 4
+		pr.rot = DIR_ANGLE[pr.dir]
 
 
 func update_projectiles() -> void:
@@ -1121,7 +1141,13 @@ func update_projectiles() -> void:
 		if tur.is_empty() or int(tur.get("dense", 0)) == 1 or pr.steps <= 0:
 			_kill_proj(pr)
 			continue
-		if pr.tech.get("beam", 0):
+		if pr.tech.get("beam", 0) and pr.invisible:
+			# first step: appear on the tile in front of the shooter, no trail under them
+			world.move(pr, nx, ny, pr.z, 0, now)
+			pr.invisible = false
+			pr.steps -= 1
+			continue
+		if pr.tech.get("beam", 0) and pr.trail_state != "":
 			var tr := Mob.new()
 			tr.kind = "proj"
 			tr.x = pr.x
@@ -1131,7 +1157,11 @@ func update_projectiles() -> void:
 			tr.from_y = tr.y
 			tr.dir = pr.dir
 			tr.icon = pr.icon
-			tr.state = pr.state + " trail" if Data.has_state(pr.icon, pr.state + " trail") else pr.state
+			tr.state = pr.trail_state
+			tr.face = pr.face
+			tr.rot = pr.rot
+			if pr.rot != 0.0:
+				tr.stretch = 1.5
 			tr.layer = 4.9
 			tr.dense = false
 			world.add(tr)
@@ -1487,13 +1517,13 @@ func test_level_up(n: int) -> void:
 	for i in n:
 		P["exp"] = float(P["tnl"])
 		level_up()
-	P["pl"] = pl_max()
+	P["powerlevel"] = cap("powerlevel")
 	P["ki"] = cap("ki")
 	msg("Test: level %d → %d." % [start_lv, int(P["level"])], Color(0.6, 1, 0.6))
 
 
 func test_restore() -> void:
-	P["pl"] = pl_max()
+	P["powerlevel"] = cap("powerlevel")
 	P["ki"] = cap("ki")
 	P["stam"] = 0.0
 	msg("Test: powerlevel and Ki refilled, fatigue cleared.", Color(0.6, 1, 0.6))
@@ -1506,7 +1536,7 @@ func test_learn_all() -> void:
 
 
 ## Map placements as teleport targets. kind "npc" or "monster"; one entry per name per area.
-func test_targets(kind: String) -> Array:
+func test_targets(kind: String, it_only := false) -> Array:
 	var seen := {}
 	var out: Array = []
 	for e in Data.map["entities"]:
@@ -1516,6 +1546,8 @@ func test_targets(kind: String) -> Array:
 			continue
 		var is_mon := p.begins_with("/mob/Monster/")
 		if is_mon != (kind == "monster"):
+			continue
+		if it_only and not p.begins_with("/mob/NPC"):
 			continue
 		var nm: String = t.get("name", "")
 		if is_mon:
@@ -1534,6 +1566,66 @@ func test_targets(kind: String) -> Array:
 	return out
 
 
+# =================================================================== instant transmission
+## Instant Transmittion.dm: pick an NPC's energy signal, pay 500 Ki, stand still while you lock
+## on (3 s, 1.5 s for the Yardrat gene), then appear next to them. Not from z 8 and up, not while
+## gravity is on, and a 6 s lock afterwards.
+var it_lock_until := 0.0
+var it_busy := false
+var _it_rows: Array = []
+
+
+func instant_transmission() -> void:
+	if it_busy or now < it_lock_until:
+		msg("Cannot use this Technique right now.", Color(1, 0.5, 0.4))
+		return
+	if busy != "":
+		msg("You are already doing something.", Color(1, 0.5, 0.4))
+		return
+	if grav > 0:
+		return
+	if pe.z >= 8:
+		msg("You cannot use instant transmission while in this zone!", Color(1, 0.5, 0.4))
+		return
+	_it_rows = test_targets("npc", true)
+	var opts: Array = ["Cancel"]
+	for r in _it_rows:
+		opts.append("%s (%s)" % [r[0], zname(r[3])])
+	ask("Instant Transmission", "IT to who?", opts, _on_it_pick)
+
+
+func _on_it_pick(_c: String, i: int) -> void:
+	if i == 0:
+		return
+	var r: Array = _it_rows[i - 1]
+	if float(P["ki"]) < 500.0:
+		msg("You do not have enough Ki!", Color(1, 0.5, 0.4))
+		return
+	if busy != "" or it_busy:
+		msg("You are already doing something.", Color(1, 0.5, 0.4))
+		return
+	var ms := 3000.0 if P.get("gene", "") != "Yardrat" else 1500.0
+	P["ki"] = float(P["ki"]) - 500.0
+	it_busy = true
+	it_lock_until = now + ms + 600.0 + 6000.0
+	set_move_dir(0)
+	pe.stun_until = now + ms + 600.0
+	pe.state = "IT" if Data.has_state(pe.icon, "IT") else pe.state
+	msg("Locating %s's energy signal..." % r[0], Color(0.8, 0.85, 1))
+	after(ms, func(): msg("%s Found!" % r[0], Color(0.8, 0.85, 1)))
+	after(ms + 600.0, func(): _it_arrive(r))
+
+
+func _it_arrive(r: Array) -> void:
+	it_busy = false
+	_update_state()
+	if pe.dead:
+		return
+	teleport(int(r[1]), int(r[2]) - 1, int(r[3]))      # in front of them (they block their own tile)
+	pe.do_flick("IT", now)
+	msg("%s appears from nowhere!" % P["name"], Color(0.6, 0.85, 1))
+
+
 func test_teleport(x: int, y: int, z: int) -> void:
 	stop_busy()
 	teleport(x, y, z)
@@ -1549,7 +1641,7 @@ func _is_utility(key: String) -> bool:
 ## Training actions live behind the Train button at the top.
 func panel_actions() -> Array:
 	var out: Array = ["talk"]
-	for k in ["Fly", "PowerUp", "PowerDown", "Sense", "InstantTransmission"]:
+	for k in ["Fly", "PowerUp", "PowerDown", "Sense"]:
 		if k in P.get("learned", []):
 			out.append("t:" + k)
 	var fl := forms_for()

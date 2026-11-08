@@ -169,6 +169,14 @@ func draw_mob(m: Mob, pos: Vector2, now: float) -> void:
 	if not m.flick.is_empty() and fl.is_empty():
 		m.flick = {}
 	var p := pos + Vector2(m.pixel_x, -m.pixel_y)
+	if m.rot != 0.0 or m.stretch != 1.0 or m.face >= 0:
+		# rotated / stretched sprite (beams fired diagonally with a 4-direction sprite)
+		var half := Vector2(T, T) / 2.0
+		# stretch along the sprite's own x axis first, then turn it
+		draw_set_transform_matrix(Transform2D(Vector2(cos(m.rot), sin(m.rot)) * m.stretch, Vector2(-sin(m.rot), cos(m.rot)), p + half))
+		_sprite(m.icon, m.state, m.face if m.face >= 0 else m.dir, -half, now, moving, fl)
+		draw_set_transform_matrix(Transform2D.IDENTITY)
+		return
 	for u in m.underlays:
 		_sprite(u["icon"], u.get("state", "") if u.get("state") != null else m.state, m.dir, p, now, moving, fl, u.get("alpha", 1.0), null, true)
 	_sprite(m.icon, m.state, m.dir, p, now, moving, fl)
