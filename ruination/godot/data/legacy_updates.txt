@@ -1,0 +1,981 @@
+[b]Update 5.5[/b] (from the original game)
+
+
+[color=#ffd75e][b]6/22/2022[/b][/color]
+- Scoreboard now shows commas
+- PVP Flag timer counts down 4x as fast
+- Various bug fixes
+
+[color=#ffd75e][b]4/16/2022[/b][/color]
+- New HUD added, incomplete, can disable or enable in options. Can be dragged around anywhere on the screen
+- Rebirth limit set to 30
+- Stat multis adjusted
+
+[color=#ffd75e][b]2/2/2021[/b][/color]
+- Goku Boost reduced to 20% (from 100%)
+- Elder Kai boost added, 80% boost level 200k requirement
+- Hercule boost changed to give to stat bonuses, with a bit of randomness, you will get at least 1,000 to all stat bonuses
+How much you get is also influenced by number of rebirths and mode number
+
+[color=#ffd75e][b]2/2/2021[/b][/color]
+- Omega Weights added. They only drop from Beerus mobs
+- Dual Train now benefits from the gravity room
+- Small island of Omega Nameks added to yardrat
+- Exploding mobs level increased so high level players can keep mobbing them
+- Level 500k soft cap removed from beerus mobs
+- Various bug fixes
+
+[color=#ffd75e][b]2/2/2021[/b][/color]
+- HBTC gains are now in safe zone. Meditation is still better in HBTC (have some plans for HBTC)
+- Spar ticks changed, they go off of what you concentrate are, and are 2x that of FT
+- Finisher moves (corrupt, absorb, etc) now give between 5-20 stat bonus instead of adding to stats directly
+- Punch damage slight buff in PVP, is still nerfed below default 100%
+- While pvp flagged, you cannot IT to any NPCs. Just a preset spot and other flagged players(probably going to expand on this, unless I go through the NPCs and make a list of which ones to disallow while flagged)
+- Mystic Half Saiyan final form is now Mystic, not SSJ3
+- Androids have to walk snake way now
+- Shards give more stat bonus
+- New Shield Smash sprite
+- Various bug fixes
+
+[color=#ffd75e][b]1/22/2021[/b][/color]
+- Minimum punch and projectile damage is now 1, HBTC damage reduction removed
+- Ki attacks no longer cost ki, just stamina. Might go through these later and make some of them cost ki, such as the 3 tile bomb and homing attacks
+- Mob stats guide and new trans requirement/multi guide in game (thanks Human) they are both under Mob Stats guide, will see if I can directly bring up the trans guide tab via a link later on if not will either combine all into 1 or separate these 2
+- Party level restrictions removed, will probably switch it back on at the start of each wipe and turn it off half way thru in future wipes (exp allocation still needs changed)
+- Disabled punching other players while in the air
+
+[color=#ffd75e][b]12/22/2020[/b][/color]
+- Shards now add to your stat bonus instead of stats. (2,5,10,20)
+- Stat bonus is now calculated further down the line in stat ticks, this will make them more pravelent, especially on rb
+- Using buffs on others will no longer wipe your xp, now gives xp, and is a bit more useful
+- Shield Smash range increased by 1 and cooldown slighlty reduced
+-
+-
+
+[color=#ffd75e][b]12/22/2020[/b][/color]
+- Shield Smash, defense based projectile (25% Defense * Durability/100) learned at level 30k, has a slightly longer CD than Iron Fist
+* Temporary icon, new one incoming
+- Beerus mobs will now correctly respawn individually
+- Defense multi now effects how much damage you recieve in Beerus zone. With a multi of 1-4 the damage is the same as it was before with everybody, and with a multi of 19 or above, the damage can be as low as 4$ or high as 10% per hit
+- Invert 1 requirement lowered to level 20k
+- Explosive Wave ki cost lowered
+- Explosive Wave will now cast twice as fast as  before
+- Ki Power is no longer part of Explosive Waves formula
+- While in spar stance, all techniques, including 3 tile and rapid fire, should work correctly
+* I haven't tested this myself, any issues let me know
+* Once I'm sure this is good, a new tournament will be introduced, which forces spar stance on all participants
+- Power wish for BSDB increased
+
+[color=#ffd75e][b]12/18/2020[/b][/color]
+- You while now gain TP equal to FT gains while dual training
+- Several bug fixes
+
+[color=#ffd75e][b]12/16/2020[/b][/color]
+- Explosive Wave is now around the strength of a single SEW wave, but still powerlevel based
+- Dual train is back, it no longer drains stamina, however the tp gain is gone and each person gets xp and stats based on their own level, should be better than ST for leveling up
+- Kamenian evil forms fixed, evil form 1 was missing, added it and shifted the other forms by 1
+- Tournament rewards increased, now they give exp based on your xp to next level, so people can join them while banking xp
+- ZP vendor extra inventory option cost reduced to 10 zp
+- Various bug fixes
+
+[color=#ffd75e][b]12/9/2020[/b][/color]
+- Kamenian forms added. Each form has a different icon for good/evil alignment
+* Form 1 at 20k, 2 at 60k, 3 at 135k, 4 at 200k
+- ZP Vendor added. Buy +1 kill per kill, extra modes that carry over to future rebirths, and extra inventory space
+* If anybody has any suggestions of more things to add, either let me know or post on the discord in suggestions. I would definitely like a couple more options
+- Beerus mobs stop giving levels after 500k, you still gain stat bonuses
+- Beerus mobs now drop zp shards
+- Brolly Suit from bank quest stats changed. Exact stats in suit guide but it's now the best suit for durability. It's a very hard quest, but have verified it's possible to beat with a low defense multi before level 200k. Don't just go running in, think about things you could use.
+- Gravity damage has been drastically toned down
+- Meditating in HBTC or gravity has increased skill gains. HBTC is 1.5x gains while gravity is 2x
+- Peaceful mobs have been toned down to avoid future Yamchas. This does not include the pushy bank security
+- Kaioken changed:
+* Any stamina under 100 max kaioken is 5. 1,000 stamina is 10x kaio, with +1 kaioken level each 200 stamina until you max at 20x at 3,000 stamina.
+* You can also use kaioken at 40% powerlevel, instead of 50%
+* Kaioken power increased by 25% to compensate. It's potentially a buff depending on how you build
+* I felt that stamina should matter more with kaioken. If a lot of people are unhappy with this it might change back
+- Several bug fixes
+
+[color=#ffd75e][b]11/30/2020[/b][/color]
+- Stat bonuses can be earned again. Earn them slowly via ST or FT (FT is a bit more frequent) and also can increase them by mobbing at Beerus. They don't reset when you rebirth. They are supposed to be gained extremely slowly and may need adjusted
+- New race, Rebrianne, is an Alien type and cannot select until you are on your third rebirth
+- Moro now has a second transformation, first form is at 50k, second is at 150k
+- Kamenian now has 5 total forms, but the appearance of the form depends on your alignment
+- XP gains for self training have been drastically increased outside of HBTC. They're still a little bit better in HBTC but not a lot
+
+[color=#ffd75e][b]5/24/2020[/b][/color]
+- New Demon gene, Fomhoire, non perm with transformations at 25k, 85k, 150k (graphics by Ryu)
+- Beerus Planet and zone are in, at the moment there is only 1 zone in the cave, although it is quite large
+* Talk to Whis to travel between Planets
+* More floors will be added at a later date
+* Feedback of any kind is welcome, I expect there will be changes that are needed
+* Depending on how this goes, might change the damage they do to players to be percent based
+* You gain 50-150 levels worth of XP per kill in here, but better/more rewards will be added later
+* Credit to Ryu for making first zone map and mobs
+Misc Updates
+- SEW is now learned at level 17500 and ES 18000
+- You will gain 1 zp every 5k levels
+- Master Roshi is now a pervert
+- Shadow Spar TP nerfed
+- A few bug fixes
+
+[color=#ffd75e][b]5/19/2020[/b][/color]
+- ZP is no longer used on your stats. Instead your stat ticks are based only on your current level, and your stat multis. Ticks have been buffed a bit to compensate for lack of ZP
+- ZP does still exist but the only way to get it is as drops from mobs. It can be spent at Sensei to increase the exp bonus, but now it can be increased up to 500% ZP Shard drop rate may need adjusted just let me know
+- Rebirth requirements are changed, you can now rebirth at 50k, 100k, 150k, 200k, 250k  etc +50k levels after a rebirth with a max of 500k
+- New Roshi gene with 2 unique forms and a 2nd transformation for Android 21
+- New technique, Detonate - You use this to make any of your straight forward projectiles blow up on the spot. For example use it after you shot a 10x and it'll blow up, with splash damage, hitting anything in its wake. If you want a bit more control you can macro it to a key with Released checked. Fire a kamehameha with D  and D+Released will blow it up when you release the key
+- New planet and zone, specifically for players above 200k to gain better levels from mobbing compared to the current in game mobs. This is still a WIP, it's not going to be complete tonight, but it definitely will be for this weekend, it'll be an important place for people to mob after 200k and is my main focus for updates this wipe, as it'll get more floors and mobs, with rare suit drops not obtainable elsewhere. Possibly a new tier above ultra.
+And mobbing in the zone is different than mobbing outside. Like exploding mob zones, you can't fly while inside. Mobs pack a punch but are low on health so only a few blasts would be needed. EXP from a single mob is worth a lot more than a single mob
+- Non perm and Invert requirements are now level based. Kaioken buffed as it'll be harder to get your transformations
+- Party system added back. If you are below 200k you can invite anybody within 25k levels of your level. If you are above 200k you can invite anybody else above 200k
+
+[color=#ffd75e][b]1/27/2019[/b][/color]
+- Turning off auto leveling is back, this is to accomodate high level characters. Can be toggled off/on in the options
+- New Arena (safezone areas removed)
+- Hercule Gym buffed (no benefits after level 150k) however HBTC is better at any level
+- For the remainder of this wipe, every race can learn Sauzer Blade
+- Majin Wizards can now learn Advanced Training
+- Game Guide deleted since it is out of date. A new one will be viewable in the same location a basic guide will be in there soon, a detailed one might be made at a later date
+- Several bug fixes, specifically a couple with Revert
+- SEW cooldown drastically reduced, damage is now based on max ki instead of current
+- SSJ5 exp increased, Kid Buu exp decreased
+- ZP shard changed to a solid color due to it causing lag if held in inventory
+
+[color=#ffd75e][b]12/3/2019[/b][/color]
+[b]New Stat System[/b]
+- Powerlevel is no longer directly trainable. Instead powerlevel is based on a combo of your strength, ki, and defense
+- 20% strength + 20% ki + 60% defense is your new max powerlevel
+[b]Rebirth changes and Zp Cap[/b]
+- You only gain an extra stat point for the first 10 rebirths
+- A new character has a ZP cap of 500. They cannot spend Zp beyond that cap
+- Cap resets and raises by 100 each time you rebirth
+- Upon rebirth you gain zp equal to 10% of all zp ever earned
+[b]Kaioken changes[/b]
+- Kaioken now maxes at 20x and automatically uses the highest level available
+* Kaioken formula still needs some work it's probably a bit too weak now
+[b]Other changes[/b]
+- AFK Training for exp is less effective, specifically in HBTC and hercule gym
+- Focus Train stat ticks have been slightly buffed while in HBTC
+- Hercule gym only has better gains before you reach level 100k, and they are always lower than HBTC
+- Kamenian buff cooldown fixed, event item should now properly delete from inventory at logout
+- Party system temporarily disabled
+
+[color=#ffd75e][b]10/14/2019[/b][/color]
+- Moro learns a new technique, Mouth Energy Wave, at level 50k. It is similar in power to 10x but wider splash range and longer cooldown
+- Kamenian can now learn:
+* Regeneration
+* Buff Powerlevel, Buff Defense, Advanced Training
+* Damage Field
+- Yardrats can now instant transmission faster than other races, both to npcs and players, and even while flagged for pvp
+- Can now use buffs before and after kaioken, but buffs now calculate based on your max stats, not current. This pretty much has the same effect as before, except kaioken will not strengthen the buffs
+- Bug with energy barrier fixed
+- Can no longer enter exploding mob zones while stats are buffed
+- Event Item added
+* Item Search item, number and icons set by admin, announces to server when one is picked up. Also announced when they drop one, and dropped/announced at logout
+- Android 21 male type fixed
+
+[color=#ffd75e][b]10/8/2019[/b][/color]
+New races (under Alien gene)
+- Moro
+- Lycanthrope (can choose between all 3 of them)
+- Yardrat
+- Kamenian (non canon, a mix of a kai and a namek)
+None of these races have  any unique techniques yet, and they all have a non perm transformation (a couple of them need their own unique aura in the future) their transes are slightly better than other non perms, but not enough that you'd want to RB if you have stopped RB'ing
+- Afterlife Goku and Whis npc boosts changed to percent based,  Goku is 15% and Whis is 30% right now it is best to use them while transformed but this may change next wipe
+- New command for party leaders to move a party member to bottom of the party without anyone needing to relog
+- Stat ticks for killing mobs, and for sparring another player have been increased by 2.5x
+- Can no longer stack buffs with kaioken
+- Potential quest points from killing cell jrs has been increased
+- Being flagged for PVP is now 3 times as long
+
+[color=#ffd75e][b]8/19/2019[/b][/color]
+[b]Sparring Stance[/b]
+Sparring stance allows you to match your power to your opponents. When it is turned on, your damage isn't dependent on your stats, rather it is percent based, how much depends on which ability. For example, punch may do 2% damage to your opponent, sword attack 5%, projectiles 5-10%
+Turn this on and have a sparring partner (or multiple partners) turn it on as well, then no matter what your stats are, you can fight each other on almost equal ground, gaining stat ticks in the process
+* This is still incomplete, just decided to put it in to get some feedback. It doesn't work with 3 tile wide attacks and rapid blast like attacks (yet)
+* Stat ticks from sparring also likely need increased, will increase them to a point where it's definitely better than FT, just want people to spar some and get some feedback
+* Spar Stance will be used in other things when it's completed, in particular a new tournament to the rotation, a skill tournament, where sparring stance is entered automatically
+* This is still a work in progress, mainly need some QoL things but any suggestions just let me know
+[b]Hercule Gym[/b]
+- You can enter the Hercule Gym at level 20k
+- Inside the gym, self/focus train exp gains will be equal to HBTC, and stat ticks will be 10% weaker than HBTC, until level 200k, after that, ST/FT in there is the same as any other place other than HBTC
+* There are a few punching bags in there, they give you exp/powerlevel when you attack them, but at the moment they'll be pretty useless. Will get around to making them a worthwhile training method, just added the basics today
+* The Gym is pretty bare and ugly, I'll improve the look and add other equipment in the future, just wanted to get it added quickly for training verbs
+* Gym is located in the small building below safe zone, and is a safe zone itself
+[b]Other updates[/b]
+- Ticks from sparring have been increased, they might need to go higher still, but this is a start
+- You can now buy inventory space with quest points, +25 at a time for 5k QP, can purchase twice
+- Work on a new HUD has begun, will implement the whole thing just don't have all the icon states divided yet. Instead of the HUD updating every 10%, it will update every 1%
+* HUD is temporarily disabled until new HUD is finished
+- Some NPC icons replaced (credit to Ryuu)
+- You should no longer be able to enter a guild house when flagged for PVP
+- Damage Field should no longer get progressively weaker with his successful hit
+
+[color=#ffd75e][b]8/12/2019[/b][/color]
+- Gluttenous Androids can learn candy ray now
+- Konat Brave Trans now adds weapon skills to current and bonus, not maximum, to prevent keeping those bonuses after a RB
+- HBTC/IT bug fixed
+- Gluttonous Androids can use mega chips now
+- Splash damage now has a minimum of 1 damage
+- Splash damage before defenses is around 50% damage of most techs
+
+[color=#ffd75e][b]8/6/2019[/b][/color]
+[b]HBTC changes[/b]
+- Afk training is only +20% as effect for stat ticks (exp/tp gains are still the same)
+- Sparring in the HBTC is another way to gain stat ticks
+* When you hit a sparring partner, you have a chance to gain offensive stats, when you get hit, chance to gain defensive stats
+* You might want to turn lethal off when having a friendly training match with someone
+* You can spar anywhere in the world and gain stat ticks, but it is more effective in the HBTC, and when in HBTC damage is reduced to [b]10%[/b]
+[b]Other updates[/b]
+- Stat ticks from mobs have been increased
+- Splash damage now correctly calculates for defense (might need to buff it a bit now)
+- 3 new suits added to Quester
+* Videl Saiyaman Suit, Green Lantern Suit, and Saitama Suit(icon by Banto)
+- New aura for SSJB
+- When you rebirth you will now keep Cell Zone key
+
+[color=#ffd75e][b]8/4/2019[/b][/color]
+[b]Assigning points into multis has been changed[/b]
+- There is now a limit to how many points you can have in a single stat
+- The limit by default is 10, however each time you rebirth, the limit raises by 1, so first rebirth, it's 11 points, then second rebirth it's 12 etc
+* Did this due to some players reducing all of their multis to 1, except one, and then they'd pour all of their points into their strength/ki, creating extremely powerful glass cannons
+* To anybody who has done this, please rebirth when you can. I really don't want to go and edit peoples stats and/or multis to fit with this
+- SSJ Rose aura added (credit to Banto, more will be added in next update)
+- TP effectiveness has been reduced, if this is too low I'll increase it, but I think it'll be fine, it was too OP
+- Rebirth bugs fixed, including being able to learn kaioken after a RB, and your mode not setting itself to 1 when you get your first level rank
+[b]Version 4.0[/b]
+
+[color=#ffd75e][b]5/26/2019[/b][/color]
+[b]Rebirth System[/b]
+- Rebirth into a new, more powerful character. Each time you rebirth you gain +1 stat points, starting at 5 points, 6 at rebirth #1, 7 at rebirth #2 etc
+- When you rebirth you choose a new race/gene and set up your stat multis again
+- Your level and stats return to what they are on a new character
+You keep
+- Modes gained from resets
+- Your inventory
+- Overall skills
+- Guild, guild title/rank
+You lose
+- Stats/level
+- All techniques/transformations
+- Zp bonus in stats, all spent and unspent ZP
+- Rank and boosts reset
+- DB wishes set to 0
+Rebirth requirements:
+- First rebirth: level 100,000
+- Second rebirth: level 150,000
+- Third rebirth and on: level 200,000
+[b]Other updates[/b]
+- Zp spent at yardrat has been nerfed
+- Chance to gain a stat tick when killing mobs (normal mobs only)
+- TP has been made more effective at yardrat (probably adding option to spend on exp, after I find a good balance)
+- Levels gained from exploding mobs reduced
+- Exp from concentrating on exp has been buffed
+
+[color=#ffd75e][b]7/12/2019[/b][/color]
+- New Changling gene, Regalis. Powerlevel based (King Kold)
+* Icons by Ryuuchi and Banto
+- New Android gene, Gluttonous. Str/Ki based (Android 21)
+* Icons by Ryuuchi
+- New Tuffle gene, Venerable. Semi Perm, Powerlevel based
+* Icons by Ryuuchi
+- Damage has been reduced for most techniques by about 30%
+- Toggle Lethal now effects projectiles and splash damage
+- Trying out different AI for exploding mobs
+- Stamina cost for ki attacks reduced by around 50%
+- Stamina cost for Zanzoken and After Image reduced, Zanzoken now costs half of what After Image costs
+- Renamed a few techniques (that interferred with macros)
+
+[color=#ffd75e][b]6/23/2019[/b][/color]
+- Sword Attack power doubled
+- Small tweaks to dual train
+* The experience gained while dual training, is based on the person who initiated the dual training, so a higher level player could help level up a lower level player
+* Both people get stat ticks based on focus train stat ticks
+* Both people get much more TP than other forms of training
+* There is a small stamina drain with dual train, so you do have to rest occasionally, however it has been lowered and is pretty low
+- Exploding mob zone rewards now correctly work
+- Fixed small issue with equipment drops
+
+[color=#ffd75e][b]6/22/2019[/b][/color]
+- New technique, [b]Focus Step[/b]
+* Learn at level 10k, to use, hold shift and hit an arrow key, it'll teleport you a few tiles in that direction, leaving an afterimage effect
+* Can not be used while in the air
+* Costs a small mount of ki, when flagged for pvp, costs stamina
+- New gene, [b]Rageful Half Saiyan[/b] icon made by @LegoMyEggo and Banto
+- Enchanted weights for weapon, weapon power, and weapon resistance will now be dropped by mobs
+- New black turban icon (credit to Banto) so when a Turban drops, when it is colorized it will look much better
+- A couple things changed/removed to improve game performance (including a change to exploding mob AI)
+- Some bug fixes (including an equipment related one, several of which have been fixed lately thanks to Spada and Ippo)
+- Trace nuke can no longer be used in exploding mob zones
+- ZP rewards from Quester no longer limited to 8 purchases, however the final tier is extremely expensive
+- Goku Black suit can now be bought with Quest Points (same suit that Zealot Kais get when they wish for Goku Body)
+- Custom Scouter can now be bought with Quest Points, can choose custom color
+- Bubbles/Gregory catch/hit verbs now in Combat Tab
+- Sword Attack cooldown slightly reduced
+
+[color=#ffd75e][b]6/17/2019[/b][/color]
+[b]New techniques[/b]
+- Triple Ki Blasts: Fires 3 ki blasts with splash damage in a 3 tile wide area. Fairly costly to use, costs more in Explosive mob zones. Learn at 100 ki control
+- Trace Nuke: Fires a blast that when in range of another player explodes, forcing the damaged player to land if they are flying. Learn at level 100k
+* You can use this in the air yourself, if you are chasing someone (you can also punch someone while flying to make them land)
+* Low damage, exists when in pursuit of a target
+[b]On Screen HUD[/b]
+- The onscreen hud can be dragged anywhere on your screen
+- Can be toggled off and on in options
+- It doesn't update on timers, instead it updates manually only when your PL, KI or EXP changes. This makes it update immediate, and is more optimized than running on a quick timer, but I may have missed some stuff so let me know
+- PL and KI have states for every 10% up to 200%, if your PL or KI is above 200%, it'll be the same state as the 200% one
+- The EXP bar doesn't have any states above 100% exp
+- The Dragonball will turn blood red when you are flagged for PVP
+[b]Shadow Spar[/b]
+- Arrows appear above your character, hit the correct arrow to gain a bonus while you train with an image of yourself (feedback is appreciated)
+- You'll gain more experience, tp, and zenni. You will gain stat ticks based on self train ticks, but you might gain them a lot faster, depending on how quick you are
+- The further you go in a shadow spar combo, the more experience you'll get. The bonuses cap at 500 but if you don't mess up you can keep that going. 500 makes your exp ticks 5x of the default from self train (again, you could get these quicker than just normal self training)
+- You'll gain a ZP every time you hit 1000 in a combo
+- If you mess up, your combo will go away and you'll have to start from the beginning
+- The gravity room and HBTC, along with shards and other exp bonuses, all effect shadow sparring
+[b]Other updates[/b]
+- [b]Auto Target[/b] command added to Combat tab. Automatically sets your target to the closest mob/player
+- Choose Target menu changed, cancel is at the bottom
+- While targetting a mob/player, you no longer need to be 3 tiles away to auto-aim in their direction
+- Super Kaioken has been weakened, but the drain has been reduced as well
+- Sword attack range slightly extended, will pierce ki attacks
+- Iron Fist speed increased
+- Beginnings of piercing attacks implemented, if two piercing attacks hit each other, they both blow up, if only one of them is piercing, it'll go right through the non piercing one
+- Text color verb replaced with Text Options, you can now have [b]colored names[/b]
+- Options to disable guild invites and shadow spar info
+- Exploding mob agro range reduced slightly
+- Finish-type moves (corrupt, drain etc) now have a higher cap and give more powerlevel when used. The cap is much higher when used on players, and lower on mobs
+- Some low level, good alignment peaceful mobs added around the city
+- Various bug fixes, mostly with equipment and buff type abilities
+
+[color=#ffd75e][b]6/8/2019[/b][/color]
+- Mobs in both exploding zones will now respawn individually, instead of each group on their own list, this should help with both lag and getting jumped at a respawn
+- Exploding Cells slowed down a little bit
+- Hetap machines now sell 1 type of Hetap, a bottle instantly heals you and increases your current stats by 2x of your potential. However you are "full" longer than a senzu bean
+- Two new swords were added, obtainable with quest points. Like the Z Sword/Demon Blade they increase how much exp you gain while training however they are more effective than both
+- A couple of helpful NPCs added, with information around the area they are stationed
+- AoE Field Technique cast time reduced
+- Suit prices drastically reduced from suit shopkeep (Prices in suit guide updated)
+- Block IT option is back in Technique Options, however it only works when you aren't in PVP. While flagged for PVP people can IT to you regardless of the setting
+- Server zenni bonus fixed
+- Can now hit players standing on water with beams/blasts without being directly beside them
+
+[color=#ffd75e][b]6/3/2019[/b][/color]
+- Exploding Cell Zone changed, not as empty/massive
+- Exploding cells are a bit faster than exploding saibas
+- Fixed bug where you could zanzo/after image and not trigger the right AI for these mobs
+[b]AoE Field Techniques[/b]
+- 3 techniques added, Damage Field, Heal Field, Slow Field
+* Damage Field damages all mobs in the area except the caster (PL based damage)
+* Heal Field heals caster and any party members when inside the field (heals percents not based on stats)
+* Slow Field slows down all mobs while they are inside the field, except the caster
+- Only Pure Blooded Kai knows heal field, only majin wizards know slow field
+- Saibaman, tuffles, humans, pure blooded kais, and majin wizards know damage field
+
+[color=#ffd75e][b]6/2/2019[/b][/color]
+[b]Exploding Cell Junior Zone[/b]
+- A new building north of exploding saiba zone is added, you must obtain entry by buying a key with quest points
+- The new zones suicidal cell juniors give up to 2x the quest points of exploding saibamen, and up to 5x the experience/levels
+- They are a bit more likely to drop ZP Shards than any other mobs
+- a new quest npc, Injured Half Saiyan, is outside the zone, giving 2 quests similar to the other zone
+- This zone is bigger than the exploding saiba zone, but if you want you can run to the exit quicker, slightly less linear if you don't run that way
+- The exploding cells have a potential blast range higher than  exploding saibas
+* Note: While functional certain things need worked, in particular the cell junior icon
+* For this wipe, buying the key is cheaper than it will be in the future, since it was added after the fact
+[b]Power Up changes[/b]
+- Power up options located in Technique Options
+- Allows you to change your maximum power up potential (from 100-150%)
+- Can also change how long it takes to cooldown from reaching maximum power
+- Power up is now SLIGHTLY slower
+- Power Down command changed, now you reduce your stats to a percent of your choosing, instead of a number. And it reduces all 4 of your stats
+[b]New Character changes[/b]
+- New Changling gene, Vindictive, is Cooler based with a form beyond Golden even (thanks to Ryuuchi)
+- Feline now has a second graphical option, Chaotic, which is a dark version of the default (thanks to Ryuuchi)
+[b]Misc Updates[/b]
+- Concentrate stat ticks on EXP has been increased (though most don't focus on EXP and it's not a huge increase)
+- Some bugs fixed
+- Certain NPCs you won't be able to IT anymore when you're flagged for PVP
+- Some changes that will hopefully improve performance
+- Candy ray has been moved over to new projectile system
+- Superman suit has been reduced in price, since it's not very useful for most builds
+- You will now recieve the proper amount of levels from exploding zone mobs (more than before, cells worth more than saibas still)
+[b]Version 3.5[/b]
+5/26/2019
+[b]Customize your own build further![/b]
+- At character creation, you can add/subtract points into your four stat multis, which effect level up gains and stat ticks. And optionally use points to increase your max stamina (up to 2000)
+* Note: increasing max stamina is useful for almost everything. Punches, projectiles, techniques. But mostly 1000 should be fine. However, having more stamina will allow you to fight longer without resting, and having extra stamina is extremely helpful for techniques like Kaioken, Regeneration, and Ki Shield
+* Stamina will also effect kaioken limit
+* Resting will take the same amount of time no matter how much stamina you have
+- Ki defense is no longer a trainable stat, instead, it is now integreted into defense (may need some adjustments)
+- At the moment, you won't be allowed to change your multis after you set them at the beginning, but ZP is still around to use
+[b]Other Changes[/b]
+- Stat tick formula changed, character level effects on stat ticks will cap at level 200k
+- Biological Androids can now choose between green and blue color scheme at character creation (thanks to Ryuuchi)
+- Killing a player will now net you exp in part based on your level and their level. Might need to change this some more, but it's more rewarding than before (although not rewarding for a high level to kill a low level)
+- Some mapping changes. Safe zone is different, expanded one of saiyan warrior islands, added Arena northeast part of namek anyone can use
+- Ki damage has been raised by 15%
+- Ki defense shards are no longer in the game, instead they have been replaced by ZP shards, they give a random of 1-5 ZP each use. However they are rare, especially from lower level mobs
+- Mr Popo prices changed. Training point crits are 2 mil a piece, ZP Crits 5 mil, Stat crits 10 mil
+- You will now gain 25 ZP at 20k kills, but only for your first 3 resets, then it'll switch to training points
+- 25k and 30k kill rewards lowered to 50 and 100 ZP each
+- After mode 25, you won't get a better bonus from spending zp at yardrat. However TP doesn't have this cap
+[b]Dragonball Changes[/b]
+- Earth dragonballs you can use as many times as you want, but the rewards are lower. Earth ZP wish is random between 1-10. Power is potentially helpful early on
+- ZP wish on Namek and BSDB has been increased and requirements to hit the max lowered
+- DragonRadar text has been slightly updated. Now it'll tell you if a player is holding a DB, what direction they are from you, or and if needed which planet, it will also tell you which ones you are holding onto(will work on the graphical radar later)
+* At level 150k you stop gaining more ZP from the Namek DBs and Level 300k is when you won't gain anymore ZPs from the BSDBs
+* Summoned Dragons won't stick on a character anymore, they'll apply to a turf instead
+- Wishing for Goku Body will now take a BSDB wish, and SSJRs multi has been raised back up to 75x. Also, cut the level requirement for SSJR down to 50k
+[b]Kaioken Changes[/b]
+- Kaioken has a new aura (thanks to Banto)
+- Kaioken "builds" are possible. You can still stack it on your transformation but you don't have to be stuck at 20x limit
+- Raising your stamina increases your kaioken limit, 1200 stamina = 25x, 1400 = 30x, 1600 = 35x, 1800 = 40x, 2000 = 50x, and if you also use your BSDB wish to increase your stamina by 1000, besides have 3x base stamina you'll be able to do 100x kaioken
+- You can also attempt to use kaioken beyond your maximum limit. Before it would immediately KO you, but now, it can work. How likely it is to work depends on how far over you go, and if it fails, it will instant KO you
+* I don't think kaioken will be too OP since the higher kaioken # you go the more stamina you lose too, but some adjustments might need to be made
+
+[color=#ffd75e][b]5/17/2019[/b][/color]
+[b]Exploding Saibaman Zone Changes[/b]
+- The amount of quest points obtained from killing mobs has been increased (you will get 1-5 per kill)
+- Total experience gain from killing a mob increased (will get 1 level for sure, but can get around 3 levels per kill)
+- Chance of gaining stats from a kill increased from 10 to 25%
+- There is a small chance you obtain a ZP from killing a mob
+- Boss Saibas removed (for now) added some more exploding saibas to make up for it
+- New respawn method
+- Quest points awarded for exiting the zone are now based on how many kills you got (roughly half of that runs kills)
+[b]Quest Points[/b]
+- Lowered the price of various rewards
+- Can get multiple modes using QP now (cheapest being 10k QP, which should be easier to get now that exploding saibas give more per kill)
+[b]Misc. Updates
+- Each SEW wave range has been increased by 1
+- Altered punch animations (to see if the rare graphical bug still occurs)
+- A message now displays when your fatigue is at 80% or above while in Kaioken
+- If you are below 25% PL while gravity training, a red warning will now display
+
+[color=#ffd75e][b]5/8/2019[/b][/color]
+- Stat ticks while gravity training has been made more effective
+- Health drain while gravity training has been slightly decreased
+- Stat gain from killing an exploding saibaman has been slightly increased, frequency changed from 5% to 10%
+- A couple bug fixes
+
+[color=#ffd75e][b]5/5/2019[/b][/color]
+- Increased minimum damage for ki attacks
+- Slightly lowered SEW cooldown
+- Punch cooldown now has a minimum and maximum, still based on your melee skill
+- Gravity training is now more effective for EXP (self train especially)
+- A few bug fixes
+
+[color=#ffd75e][b]4/30/2019[/b][/color]
+Exploding Saibaman updates[/b]
+- New quest from Injured Saiyan
+- Mode + 1 option buyable with quest points
+- Potential stat gain from killing a mob has been increased, as has the cap
+- Regeneration has been somewhat nerfed while inside the zone
+- Power up nerf has been changed, it's now 15% more effective while in the zone
+- Exploding saibas will now respawn individually when the timer is up, in an attempt to prevent players from freezing
+- A few rare giant red saibamen have been added. They spawn small exploding saibamen when they have a player targetted, while keeping a bit of distance. These have about 75% of the powerlevel of SSJ Roses, although they won't physically attack you, if you can't kill them it might be a good idea to run
+* These give a lot of experience if you can kill one
+- A special effect has been added to indicate you have been damaged by an exploding saibaman
+[b]Gravity Training[/b]
+- The gravity chambers are open up again, however the way they work has been changed
+- Each room lets you set the gravity to one number. Room 1: 100x  2: 200x  3: 300x  4: 500x
+- You must either self-train or focus-train while in the gravity room to have it have any positive effect on your stats. While training, your exp, tp, and stat gain are increased, based on the level of the gravity
+- Each pull of the gravity, you will lose a percent of your health. The percent is based on the level of the gravity
+- You will also lose a very small amount of stamina
+[b]Kaioken Changes[/b]
+- Kaioken is now usable by any race even transformed/inverted
+- The stamina drain has been increased, and is based on what level of kaioken you use
+- If you get KO'd by kaioken you will stay KO'd longer, and when you wake up, you will be at very low health
+- You must have 50% of your base powerlevel to use kaioken
+- When you stop using kaioken, you will be taken to 25% of your base stats, despite where you were before(may change this later, but it kind of makes you commit to using it, instead of using it for a brief few seconds)
+- You can now use rest while in Kaioken, however you will recover stamina much slower
+[b]Other updates[/b]
+- Dragon Tips have been updated
+- Can no longer rest and zanzo at the same time
+- A change to powerup so that while you're on the cooldown, if your PL/KI/etc falls way below your base, it won't automatically heal you to 100%
+- Power Up speed has also been lowered a bit (this can be useful, if you stop powering up before you hit 150% of your base, then you don't have to let it cooldown before you can use it again
+- Rest will now heal powerlevel but only while your powerlevel is under 50% of your base
+- How fast resting heals your stats has been decreased (including stamina, but only barely)
+- Rewrote skill level up functions so equipment that adds to those skills will be taken into account (fixes small, rare bug)
+- Several bug fixes
+
+[color=#ffd75e][b]4/23/2019[/b][/color]
+[b]Exploding Saibaman Zone[/b]
+- In this zone, there are many red saibaman, that will quickly run towards you, and when close enough, they will self destruct, causing a somewhat randomized area around them to be damaged
+- The damage is based on the range. The higher the range, the lower the damage
+- The damage is percent of your max powerlevel, this means you can mob here in base and still gain rewards, being transformed won't help at all
+- Another reason why you can do this in base, is because they only have 2 health and no defenses. Any technique will one hit them, the only exceptions are the AoE techniques, it takes 1-2 hits from splash damage
+- There is a kill counter specifically for these mobs, gain 1-2 levels every kill, after you obtain enough kills, the level ups will be slightly less frequent. You can gain more than one level per mob
+- There are 3 suits that can be obtained randomly from these mobs (they will go directly into your inventory)
+* Great Saiyaman Suit, Spiderman Suit, Megaman X Giga Armor suit
+- You will gain 1 exp and very little zenni from killing these mobs, therefore you can't level up party members on these mobs. However, the levels you do gain shouldn't interfere if you are in a party and someone is mobbing normal mobs
+- It is recommended that strength users use ki attacks, punching one before they explode is difficult
+- The zone is accessible through the old safe zone location, the small building north of the city
+- Powering up while inside this zone is only 10% effective
+- You cannot fly or IT in this zone
+- In order to leave this zone, you must make your way to the exit, on the far west side of the entrance (or die)
+- You have a 10% chance to heal a small amount of your PL, KI, and Fatigue when you kill one of these mobs, be sure to keep an eye out on your percents
+- There are two NPCs associated with this zone, one that gives a quest is right outside the door
+[b]Quest Points[/b]
+- There is an NPC by the dark house in the north part of the city where you can spend "quest points"
+* Quest Points are obtained by competing certain quests and killing certain mobs
+* The exploding saibaman zone mobs will give you quest points for killing them
+- At this NPC, you can spend quest points on certain one time boosts. Certain boosts won't show up in the menu until you have bought lower tiered boosts. More choices and ways to obtain quest points will be added in the future
+- There is currently one new suit obtainable with Quest Points
+[b]Level Up Issue[/b]
+- A temporary solution for those with high stats that don't get all level up gains while transformed, you can now turn off leveling up in options. When off, your exp % will go up and up, when you are done mobbing, you can revert, turn it back on, and gain 1 level, and you will start gaining all the levels you have earned
+* If you turn it off and are already gainiing levels, you will have to wait until your exp dips below 100%
+* If you get levels from a tournament or dragonballs, it will automatically turn back on, to avoid any infinite loops
+[b]Other updates[/b]
+- Added some new animations (mostly to Punch for visual indicators but also expanded on Power Dash and when something is KO'd it's now more obvious)
+- Respawn timer to Yemma (King Kai has no respawn timer) it's only a couple minutes most of the time, although dying in exploding saibaman zone will put the timer much higher
+- Emoticons added to chat (thanks to a library from Lummox Jr)
+- Quest tab altered
+- You can now move after the initial casting of SEW (is useful in exploding saiba zone)
+- Auto-face punch damage has been slightly increased (25% to 30%)
+- Zanzo/after image now cost no stamina when not in pvp (had it switched to cost no stamina when you are flagged)
+- Some ki techniques had their stamina costs reduced, and global cooldown for attacks slightly lowered
+- A couple techniques incorrectly triggered double damage in PVP, now it should only trigger when someone is actually using IT
+- HBTC now asks you if you are sure if you want to enter
+- Changes to the level up function, hoping to work around stats not adding due to high numbers
+
+[color=#ffd75e][b]4/17/2019[/b][/color]
+[b]PVP Flagged system implemented[/b]
+- When hit by a player, or when you are hit by a player, you both are now flagged for PVP. Indicator in Vitals tab will display when flagged
+- Every attack should flag, if I missed something, let me know
+[b]While Flagged[/b]
+* You are added near the top of the instant tranmission list. IT'ing to a player takes longer than IT'ing to a mob, and you will recieve a text warning when someone is on the way
+* If you are flagged, it will take 2x as long to IT away
+* If you are hit while attempting to instant tranmission away, you will take double damage and instant transmission will fail
+* Flight speed is the same as move speed (faster when not flagged)
+* You power up at half speed when flagged
+* Zanzo/After Image cost stamina (no longer cost stamina when not flagged)
+* Fly cooldown when flagged (no more cooldown when not flagged)
+* Flying costs 20% stamina (no stamina cost when not flagged)
+* You will not be able to enter any safezones
+* You will remain flagged until you are out of combat for around a minute, hitting a player or getting hit again resets the counter (or if you die you are unflagged)
+* PVP flagged time is a bit higher if you hit someone, it's lower if you only got hit. However if you hit back, then it resets to the higher time even though you didn't start the fight
+* If you logout while flagged, it'll be known in OOC
+[b]Punch auto-face[/b]
+- When you use punch, if there isn't a mob or player directly in front of you, but there is one on any of the other tiles right beside you, you will automatically face them and hit them. However, total damage is reduced to 25% (direct hits are not nerfed at all, might adjust this later)
+- You do not need to choose a target for this to work, it does this for you
+* Given enough feedback I may increase/decrease the percentage
+[b]Time Skip changes[/b]
+* Move speed slowed down a bit more
+* Can fly while affected however flying and landing will no longer return you to base speed
+* Can zanzo/after image when affected, however, there is a large delay between each use
+* After your move speed returns to normal, there is a short period of time where you still have trouble with zanzo and flying
+[b]Other Updates[/b]
+- Super Saiyan 5 mobs added to Vegeta (somewhat stronger than SSJ4s)
+- Some end game mobs defenses were increased
+- Rest should no longer reset you to 100% KI if you are above it
+- Most attacks now add rage to the player damaged. Some attacks add more than others (like timeskip, will add between 20-35, being the tech that enrages the most)
+- Change to the level up function attempting to fix an annoying end game bug
+- Character move speed slightly increased
+- A couple minor fixes
+
+[color=#ffd75e][b]4/14/2019[/b][/color]
+- Many end game mob stats and kill rewards have been dramatically increased (will update again soon to make any adjustments, such as if they are too strong or still too weak)
+- Durability gear will now drop from mobs
+- Punch minimum damage has been increased from 10% to 20%
+- Ki targetting will now not make you auto-face your target if you too close (Must be further than 2 tiles away)
+- Ki cast critical hits has changed, now at 100 ki cast, you have a 25% chance to critical hit (raising ki cast passed 100 does raise the odds now)
+- A critical ki attack is now +35% in damage (from 20%) and there is a message when you hit a target indicating if your attack was critical or not
+- Ki cost for various techniques reduced (I haven't gotten around to stamina reduction on ki attacks yet but will soon)
+- Pure Blooded Kais now gain levels when buffing other players (buffing themselves doesn't give the same bonus) If they buff a player a higher level than them, they gain more levels than one lower
+- Advanced Training buff has been made more effective for focus train and especially self train
+- Ki Absorb technique has been re-enabled. When active, you become fatigued over time, but when you are hit by a projectile, you will gain ki based on the damage. If you are at or above 300% Ki, ki absorb will fail
+- Flight speed increased. Zanzo/after image now have a stamina cost
+- Executioners Strike stamina cost reduced from 5% to 1%
+- Fixed some power up/down/rest related bugs (thanks to Ippo)
+- Power down will now only lower your powerlevel, and it won't bring your powerlevel back to base after a few seconds
+- Unleash Rage should properly work when not in a tourney (thanks to Satan)
+
+[color=#ffd75e][b]4/9/2019[/b][/color]
+- FPS back up to 30
+- Targetting range has been increased
+- Firing an attack too far from a target no longer resets your target, you keep the same target until you select a new one, cancel, or relog
+- Fixed a bug that sometimes occured if you had a target selected and fired at somebody directly beside you
+- Power Dash now has a stamina cost, but damage has been increased by nearly 3x (and remember, if you Power Dash through most projectiles, it blows them up and you keep going, you could dash through a direct attack and still hit your target)
+- Executioners Strike now costs much less Ki, but has a stamina cost
+- Training points are now 5x more effective (mode still effects them)
+- Chips and Megachips are now auto used like shards (unless you have the option toggled off
+- A couple minor bug fixes
+
+[color=#ffd75e][b]4/7/2019[/b][/color]
+- New targetting system implemented. To select a target, double click them, or use Set Target verb in combat. You must be close enough to a target to set it, and if the distance gets too far when you use an attack, the targetting system won't be use. When a target is set, upon firing a ki technique, you will automatically face the general direction of your target before firing
+[b]Note: we do not have the diagonal icon states for projectiles yet, so it won't look good until this is finished. However, it doesn't effect the function[/b]
+- Ki cost has been dramatically
+- Ki cast critical bonus has been raised from 10% to 20%
+- Melee based projectiles (dragon fist, iron fist) now calculate damage based on defense and durability, instead of ki defense and ki resistance like most projectiles
+- When you power up to maximum power, you will return to your base somewhat slower
+- Stat shards are now automatically used when you pick them up, toggle this off/on in Options
+- Stat shards buffed. Large: 50k, Great: 100k, Massive: 200k
+- Drop rates have been slightly lowered
+- Scoreboard wiped, Kills section is now Player Kills
+- Flying delay has been cut in half
+- Various bug fixes, major ones include a lucifer bug (thanks to Aed) and Yemma bug (thanks to Sar)
+- A few mobs have had their stats adjusted (Golden Oozarus, Power Weighted Androids, Ultimate Android) although end game mobs will likely recieve a boost in an upcoming update
+- New Training Modes and Kill ranks guide
+- A few updates to admin verbs
+
+[color=#ffd75e][b]4/2/2019[/b][/color]
+- FPS has been reduced from 30 to 25, to see if the mass disconnects are influenced by a higher FPS
+- Demon transformation bug fixed
+- Flying now only costs 5% stamina, but there is a slight delay to fly again after you land
+- Exp gain from self train has been boosted slightly
+- Energy Barrier now has a longer cooldown
+- A couple other minor fixes
+
+[color=#ffd75e][b]3/31/2019[/b][/color]
+-Transformations changed, no cycling but can pick form. If you think there's a problem with your trans/multi/etc let me know. You can train again while transformed
+- New kai icon for zealot kai gene, if you're a Zealot kai and want it let me know
+- Unique hairs for each hair style for SSJR
+- Hair color now correctly saves when you transform and revert (you will probably have to visit the Barber one time if you haven't or you may end up bald
+- New technique, Energy Barrier, learned at level 45k. Slows you down blocks all damage until it expires or it breaks (its health is based on 2x of your max powerlevel, and it takes reduced damage, especially from melee. But it can be broken. Costs stamina to create
+- Taking flight now costs 120 (about 12%) of your total stamina(landing costs nothing) This is another countermeasure for people who like to stay in the air in a fight
+- Area of effect damage from projectiles and SEW should force a flying player to land
+- Unleash Rage has been buffed, also you gain a very small amount of rage from taking damage from most type of attacks. You cannot unleash rage in a tournament
+- Shopkeepers will buy items from you at a better price, the sale price of great and massive stat shards in general has been increased
+- Meditate ticks increased
+- Ki defense effectiveness reduced to 50% - reason being, no ki tech does anywhere near 100% (unlike defense)
+This doesn't make ki defense useless, it's still useful, possibly still more useful than it should be.
+- The cost of Executioners Strike and Super Explosion Wave has been reduced
+- Can no longer use a senzu bean while in a tournament
+- Quite a few bug fixes, thank you to those who have been reporting them, though there are still some left
+
+[color=#ffd75e][b]3/26/2019[/b][/color]
+- A temporary fix implemented to fix a transformation/stat bug, you will be forced to revert before self/focus training or meditation. If you mob and gain levels it is recommended that when you are done, you revert, do not transform > gain levels > transform > revert. Do: transform > gain levels > revert > transform
+Transformations are being reworked, when it is done this won't be an issue, and you will be able to jump directly to the transformation you want
+- Boosted shards/chips again. Shards: Small - 10k, Large - 25k, Great - 50k, Massive - 100k. Chips - 10k, Mega Chips - 30k
+- Removed some strong mobs that were around weaker mobs (probably others that need to go, let me know)
+- Level option for BSDB added back
+- Removed admin help verb, if you need help ask in OOC or on the discord. If you have a bug or suggestion use the report function
+- A couple other bug fixes
+
+[color=#ffd75e][b]3/25/2019[/b][/color]
+- PL and KI percents will be red when you are powering up, or until your stats slowly lower back down to base after powering up, or while you are in kaioken
+- The cool-down period after you power up has been greatly reduced
+- You can now eat senzu beans while inverted or transformed but there is a cooldown timer on them, you can see if you are full in the statpanel under Fatigue
+- Added command to hide worn equipment. Right click on a worn piece and select Show/Hide Icon
+- Small shards and chips were not dropping properly
+- Slightly buffed shards/chips
+- New Technique Guide added (WIP)
+- Punch damage and cost has been reduced
+- Ki damage vs other players now has damage minimums and maximums, different per tech. For example, if you hit someone with a 10x and they have more ki defense than your 10x strength, the damage will be set to 10% of their PL, however if 10% of their PL is more than half of your current ki, you will damage them for half of your ki
+- Stat ticks adjusted
+- A few genes had the wrong PL requirement, they should all be correct now, as shown in the guide
+- Several bug fixes
+- Dragonball wishes have been changed from last wipe. Wishing for ZP is still effective, but if you choose to wish for Power, you will gain in all stats, a percent based on your own stats up to a cap. The cap depending on which set. Wishing for levels has been buffed
+You can wish for endurance only on the BSDB, which will double your stamina. It's the only way to increase your stamina at this point
+[b]Version 3.0[/b]
+3/24/2019
+- All numbers (training, trans multis, mob stats, etc) have been drastically reduced. This was a big project so I expect there to be plenty of feedback after we wipe (mostly on mob stats)
+- You can now pick which gene you want. The genes with the slightly lower trans multis have a higher stat multi in their specialized stat (a prideful saiyan would gain more ki than a godly saiyan, and especially over honor/legandary, since Godly has the edge) However you won't see any difference early on.. the stats you gain early on very low, but since have so many levels this way it needed to be done
+- Transformations have been changed up. Now your PL and KI percentages will never go up to a high number, it'll be between 0-100%, based on your ki control. Though you can temporarily bring it above 100 with powering up or a buff
+- Power Up works while in transformations now, and you can toggle it off and on you don't have to let it finish. You can power up to 1.5x your base, so at 100 ki con you can power up to 150%
+- Instant Transmission is just a menu choice for every race, it only has NPCs in the list though. But you can input an EC if you want, to get to a player.
+- Stamina is now a static number, you don't have to train it anymore. Reason being is, after the first day or so stamina was pretty much pointless. So now you can afk train without having to worry about resting
+- Stamina is still used in various techniques, and I did adjust (reduce) most of the techs, but it might need adjusted again. However, I would macro Rest, in case you need it. Although most techniques don't take very much stamina eventually you'll need to rest. Resting does heal your PL/KI a bit too. And it won't take a long time to rest, you could rest in the arena and not get killed if you are quicker than your opponent.
+- With the reduced numbers I've had to take a look at ki cost for techniques. While the old system worked, after a point you basically had unlimited ki. I've redone Ki Cost to be based on a percent of your ki stats, plus a smaller static number based on the tech. So you might notice a 10x kamehameha takes 3% of your ki each time you use one, while a starbang only takes 1% Ki Use is still something you'll want to raise, it directly reduces what percent is subtracted (and it can be less than 1% with high ki use)
+- New Kai gene, Zealot, where you start as a perm, with invert. And you can perm if you wish, alternatively you can use the BSDBs and wish for Goku Body, and become Goku Black. Where as Goku Black, you'll have 1 transformation, SSJR, but to compensate for losing a BSDB wish they have the highest multi of any non perm in the game (75) [b]Note: don't rush to get goku body right away, you lose invert when you do, and SSJR requires 50mil PL[/b]
+- Some other genes have had their type changed. Bloodthirsty Human and Brave Konats are the only two Str/Sword type genes in the game
+- Removed all the overall skill increases from transformations. With Weights and Suits, people are way too OP. However the sword type genes do have a total increase of 10 in their weapon skills when they transform. I might go through and add a little bit to all the genes, but only skills that make sense (like melee and durability for a str/def based gene)
+- Deflect skill has been removed
+- Ki Cast now has another purpose. For most techniques, they will always fire now. But if the ki cast check is successful, it'll increase the damage of the attack by a small percent, like a critical hit. Some techniques still require ki cast to fire though (such as the rapid blast attacks, Big Bang like attacks, and the Galactic Donut-like attacks)
+- The stats that shards (and megachips) give has been drastically reduced. Shards are now based on 1% of your stat, not 5, and the cap for each: (Small - 500) (Large - 2000) (Great - 5000) (Massive - 10000)
+I'll increase these if I need to, but I'd rather have them too low than too high
+- Removed gym equipment. Would like to add it back if it could be repurposed into something useful
+- Dragonball wishes changed. Potential ZP rewards are capped per wish (25, 100, 250) Can't wish for individual stats, but for power in general, and it's more effective than before
+
+[color=#ffd75e][b]2/19/2019[/b][/color]
+- Screen size added back in Resolution menu, named View Size
+- Experimenting with different optimizations
+- New Options in Option verb, to toggle splash damage text, kill rewards, and party kill rewards (turning these off when killing massive amounts of mobs could improve your own personal game performance
+- Join Dragonball Ruinations Discord
+- Switched back to old movement
+- Arena isn't blocked off any longer, but you can't leave the area during a match
+- Speed stat calculations and gains removed from the game
+- A variable for tournaments was not being set to 0 after losing a match, should be fixed now
+- You should no longer be able to do a guild war against your own guild
+- Brave Rush now locks targets flying ability for longer
+- Defense from punch slightly less randomized (70-100% effectiveness to 85-100%)
+- Slightly increased Dodge stats effectiveness
+- Block now blocks 80% of remaining damage from a Punch, rather than calculating increased defense for that hit
+- Sense verb altered, need to see it in action to know if it's better
+- Guild Members tab removed completely, however the guild members verb in Guild tab shows all that info in a popup window
+- Quest tab should now properly display when you have a quest. If it's not there and you have a quest, Options > Toggle Tabs will bring it back up
+- Minor changes to the inferface
+- FPS temporarily reduced, from 25 to 20
+- Gravity Machine function was fixed up a bit
+- Dragon Radar text now tells you which direction the dragonballs are at
+- Kaioken now constantly drains stamina. Super Kaioken drains more, but is much stronger
+
+[color=#ffd75e][b]2/16/2019[/b][/color]
+- Trying out different player movement setup
+- AI has been changed up, hopefully it performs better but need to see it in action with players
+- Level Up function changed, you will gain mass levels more slowly over time, but this should be much more optimized
+- Power Dash will now destroy a projectile if you dash right into it, you will take splash damage, but not direct damage, and keep dashing towards your target
+- Power Dash Range increased
+- Power Dash animation updated
+- Super Explosive Wave cooldown slightly reduced
+- Executioner Strike cooldown slightly increased, damage increased moderately
+- Ki Punch stamina cost slightly reduced
+- Punch damage reworked
+- Punch minimum damage was incorrectly being set to 0, now if your punch power - target defense power is less than 10% of your strength, your punch damage will be set to 10% of your strength
+- Sword Attack damage has also been modified
+- Punch and Sword Attack cooldowns modified
+- Sword Slash should no longer move Vault doors
+- Strength-based projectile AntiMatter (Bio Warrior tech) damage has been somewhat reduced, as has its speed
+- Broly Suit drop rate from Bank quest increased
+- You will now get a message if you can do the bank quest again
+- New Report option located in System > Report. Please report any bugs/suggestions you have. Your reports are confidencial, only admins can view your information (thanks to Super Saiyan X for creating this)
+- OOC and Say character limit increased from 150 to 250 characters, if you go over that amount it will cut off at 250 characters but display the whole message right below
+- Fixed a bug with Ki Punch and spamming techniques
+- Fixed a bug with the Legendary Sword (acquired from Tapion, Konats only)
+
+[color=#ffd75e][b]2/7/2019[/b][/color]
+- Ki punch damage increased (45% strength * melee skill) and stamina cost cut in half
+- SEW code has been changed, should be a lot more efficient. If all goes well will lower the cooldown on SEW again
+- Punch has been redone, thanks to Xaliant
+- FAQ section added to new game guide, players may post comments/questions there
+- The rules have been recently updated
+- Bank security death bug fixed
+- Certain end game mobs were not dropping stat shards
+
+[color=#ffd75e][b]2/1/2019[/b][/color]
+- Finish Buster and Brave Rush bug fixed
+- Bank Raid quest fixed
+- Respawn timers for various mobs altered
+- Update Maps has been updated to show map changes
+- Update Maps is now also viewable externally in Game Guide
+[b]**Map changes**[/b]
+- New turf icon for Yardrat
+- New island on Vegeta
+- Some ATMs removed
+- Other minor map fixes
+
+[color=#ffd75e][b]1/29/2019[/b][/color]
+- Push technique added. Learn at 25k. Pushes target back plus deals strength based damage
+- Move delay slightly reduced (let me know if you prefer it this way)
+- Move speed is slightly quicker while flying
+- Brave Rush no longer freezes target and no attacks should be usable immediately after, also you have a small window where you can zanzo away and dodge the attack completely. It still locks zanzo, IT, forces the target to land, and slows them down for a limited amount of time after a hit
+- Farmer added to one of the Earth Islands, he gives a quest
+- Bank Raid quest (not a multiplayer raid, just a quest, works fine but needs some attention in the future)
+- Majin Sorcery has been changed to powerlevel based, message fixed
+- Majin Wizards trans multis adjusted
+- Corruption now caps at 1.5mil pl instead of 250k
+- Range where you will see chat from Say has been increased from 12 to 16(depending on your settings you still might not see someones say if they are on the edge of your screen
+- Space Suit and Tuxedo price have been reduced to 10 trillion zenni
+[b]**Map Changes**[/b]
+- 3 new areas on Yardrat with Goku SSJ Rose mobs
+- Glass part of the roof of buildings and some of the lines were incorrect, fixed now
+- Yardrat has a new water icon
+- Other minor changes
+
+[color=#ffd75e][b]1/20/2019[/b][/color]
+- Bumped the FPS up to 25 (from 20)
+- Power dash now correctly applies damage
+- Projectiles can now travel across water
+- Executioners strike now fires faster and the cooldown has been reduced by 40%
+- Ki defense was lowered, it was too effective after damage minimums changed
+- Two new suits added in Suit Shopkeep (25 Trillion Zenni each)
+- Two new custom auras added
+- Enemy view range expanded a bit more (again this might be reversed)
+- Interface changed (can change back if people don't like the new size of the map)
+[b]*Map Changes*[/b]
+- New island added to Yardat, with infernal dragons
+- Building above the gym has an interior (no NPC yet)
+- Planet Vegeta has a new structure which will be used in a quest sometime
+- A few map fixes
+
+[color=#ffd75e][b]1/17/2019[/b][/color]
+- New melee tech added, Power Dash - damage similar to punch but only uses strength, no powerlevel. Learn at level 75k
+- City expanded (this is work in progress) with seperate buildings for shops, the bank, the barber, and the yamcha gym (which has been moved to the city)
+- ATM machines are located throughout the game, they work just like Bankers but you have to go to the Banker to transfer zenni
+- Roshi's island updated, saga island upgraded, now has Gokus house
+- Various structures have been added to the map (thanks to Ryuuchi for supplying many of the icons and coding them into a DM file)
+- Interface update, using a zoomed feature, you can zoom in and out using Resolution still, and the game auto adjusts the game map whenever you resize/maximize the window
+- Suits page added to game guide
+- Ki Shield now finally works
+- Damage minimums have been changed, different formula and reduced the minimum percent
+- Splash damage should now only have reduced damage against the shooter, before if the player hit themselves all splash damage was reduced to all targets
+- Enemies sight now has a slightly higher range (may change this back)
+- Various bug fixes
+
+[color=#ffd75e][b]1/15/2019[/b][/color]
+- Unique move for each race added, learned at 80k. (Damage formula: 20% PL, 12% KI) has huge splash range
+** Bio Warriors new techs, Nerf Missles, is based on 20% PL, 12% str since all Bio Warrior genes are str based
+- Hit aliens level 20k tech, Vortex Skip, is now strength based
+- New melee technique, Ki Punch, fires a strength based attack a few tiles in front of the player (learn at level 50k, drains small percentage of stamina each use)
+- All strength based projectiles have a much lower max range (how far depends on each tech) Dragon Fist is about 8 tiles for example, while Ki Punch is only a few
+- Time skip now slows down the target instead of a short freeze (the duration and intensity may need adjusted
+- All ki projections max travel range has been reduced, from 40 to 18
+- Projectiles that have splash range will now explode when they reach their max travel distance, instead of just disappearing
+- You should no longer be able to fire a projectile with BR, however, punch still works (might change later
+- BR now slightly slows down the target after they have become unfrozen, however it's much shorter and less intense than timeskip
+- BR will now force the target to land if they are flying, and it disables flight for a short amount of time
+- Ki resistance effectiveness has been toned down a bit
+- Ki Shield technique effectiveness increased from 20% to 35%
+- New (and very expensive) suits have been added to the suit shopkeeper. The MK suits all give the same benefits, Anti Goku Suit is probably the best if you go ki, but Akatsuki Outfit has good melee benefits, and the best durability/ki resistance bonus of all suits (slight ki power reduction when equipped
+- Interface updated, guild chat now displays in the middle text box (give this a chance, if the map is too small I'll change it again, or you can change it manually)
+- Default aura has multiple color choices now (NOTE: if you log out without turning off a default aura, you will have to use fix aura. this is not an issue with other auras and will be addressed at a later date
+- Custom auras fixed, they now have transparency
+- Gravity Training guide added to new game guide
+- Dragon Tips have been updated
+- God Saibas and Dragons added to the Ice Cave on Earth
+- Some more end game mobs added to Yardrat
+- Some mob stat changes (UI Goku exp reward increased, Dragon exp increased slightly, some mobs on Yardrat were under level 1 million, they recieved stat boost and increased level
+- Minor quality of life updates (if your OOC message is too long it'll read the message back to you instead of just telling you it's too long, let me know if you have simple suggestions that go with this)
+- Majin regen changed back to the way it used to be (for now)
+- Various admin functions have been updated
+
+[color=#ffd75e][b]1/8/2019[/b][/color]
+- Respawn timers have been reduced by 1/5th, if this works out will consider lowering them a bit more
+- Golden Oozarus added to Vegeta
+- A new island has been added to Yardrat, south of Omega Shenron NPC
+- Various mob rewards have been adjusted
+- Powerlevel based ki attacks have been nerfed
+
+[color=#ffd75e][b]1/6/2019[/b][/color]
+- Videl has been updated, with 2 sections of auras, one section you can customize the colors. More auras will be added in the future (Thanks Ryuuchi)
+- Most mobs now move at full speed
+- You will no longer be effected by splash damage if you take a direct hit from a projectile
+- If you hit yourself with your own splash, the damage you take is greatly reduced
+- Race tourneys have been removed, at the moment there are 3 level tier tournies, and a world tournament anybody can join
+- New section on file menu, PVP, which has verbs related to tournaments and arena challenges
+- Talking to Yemma now revives you, you can walk snake way to visit king kai if you want
+- There is now a message displaying when a mob drops an item
+- Dodonpa is now learnable by Humans and Androids
+- Some mob stats and rewards have been adjusted
+- Explosive wave power is now based on powerlevel
+- Super Explosion Wave cooldown has been reduced, and it now fires slightly faster
+- Kamehameha now has splash range of 1
+- ST/FT gains for strength and defense have been raised
+- Majin Wizards buffs now function properly
+- Majin wizards can see their transformation skill in overall tab
+- Bug/exploit fixes
+
+[color=#ffd75e][b]1/3/2019[/b][/color]
+- Weighted equipment will now drop in random colors
+- Weighted equipment will drop slightly more often
+- You can now damage yourself by your own splash damage again, but the amount is reduced
+- Mobs changed, some mobs will now walk slower than others
+- Some mob stats altered
+- New ki shield icon (thanks to BlackAlleyCat)
+- Ki shield stamina drain lowered slightly
+- Kai and Majin Wizard buffs show now reapply after you transform/invert (this does not help perms yet)
+- Kai and Wizard buffs should now properly cap
+- Dodge skill nerfed, now 100 dodge is about a 10% chance to dodge a punch
+- Suit shopkeeper readded
+- Freeze cooldown has been reduced by 4/5ths
+- Ki homing attacks will no longer target players, only mobs
+
+[color=#ffd75e][b]12/30/2018[/b][/color]
+- Ki Shield has been changed to reduce 20% of damage from ki attacks but while active it constantly fagitues you until you are out of stamina
+- Mob drops has been altered, the requirements for higher tiered drops has been increased and drop rate has been slightly lowered
+- New verb in Combat tab, "Toggle Lethal" by default it is off. When it is on, you will automatically kill your target. At the moment only works for Punch and Sword Attack
+- Some minor adjustments to mobs
+- Suit shopkeeper (temporarily) removed
+
+[color=#ffd75e][b]12/29/2018[/b][/color]
+- Freeze is now a projectile
+- Kai multis have been adjusted
+- Item drops will now correctly drop all tiers of drops
+- Star bang damage has been fixed
+- Antimatter damage has been changed to strength based because all bio warrior genes are strength based
+- ZP Crits should now work correctly when a player is killed
+
+[color=#ffd75e][b]12/28/2018[/b][/color]
+- Trunks NPC added back into game, located in the city
+- Cooldown on quick firing techniques increased slightly
+- Slight changes to projectile damage
+- Mob movement changed, all mobs move the same speed, and a bit faster (if you don't like this let us know)
+- Time skip has been nerfed
+- Antimatter is now learnable by Bio Warriors at level 20k
+- Sword attack now auto kills instead of KO
+
+[color=#ffd75e][b]12/26/2018[/b][/color]
+- Mobs will now drop appropriate equipment for their level bracket
+- Slightly increased mob speed
+- Slightly increased player move delay (smoother movement with no lag jumps)
+- Finish delay has been reduced (less delay, more mob kills!)
+- Added commas to more numbers in game, such as using scan from a tech or scouter
+- Kais now learn kaioken automatically
+- Party chat character limit has been increased from 100 to 300 characters
+- A bug with the tournaments should be fixed
+
+[color=#ffd75e][b]12/25/2018[/b][/color]
+- Added Suits and Suit Shopkeep. Suits are equipped to their own slot, they are very expensive but they increase different skills when equippped
+- Each race now has a unique projectile that they learn at level 20,000
+- Gravity cap now increases after each reset, with higher resets giving more of a reset. Defense and Ki defense cap is lower than the other stats. End game gravity is in the works
+- Omega Shenron has been added back to the map, at the moment he is on southeast Yardrat
+- Drop rate altered
+- The chance of gear that is dropped being enchanted was increased from 40% to 80%
+- Server Kill Boost fixed
+- Players should no longer get kicked out of HBTC
+
+[color=#ffd75e][b]12/22/2018[/b][/color]
+- View Maps has been updated (also now located in file menu > game
+- Final Explosion should be fixed
+- Changes to the movement code
+- Majin Sorcery buff re-added to the game
+-- Majin Sorcery gives 30% buff to target if they are evil alignment, 10% if they are good
+- Both Kai and Majin Wizard buffs now re-apply if you revert and re-trans, so you won't lose them
+- Kai buffs cannot be stacked with Wizard buffs, and vice versa
+- A few more mob stat changes
+
+[color=#ffd75e][b]12/20/2018[/b][/color]
+- All new multis for all races and genes, and invert buffed
+- Optimizations to enemy A.I.
+- Statpanel simplified and optimized a bit
+- Some mob adjustments
+- Namek, Bio, Majin regeneration changed
+- All now fatigue you while they are turned on
+- Namek and Bios can continue to fight while they are regenerating
+- Majins cannot move while they are regenerating, but they regenerate faster
+- Technique damage altered, random high damage fixed
+- Ki attack damage vs other players has been changed. Players have better defenses but techniques have different minimum damages based on the shooters current kit
+- This is experimental and subject to change, and is intended to promote more skill than stats in a fight, however the stronger character will still have the advantage
+- Sword Attack now hits 3 tiles wide in direction of player. Is still a WIP, does not work with diagonals and there is no animation
+- Kai buffs have been greatly nerfed, and the cooldown timers have been cut in half
+- Kai gravity field effectiveness cap has been tripled
+- Meditation experience gain rate doubled
+- Some mapping changes/fixes
+- Some verbs are now located on the file menu under "Game"
+- New update guide added (W.I.P.)
+- Who verb changed to be browser based
+
+[color=#ffd75e][b]12/17/2018[/b][/color]
+- Temporarily reduced world FPS from from 40 to 20
+- Lowered the drop rate, especially for training shards
+- NPCs can no longer be thrown by powering up
+Beta 2 12/16/2018
+- Pixel movement replaced for tile movement
+- Mob stats have been nerfed
+- A couple of techniques have been slightly nerfed
+- Certain mobs and map elements have been (temporarily) removed
+- Drop rates for gear have been increased
+- Drop rates for shards have been greatly increased, and higher tiered shards will no longer drop from lower level monsters
+- Sword Attack basics have been implemented(incomplete)
+- Various bug fixes
+Update 3.0 Beta
+- Vastly updated map including new areas and many new mobs, and some new graphics.
+- A lot of end game mobs added, Mobbing will be more pleasant now.
+- Some techniques are no longer useful for killing players (such as SEW) instead a new projectile system has been implemented and most attacks use it. SEW is still just as useful for mobbing.
+- Technique damage has been redone
+- Most techniques have their own cooldown timer now so you don't have to wait to use another attack. And some attacks have very low cooldowns
+- The focus is being moved away from stat based homing attacks. Burst Rush now does no damage, but still slows the target. Galactic Tyrant is gone
+- Dragon Fist damage is now calculated based on strength, not ki, since melee players have lost a tech
+- The sword abilities are also viable techs for melee users, some more melee techs could be coming in the future
+- Because of the focus on projectiles, Ki Cast now raises a lot faster
+- Transform multi's have been reworked. All perms are about 250, at the moment the non perms stay the same. However the "weak" genes such as prideful saiyan are now "specialized" genes. For example, a prideful saiyan gains a lot more max ki at each level compared to a godly saiyan, which potentially can add up quite a bit.
+All 3 inverts have been slighted nerfed, and all of the multis are subject to change
+- Gravity training is back in, there is a specific building for it on Earth (it is a safe zone)
+- Your potential gravity gains do cap (and it is based on both gravity level and your character level) but through resets you can increase it
+- Resets are now at 20k, 25k, and then 30k after that. At resets 5, 10, 15, and 20 your gravity cap raises
+- Ki control gear is out of the game, the others are still in. This will allow players to pick and choose which weights they want to "build" their character
+- Stat shards are no longer limited to 10, you can use as many as you want. However the gains have been greatly reduced and each level of stat shard has a cap where you won't gain anymore
+no matter how much of that stat you have
+- Interface slightly updated. You can drag the splitter between the statpanel and chat to make one show more or less
+- Rest can now be toggled off/on

@@ -935,6 +935,50 @@ func _build_stats() -> void:
 	v.add_child(stats_label)
 
 
+## Update Notes / Legacy Update Notes (Menu): a scrollable window showing data/*.txt.
+var notes_panel: PanelContainer
+var notes_title: Label
+var notes_label: RichTextLabel
+
+
+func _build_notes() -> void:
+	notes_panel = PanelContainer.new()
+	notes_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	notes_panel.custom_minimum_size = Vector2(760, 500)
+	_offs(notes_panel, Vector2(-380, -290))
+	notes_panel.visible = false
+	root.add_child(notes_panel)
+	var v := VBoxContainer.new()
+	notes_panel.add_child(v)
+	var h := HBoxContainer.new()
+	v.add_child(h)
+	notes_title = _label("Update Notes", 22, GOLD)
+	notes_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(notes_title)
+	h.add_child(_button("Close", func(): notes_panel.visible = false))
+	notes_label = RichTextLabel.new()
+	notes_label.bbcode_enabled = true
+	notes_label.custom_minimum_size = Vector2(720, 430)
+	notes_label.scroll_active = true
+	notes_label.selection_enabled = false
+	notes_label.add_theme_font_size_override("normal_font_size", 16)
+	notes_label.add_theme_font_size_override("bold_font_size", 17)
+	v.add_child(notes_label)
+
+
+func show_notes(legacy: bool) -> void:
+	if notes_panel == null:
+		_build_notes()
+	var path := "res://data/legacy_updates.txt" if legacy else "res://data/update_notes.txt"
+	notes_title.text = "Legacy Update Notes" if legacy else "Update Notes"
+	notes_label.text = FileAccess.get_file_as_string(path) if FileAccess.file_exists(path) else "No notes found."
+	notes_label.scroll_to_line(0)
+	menu_panel.visible = false
+	stats_panel.visible = false
+	book.visible = false
+	notes_panel.visible = true
+
+
 func toggle_stats() -> void:
 	stats_panel.visible = not stats_panel.visible
 	if stats_panel.visible:
@@ -1000,17 +1044,17 @@ func _refresh_stats() -> void:
 func _build_menu() -> void:
 	menu_panel = PanelContainer.new()
 	menu_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	menu_panel.custom_minimum_size = Vector2(380, 0)
-	_offs(menu_panel, Vector2(-190, -200))
+	menu_panel.custom_minimum_size = Vector2(440, 0)
+	_offs(menu_panel, Vector2(-220, -235))
 	menu_panel.visible = false
 	root.add_child(menu_panel)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 8)
+	v.add_theme_constant_override("separation", 7)
 	menu_panel.add_child(v)
 	v.add_child(_label("Menu", 22, GOLD))
-	v.add_child(_button("Training Focus", func(): menu_panel.visible = false; Game.choose_focus()))
-	v.add_child(_button("Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()))
-	v.add_child(_button("Character Stats", func(): menu_panel.visible = false; toggle_stats()))
+	_menu_row(v, [["Training Focus", func(): menu_panel.visible = false; Game.choose_focus()],
+		["Skills & Hotbar", func(): menu_panel.visible = false; toggle_book()]])
+	_menu_row(v, [["Character Stats", func(): menu_panel.visible = false; toggle_stats()]])
 	var hw := HBoxContainer.new()
 	hw.add_theme_constant_override("separation", 6)
 	v.add_child(hw)
@@ -1019,27 +1063,43 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
-	v.add_child(_button("Sound On / Off", func():
-		Game.sfx_on = not Game.sfx_on
-		var d: Dictionary = logwin._prefs()
-		d["sound"] = Game.sfx_on
-		var fa := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
-		if fa:
-			fa.store_string(JSON.stringify(d))
-		Game.msg("Sound %s." % ("on" if Game.sfx_on else "off"), Color(0.7, 0.8, 1))))
-	v.add_child(_button("Transformation Aura On / Off", func():
-		Game.P["trans_aura"] = not bool(Game.P.get("trans_aura", true))
-		Game.build_appearance()
-		Game.msg("Transformation aura %s." % ("on" if Game.P["trans_aura"] else "off"), Color(0.7, 0.8, 1))))
+	_menu_row(v, [["Update Notes", func(): show_notes(false)], ["Legacy Update Notes", func(): show_notes(true)]])
+	_menu_row(v, [["Sound On / Off", func(): _toggle_sound()], ["Trans. Aura On / Off", func(): _toggle_trans_aura()]])
 	var hm := HBoxContainer.new()
 	hm.add_theme_constant_override("separation", 6)
 	v.add_child(hm)
 	hm.add_child(_label("Minimap:", 15))
 	hm.add_child(_button("On / Off", func(): menu_panel.visible = false; _toggle_minimap(), 14))
 	hm.add_child(_button("Reset", func(): minimap.reset_layout(), 14))
-	v.add_child(_button("Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))))
-	v.add_child(_button("Save & Quit to Title", func(): Game.save(); get_tree().reload_current_scene()))
+	_menu_row(v, [["Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))],
+		["Save & Quit", func(): Game.save(); get_tree().reload_current_scene()]])
 	v.add_child(_button("Close", func(): menu_panel.visible = false))
+
+
+func _menu_row(v: Container, items: Array) -> void:
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 6)
+	v.add_child(h)
+	for it in items:
+		var b := _button(it[0], it[1], 16)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		h.add_child(b)
+
+
+func _toggle_sound() -> void:
+	Game.sfx_on = not Game.sfx_on
+	var d: Dictionary = logwin._prefs()
+	d["sound"] = Game.sfx_on
+	var fa := FileAccess.open(logwin.PREFS, FileAccess.WRITE)
+	if fa:
+		fa.store_string(JSON.stringify(d))
+	Game.msg("Sound %s." % ("on" if Game.sfx_on else "off"), Color(0.7, 0.8, 1))
+
+
+func _toggle_trans_aura() -> void:
+	Game.P["trans_aura"] = not bool(Game.P.get("trans_aura", true))
+	Game.build_appearance()
+	Game.msg("Transformation aura %s." % ("on" if Game.P["trans_aura"] else "off"), Color(0.7, 0.8, 1))
 
 
 # =================================================================== dialogs

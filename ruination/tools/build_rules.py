@@ -136,8 +136,10 @@ def techniques(tree):
 #  SuperExplosionWave: ExplosionSEW pulses of radius 2, 3, 4, each ki_max*ki_power/100/3
 #  FinalExplosion: oview(8), damage = ki*ki_power/100/((2+dist)/2); you are left at 0 powerlevel
 WAVES = {
-    'ExplosiveWave': {'kind': 'wave', 'wave': 'explosive', 'radius': 3, 'boom': [3, 5]},
-    'SuperExplosionWave': {'kind': 'wave', 'wave': 'sew', 'pulses': [2, 3, 4]},
+    # Sizes changed on request: Explosive Wave's two rings now reach 1 then 2 tiles (the old first
+    # ring is the new edge, damage radius to match); Super Explosion Wave pulses 1, 2, 3.
+    'ExplosiveWave': {'kind': 'wave', 'wave': 'explosive', 'radius': 2, 'boom': [2, 3]},
+    'SuperExplosionWave': {'kind': 'wave', 'wave': 'sew', 'pulses': [1, 2, 3]},
     'FinalExplosion': {'kind': 'wave', 'wave': 'final', 'radius': 8, 'boom': [4, 8]},
 }
 # /obj/Tech missiles (Technique_Procs.dm Scatter): homing ki balls. icon_state and the delay

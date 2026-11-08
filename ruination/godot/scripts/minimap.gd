@@ -59,7 +59,7 @@ func _input(e: InputEvent) -> void:
 
 ## Don't steal touches meant for an open dialog or the skills book.
 func _blocked() -> bool:
-	return ui != null and (ui._modal_open() or ui.book.visible or ui.stats_panel.visible or ui.menu_panel.visible)
+	return ui != null and (ui._modal_open() or ui.book.visible or ui.stats_panel.visible or ui.menu_panel.visible or (ui.notes_panel != null and ui.notes_panel.visible))
 
 
 func _apply_size() -> void:

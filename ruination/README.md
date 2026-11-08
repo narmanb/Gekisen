@@ -79,6 +79,9 @@ redrawn by hand.
   punch/kick hits, ki blast and beam fire (Kamehameha, Special Beam Cannon, discs, Big Bang),
   explosions, teleport (Instant Transmission, Power Dash, Burst Rush), power up (also while
   transforming) and regenerate. Menu -> Sound On / Off.
+* **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
+  (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
+  shows the original game's own update log, extracted by `tools/build_notes.py`.
 * **Test menu.** The **Test** button (top right) levels you up 1–5,000 times, refills you,
   teaches every technique your race can learn, and teleports you to any NPC, any enemy type
   or typed-in coordinates.

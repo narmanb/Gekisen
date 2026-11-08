@@ -1626,9 +1626,10 @@ func _wave(t: Dictionary) -> void:
 	match w:
 		"explosive":
 			var dmg := roundf(float(P["powerlevel"]) / 2.0)
-			after(500, func(): _basic_boom(cx, cy, cz, 3))
+			var rings: Array = t.get("boom", [2, 3])
+			after(500, func(): _basic_boom(cx, cy, cz, int(rings[0])))
 			after(700, func():
-				_basic_boom(cx, cy, cz, 5)
+				_basic_boom(cx, cy, cz, int(rings[1]))
 				for m in monsters.keys():
 					if m.dead or m.z != cz:
 						continue

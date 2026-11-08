@@ -463,6 +463,17 @@ func run() -> void:
 	await wait(0.3)
 	await shot("15f_stats_scrolled")
 	ui.toggle_stats()
+	ui.menu_panel.visible = true
+	await wait(0.3)
+	await shot("16a_menu")
+	ui.show_notes(false)
+	await wait(0.3)
+	await shot("16b_update_notes")
+	ui.show_notes(true)
+	await wait(0.3)
+	await shot("16c_legacy_notes")
+	print("NOTES ", ui.notes_label.get_parsed_text().length(), " chars")
+	ui.notes_panel.visible = false
 	Game.save()
 	print("SAVED ", FileAccess.file_exists(Game.SAVE_PATH))
 	# --- continue from the save after a window resize (the joystick must stay on screen)

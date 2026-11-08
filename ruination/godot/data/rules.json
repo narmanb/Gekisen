@@ -2145,10 +2145,10 @@
    ],
    "kind": "wave",
    "wave": "explosive",
-   "radius": 3,
+   "radius": 2,
    "boom": [
-    3,
-    5
+    2,
+    3
    ]
   },
   "FakeMoon": {
@@ -3723,9 +3723,9 @@
    "kind": "wave",
    "wave": "sew",
    "pulses": [
+    1,
     2,
-    3,
-    4
+    3
    ]
   },
   "Sword_Slash": {

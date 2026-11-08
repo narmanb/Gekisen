@@ -1,0 +1,75 @@
+[b]Dragonball Ruination – Android version[/b]
+Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
+
+[color=#ffd75e][b]11/8/2026 – Update notes, wave sizes[/b][/color]
+- Added Update Notes and Legacy Update Notes (the original game's update log) to the Menu
+- Explosive Wave is smaller: its two fire rings reach 1 and then 2 tiles, and it damages everything within 2 tiles
+- Super Explosion Wave's three pulses are one tile smaller each (1, 2 and 3 tiles)
+- Menu rearranged so everything fits on screen
+
+[color=#ffd75e][b]11/8/2026 – Sound[/b][/color]
+- Sound effects: punch and kick hits, getting hit, ki blasts, Kamehameha, Special Beam Cannon, discs, beams, Big Bang, explosions, teleporting, powering up, regenerating and critical hits
+- Aura plays the original "aura full" sound
+- Menu > Sound On / Off
+
+[color=#ffd75e][b]11/8/2026 – Transformations[/b][/color]
+- Transform opens "Which form would you like to transform to?" with every form you qualify for, like the original
+- Transformation level: goes up when you transform and while you stay transformed. At level 25, Saiyans, Half Saiyans and Mystic Humans get Form 3 instead of Form 2, and top forms grow stronger with it
+- Transformation speed: transforming takes 5.1 seconds at first and gets faster the more you do it
+- Transforming has lightning and an explosion ring; each race gets its own Big Aura (Menu > Transformation Aura On / Off)
+- Namekians, Majins, Androids, Dragons, Bio Androids, Tuffles and the other step races go up one form per press and their forms stack
+- Androids, Bio Androids, Hitmen and Zealots can't revert, and being knocked out doesn't undo it
+- Staying transformed no longer tires you out or forces you to revert (the original never did)
+- Fixed Prideful Saiyan form levels; fixed Hitman, Bio Android, Dragon, Namekian, Saibaman Godly and Zealot forms; Fomhoire and Roshi forms use their real names
+- Stats screen shows transformation level, speed and every form's requirements
+
+[color=#ffd75e][b]11/8/2026 – Melee techniques[/b][/color]
+- Push hits the enemy in front and throws it 1-3 tiles
+- Power Dash charges up to 20 tiles leaving after-images and slams into the first enemy
+- Burst Rush blinks to three sides of an enemy and throws it, leaving it stunned
+
+[color=#ffd75e][b]11/8/2026 – Techniques match the original[/b][/color]
+- Kamehameha and every blast use the original damage: (powerlevel x a + ki x b) x Ki Power%, minus the target's ki defence; critical hits (+35%) at Ki Cast/4 % chance
+- Splash damage: blasts explode over a square (level 1 = 3x3), also when they hit a wall or run out of range
+- Triple Ki Blasts fire three at once: in front and on both sides
+- Rapid Blast, Ki Shower, Flame Shower, Shine Missile, Hell Zone Grenade, Acid Rain and Genocide fire homing ki missiles; Trace Nuke homes in too
+- Big Bang Attack, Burning Attack, Blaster Shell and Revenge Death Ball are big 3x3 balls
+- Explosive Wave hits everything around you for half your powerlevel with a spreading ring of fire; Super Explosion Wave pulses out three times; Final Explosion hits everything within 8 tiles and knocks you out
+- Technique Ki costs match the original
+- NPC teachers: SSJ4 Goku (X10 Kamehameha), SSJ3 Goku (Dragon Fist), Goku (After Image), Vegeta (Galick Gun, Final Flash, Big Bang, Final Shine), Piccolo (Zanzoken, Light Grenade, Special Beam Cannon), Tien (Solar Flare, Split Form, Tri Beam), Trunks (Finish Buster, Burning Attack), Yardrat Sensei, Frieza and Dr. Gero
+- Side buttons are fixed to Rest, Talk, Fly, Power Up, Power Down, Transform and Revert, each shown only once you have it
+
+[color=#ffd75e][b]11/8/2026 – Beams and Instant Transmission[/b][/color]
+- Beams start on the tile in front of you instead of on top of you
+- Beams use their real trail sprites instead of repeating the head, and the trail disappears with the head
+- Diagonal beams are drawn as one straight line
+- Instant Transmission works like the original: pick an NPC, 500 Ki, a few seconds to lock on, then appear next to them
+- Removed Teleport from the side buttons
+
+[color=#ffd75e][b]11/7/2026 – Test menu and minimap[/b][/color]
+- Test button: level up 1-5,000 times, teleport to any NPC, enemy or coordinates, learn every technique, full restore
+- Minimap: tap to switch between three sizes, drag to move it, remembers where you put it (Menu > Minimap Reset)
+- Fixed menus that open another menu leaving an invisible copy behind
+
+[color=#ffd75e][b]11/7/2026 – DBZ look[/b][/color]
+- Shenron hotbar with 9 slots per page; tap the dragon ball on its back to switch pages
+- Side buttons are dragon balls with their names underneath
+- Train button: Self Train, Meditate, Rest and Training Focus
+- Power Down: choose 75%, 50%, 25% or 10%
+
+[color=#ffd75e][b]11/7/2026 – Message window, minimap, stats[/b][/color]
+- Message window you can move, resize and minimise, with tabs for All, Ticks, Combat and Gains (what you've gained this session); dark panel, clear or fading look
+- Training stat ticks from Self Train and Meditate are listed like the original's second output pane
+- Minimap
+- Full stats screen: every skill (Ki Power, Ki Usage, Melee, Dodge and the rest) with levels and exp, multipliers and active effects
+- Joystick is easier to see
+
+[color=#ffd75e][b]11/4/2026 – Appearances and transformations[/b][/color]
+- Race and gene looks, hair and skin from the original icons
+- Transformation data for every race and gene
+- Fomhoire demons get their hair only in the third form
+
+[color=#ffd75e][b]11/3/2026 – First Android version[/b][/color]
+- Single-player Dragonball Ruination for Android, made from the original game's map, icons, races, training, techniques and monsters
+- Touch controls: joystick, Attack button, hotbar and action panel
+- Gravity rooms
