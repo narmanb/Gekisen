@@ -1539,9 +1539,11 @@ func _on_start() -> void:
 		_points_step(np, func(p): _begin(p))
 
 
-## SetMultis.dm: spend your stat points (5, +1 per rebirth) on the Powerlevel, Ki, Strength and
-## Defense multipliers (each up to 10 + rebirths; you may also take points out of your race's base
-## down to 1) or on Stamina (+200 each, 600-2,000). Multipliers speed up training, levels and mobbing.
+## SetMultis.dm / Gold Glory.dmf "multis": spend your stat points (5, +1 per rebirth) on the Ki,
+## Strength and Defense multipliers (each up to 10 + rebirths; you may also take points out of your
+## race's base down to 1) or on Stamina (+200 each, 600-2,000). The Powerlevel multiplier stays at
+## your race's value (the live window has no Powerlevel buttons). Multipliers speed up training,
+## levels and mobbing.
 var _pts_p: Dictionary
 var _pts_done: Callable
 
@@ -1562,7 +1564,9 @@ func _refresh_points() -> void:
 	v.add_child(_label("%s %s · %d point%s left%s" % [p["gene"], p["race"], int(p["points"]), "" if int(p["points"]) == 1 else "s",
 		(" · rebirth %d" % int(p["rebirths"])) if int(p.get("rebirths", 0)) > 0 else ""], 18, Color(0.85, 0.88, 1)))
 	v.add_child(_label("Multipliers make Self Train, levels and mobbing raise that stat faster (max %d each). Stamina lets you train longer before resting." % cap, 15, Color(0.7, 0.75, 0.9)))
-	for row in [["Powerlevel", "power_multi"], ["Ki", "ki_multi"], ["Strength", "strength_multi"], ["Defense", "defence_multi"], ["Stamina", "stam_max"]]:
+	v.add_child(_label("Powerlevel multiplier (set by your race): %d" % int(p["power_multi"]), 16, Color(0.75, 0.8, 0.95)))
+	# Gold Glory.dmf "multis": the live window only has Ki, Strength, Defense and Stamina
+	for row in [["Ki", "ki_multi"], ["Strength", "strength_multi"], ["Defense", "defence_multi"], ["Stamina", "stam_max"]]:
 		var h := HBoxContainer.new()
 		h.add_theme_constant_override("separation", 12)
 		v.add_child(h)

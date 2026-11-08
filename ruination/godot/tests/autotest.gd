@@ -146,11 +146,11 @@ func run() -> void:
 	# stat points screen (SetMultis.dm)
 	var pts_seen := false
 	ui._points_step(Game.new_player(ui.creation), func(_p): pts_seen = true)
-	ui._points_change("power_multi", 1)
+	ui._points_change("ki_multi", 1)
 	ui._points_change("strength_multi", 1)
 	await wait(0.3)
 	await shot("03b_stat_points")
-	print("POINTS left ", ui._pts_p["points"], " power ", ui._pts_p["power_multi"], " str ", ui._pts_p["strength_multi"])
+	print("POINTS left ", ui._pts_p["points"], " ki ", ui._pts_p["ki_multi"], " str ", ui._pts_p["strength_multi"])
 	ui.create_root.queue_free()
 	ui.create_root = null
 	ui._begin(Game.new_player(ui.creation))

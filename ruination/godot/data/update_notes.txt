@@ -1,6 +1,10 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Faster training, stat points fixed[/b][/color]
+- Training is faster: Self Train gives about twice the exp and more stats, so Super Saiyan (level 400) comes after about 9-10 hours instead of 15-20
+- Stat points now work like the later original: they only go on the Ki, Strength and Defense multipliers (or Stamina); the Powerlevel multiplier comes from your race
+
 [color=#ffd75e][b]11/8/2026 – Balanced races[/b][/color]
 - Every race and gene now has the same total of built-in stat multipliers (15), and races with permanent transformations a couple more (17). Each keeps its original shape: Prideful Saiyans are still Ki-heavy, Namekians still Powerlevel and Defense heavy, and so on
 - Your 5 creation stat points still go on top

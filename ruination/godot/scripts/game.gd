@@ -44,7 +44,7 @@ const START_PL := {"Human": 50, "Saiyan": 150, "Half Saiyan": 120, "Namekian": 1
 const MULTI_TOTAL := 15           # built-in Powerlevel+Ki+Strength+Defense multipliers, every race/gene
 const PERM_MULTI_TOTAL := 17      # step (permanent-transformation) races get a couple more
 const LEVEL_WALL := 1000           # past this, levels come much slower and give little
-const K_TRAIN := 0.0015            # Self Train: gain = K * stat^0.85 * multi/5 per stat tick
+const K_TRAIN := 0.0022            # Self Train: gain = K * stat^0.85 * multi/5 per stat tick
 const K_LEVEL := 0.02              # level-up gain per stat
 const K_KILL := 0.012             # mobbing: stat gain per kill (scaled by how tough the monster is)
 const TEMP_FORM_MULT := [2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0]   # Form 1.. (Super Saiyan = x2)
@@ -2681,7 +2681,7 @@ func busy_tick() -> void:
 func self_train_tick() -> void:
 	var lvl := float(P["level"])
 	var moden := float(P["moden"])
-	var expgain := roundf(randf_range(5, 20) * (1.0 + lvl / 100.0)) * exp_mult()
+	var expgain := roundf(randf_range(10, 40) * (1.0 + lvl / 100.0)) * exp_mult()
 	var zen := roundf(randf_range(15, 600) + lvl / 2.0)
 	var focus: String = P["focus"]
 	var boosted := gravtrain > 0.0 or buffs.has("exp")
