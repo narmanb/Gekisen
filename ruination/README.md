@@ -84,8 +84,15 @@ redrawn by hand.
   Beerus' planet), chase a step every 0.2 s, attack every 1.1 s (Beerus mobs 2.6 s, % of your max
   powerlevel), lose you past 13 tiles; AttackMOB damage with monster criticals; exploding mobs
   glow and blow up (the corpse's blast hurts), give a level per kill; the Saibaman Boss spawns
-  pawns; everything killed respawns together every 150 s. Saga bosses aren't in: in the original
-  they only appear when an admin starts a saga, and their fighting AI is commented out.
+  pawns; everything killed respawns together every 150 s. Flying is blocked in Gero's Lab and on
+  Beerus' planet (Bukujitsu.dm).
+* **Sagas.** Menu -> Sagas runs the original two saga lines (`Mobs/Sagas/Sagas.dm`, data in
+  `godot/data/sagas.json`): parts spawn together on Earth, multi-form bosses come back as their next
+  form, stats from the original (level^2 x 500 powerlevel) at the original difficulties or "Match my
+  power". The original saga AI was commented out, so the bosses get new AI: chase and AttackSAGA
+  punches, power up when low, and per-boss moves (beams like Raditz's Double Sunday, 3x3 balls,
+  ki volleys, freezes, rushes, drains, waves). The original landing area is mostly safe zone in this
+  map, so bosses land on its open, non-safe tiles.
 * **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
   (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
   shows the original game's own update log, extracted by `tools/build_notes.py`.

@@ -533,6 +533,9 @@ func start(p: Dictionary) -> void:
 	msg("Welcome to Dragonball Ruination, %s!" % P["name"], Color(1, 0.75, 0.2))
 	if int(P["level"]) < PK_LEVEL:
 		msg("Self Train to level %s to unlock battle techniques. Rest when you get tired." % fmt(PK_LEVEL), Color(0.6, 0.85, 1))
+	saga_bosses.clear()
+	if saga_active():
+		after(2000.0, func(): _saga_resume())
 
 
 func _nearest_free(x: int, y: int, z: int) -> void:
@@ -675,7 +678,13 @@ func _entered() -> void:
 		teleport(int(w[0]), int(w[1]), int(w[2]))
 
 
+const NO_FLY_Z := [8, 10]       # Dr. Gero's Lab and Beerus' planet
+
+
 func teleport(x: int, y: int, z: int) -> void:
+	if pe.flying and z in NO_FLY_Z:
+		pe.flying = false
+		_update_state()
 	if z != pe.z:
 		world.load_z(z)
 		msg("You arrive at %s." % zname(z), Color(0.6, 0.85, 1))
@@ -944,6 +953,8 @@ func monster_die(m: Mob) -> void:
 	if m.ai in ["explode", "explode_cell"]:
 		_exploding_reward(m)
 		return
+	if m.ai == "saga":
+		after(10.0, func(): _saga_boss_down(m))
 	var e := m.exp_reward
 	var z := m.zenni_reward
 	if buffs.has("exp"):
@@ -959,6 +970,408 @@ func monster_die(m: Mob) -> void:
 		# Ruination2.dm *_Repopulate(): everything killed comes back together every 150 s
 		var wait := 150000.0 - fmod(now, 150000.0)
 		after(wait, func(): spawn_monster(path, home.x, home.y, home.z))
+
+
+# =================================================================== sagas
+## Saga events (Mobs/Sagas/Sagas.dm): Menu -> Sagas starts the Villain Saga (Raditz to Omega
+## Shenron) or the Hero Saga (Goku to SSJ4 Gogeta). Each part's bosses land together in the
+## original saga area on Earth; beat them all for the next part. Bosses with several forms come
+## back as the next one. Stats follow Sagas.dm New() (powerlevel = level^2 x 500, strength and
+## defence = level^2 x 200) scaled by the original difficulties, or "Match my power". The
+## original saga AI was commented out (bugged), so this AI is new: chase and punch (AttackSAGA),
+## power up when low, and each boss's own moves (sagas.json).
+const SAGA_DIFF := {"Pathetic": 0.25, "Easy": 0.5, "Medium": 1.0, "Hard": 2.0, "Extreme": 3.5}
+var _saga_cache := {}
+var saga_bosses: Array = []
+
+
+func saga_data() -> Dictionary:
+	if _saga_cache.is_empty():
+		var v = JSON.parse_string(FileAccess.get_file_as_string("res://data/sagas.json"))
+		_saga_cache = v if v is Dictionary else {}
+	return _saga_cache
+
+
+func saga_active() -> bool:
+	return P.has("saga") and P["saga"] is Dictionary and not (P["saga"] as Dictionary).is_empty()
+
+
+func saga_part() -> Dictionary:
+	if not saga_active():
+		return {}
+	var parts: Array = saga_data()["lines"][P["saga"]["line"]]["parts"]
+	var i := int(P["saga"]["part"])
+	return parts[i] if i < parts.size() else {}
+
+
+func start_saga(line: String, difficulty: String) -> void:
+	end_saga(true)
+	P["saga"] = {"line": line, "part": 0, "difficulty": difficulty, "forms": {}, "down": []}
+	msg("Saga Information: the %s has begun! (%s)" % [saga_data()["lines"][line]["name"], difficulty], Color(1, 0.4, 0.3), "combat")
+	_spawn_saga_part()
+
+
+func end_saga(quiet := false) -> void:
+	for b in saga_bosses:
+		if not b.dead:
+			b.dead = true
+			world.remove(b)
+			monsters.erase(b)
+	saga_bosses.clear()
+	if saga_active() and not quiet:
+		msg("Saga Information: the saga has ended.", Color(1, 0.4, 0.3), "combat")
+	P.erase("saga")
+
+
+func _saga_spot() -> Vector3i:
+	var a: Array = saga_data()["area"]
+	world.load_z(int(a[4]))
+	for i in 200:
+		var x := randi_range(int(a[0]), int(a[1]))
+		var y := randi_range(int(a[2]), int(a[3]))
+		var t := Data.turf(x, y, int(a[4]))
+		if not t.is_empty() and int(t.get("dense", 0)) == 0 and not Data.is_safe(x, y, int(a[4])) and world.at(x, y, int(a[4])).is_empty():
+			return Vector3i(x, y, int(a[4]))
+	return Vector3i(int(a[0]), int(a[2]), int(a[4]))
+
+
+func _spawn_saga_part() -> void:
+	var part := saga_part()
+	if part.is_empty():
+		return
+	var names: Array = []
+	for key in part["bosses"]:
+		if key in P["saga"]["down"]:
+			continue
+		var spot := _saga_spot()
+		var b := _spawn_saga_boss(key, int(P["saga"]["forms"].get(key, 0)), spot.x, spot.y, spot.z)
+		names.append("%s (%d, %d)" % [b.name, spot.x, spot.y])
+	msg("Saga Information: %s Saga – %s! %s landed on Earth: %s" % [part["saga"], part["part"], "They have" if names.size() > 1 else "It has", ", ".join(names)], Color(1, 0.4, 0.3), "combat")
+
+
+func _spawn_saga_boss(key: String, fi: int, x: int, y: int, z: int) -> Mob:
+	var b: Dictionary = saga_data()["bosses"][key]
+	var forms: Array = b["forms"]
+	fi = mini(fi, forms.size() - 1)
+	var m := Mob.new()
+	m.kind = "monster"
+	m.ai = "saga"
+	m.saga_key = key
+	m.saga_form = fi
+	m.path = "/mob/Saga/" + key
+	m.icon = Data.icon_id("sagas.dmi")
+	m.state = forms[fi][0]
+	m.name = "{Saga}%s%s" % [b["name"], (" – " + str(forms[fi][1])) if str(forms[fi][1]) != "" else ""]
+	m.x = x
+	m.y = y
+	m.z = z
+	m.from_x = x
+	m.from_y = y
+	m.layer = 4.0
+	m.home = Vector3i(x, y, z)
+	m.respawn = false
+	var diff: String = P["saga"]["difficulty"]
+	var grow := pow(1.5, fi)             # each later form is half as strong again
+	if diff == "Match my power":
+		var k := (0.8 + 0.1 * int(P["saga"]["part"])) * grow
+		m.level = float(P["level"])
+		m.powerlevel_max = cap("powerlevel") * k
+		m.ki_max = cap("ki") * 0.6 * k
+		m.strength = cap("strength") * 0.9 * k
+		m.defence = cap("defence") * 0.9 * k
+		m.kidefense = cap("ki") * 0.02 * k
+		m.exp_reward = float(P["tnl"]) * 3.0
+	else:
+		var mult: float = SAGA_DIFF.get(diff, 1.0)
+		var lv := float(b["level"])
+		var pl := (lv * lv * 500.0 + randf_range(1, 1000)) * mult * grow
+		m.level = lv * mult
+		m.powerlevel_max = pl
+		m.ki_max = pl * 0.9
+		m.kidefense = pl * 0.85
+		m.strength = (lv * lv * 200.0 + randf_range(1, 1000)) * mult * grow
+		m.defence = m.strength
+		m.exp_reward = m.level * (50.0 if mult < 1.0 else 20.0)
+	m.powerlevel = m.powerlevel_max
+	m.ki = m.ki_max
+	m.durability = 100.0
+	m.ki_res = 10.0
+	m.critical = 10.0
+	m.zenni_reward = m.level * 100.0 + 100.0
+	world.add(m)
+	monsters[m] = true
+	saga_bosses.append(m)
+	return m
+
+
+func _saga_boss_down(m: Mob) -> void:
+	saga_bosses.erase(m)
+	if not saga_active():
+		return
+	msg("Saga Information: %s defeated %s!" % [P["name"], m.name.replace("{Saga}", "")], Color(1, 0.4, 0.3), "combat")
+	var forms: Array = saga_data()["bosses"][m.saga_key]["forms"]
+	if m.saga_form + 1 < forms.size():
+		# the next form (Frieza: Form 2 ... Kid Buu, Metal Cooler, Omega Shenron)
+		P["saga"]["forms"][m.saga_key] = m.saga_form + 1
+		var key := m.saga_key
+		var fi := m.saga_form + 1
+		var x := m.x
+		var y := m.y
+		var z := m.z
+		after(1500.0, func():
+			if not saga_active():
+				return
+			var nb := _spawn_saga_boss(key, fi, x, y, z)
+			nb.awake = true
+			nb.target = pe
+			_lightning()
+			_basic_boom(x, y, z, 3)
+			msg("Saga Information: %s transforms!" % nb.name.replace("{Saga}", ""), Color(1, 0.4, 0.3), "combat"))
+		return
+	(P["saga"]["down"] as Array).append(m.saga_key)
+	for b in saga_bosses:
+		if not b.dead:
+			return
+	# part cleared
+	P["saga"]["part"] = int(P["saga"]["part"]) + 1
+	P["saga"]["down"] = []
+	if saga_part().is_empty():
+		msg("Saga Information: you completed the %s!" % saga_data()["lines"][P["saga"]["line"]]["name"], Color(1, 0.85, 0.3), "combat")
+		P.erase("saga")
+		return
+	after(4000.0, func(): if saga_active(): _spawn_saga_part())
+
+
+func _saga_resume() -> void:
+	# after loading a save: bring back the current part's bosses
+	if saga_active() and saga_bosses.is_empty():
+		_spawn_saga_part()
+
+
+func _saga_think(m: Mob, dx: int, dy: int, dist: int) -> void:
+	# power up when low (SagaPowerUp: +15% every 2.5 s until full)
+	if (m.powerlevel < m.powerlevel_max * 0.2 or m.ki < m.ki_max * 0.15) and now >= m.power_cd:
+		m.power_cd = now + 40000.0
+		m.stun_until = now + 2000.0
+		var aura := Data.icon_id("full aura.dmi")
+		if aura >= 0:
+			m.underlays = [{"icon": aura, "state": "", "alpha": 0.9}]
+		msg("%s is powering up!" % m.name.replace("{Saga}", ""), Color(1, 0.6, 0.3), "combat")
+		for i in 6:
+			after(2000.0 + i * 2500.0, func():
+				if m.dead:
+					return
+				m.powerlevel = minf(m.powerlevel_max, m.powerlevel + m.powerlevel_max * 0.15)
+				m.ki = minf(m.ki_max, m.ki + m.ki_max * 0.15)
+				if i == 5 or (m.powerlevel >= m.powerlevel_max and m.ki >= m.ki_max):
+					m.underlays = [])
+		return
+	if now >= m.move_cd and dist <= 9:
+		m.move_cd = now + randf_range(1500.0, 3000.0)
+		if randf() < 0.55 and _saga_move(m, dx, dy, dist):
+			m.move_cd = now + randf_range(3500.0, 6000.0)
+			return
+	if dist <= 1:
+		m.dir = dir_to(dx, dy)
+		if now >= m.next_attack:
+			m.next_attack = now + 1100.0
+			_saga_punch(m)
+	else:
+		_chase(m, dx, dy)
+
+
+## AttackSAGA(): (str + PL*0.1) - (your defence + your PL*0.1 + 1); crits double.
+func _saga_punch(m: Mob) -> void:
+	if pe.flying or Data.is_safe(pe.x, pe.y, pe.z):
+		return
+	m.do_flick("attack", now)
+	var defense := cap("defence") + maxf(float(P["powerlevel"]), 0.0) * 0.1 + 1.0
+	var dmg := maxf(1.0, m.strength + m.powerlevel * 0.1 - defense)
+	if randf() * 100.0 < skill("dodge") / 5.0:
+		pe.do_flick("IT", now)
+		world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
+		return
+	if randf() * 100.0 < skill("block") / 5.0:
+		dmg /= 4.0
+	elif randf() * 100.0 < m.critical:
+		dmg = maxf(1.0, (m.strength + m.powerlevel * 0.1) * 2.0 - defense)
+	if now < m.drain_until:
+		m.powerlevel = minf(m.powerlevel_max, m.powerlevel + dmg * 0.3)
+		m.ki = minf(m.ki_max, m.ki + dmg * 0.3)
+	_hit_player(dmg, m, "")
+	sfx("punchhit.wav" if randf() < 0.5 else "kickhit.wav", -4.0)
+
+
+func _hit_player(raw: float, by: Mob, mode: String) -> void:
+	if Data.is_safe(pe.x, pe.y, pe.z):
+		return
+	var dmg := raw
+	if mode == "ki":      # ki attack on a player: minus defence*0.4*ki_res% (ProjectilesJustin.dm dmg())
+		dmg = raw - roundf(cap("defence") * 0.4 * skill("ki_res") / 100.0)
+	if toggles.get("shield", false):
+		dmg *= 0.65
+	if buffs.has("barrier"):
+		dmg *= 0.5
+	dmg = maxf(1.0, roundf(dmg))
+	P["powerlevel"] = float(P["powerlevel"]) - dmg
+	last_hurt = now
+	if busy != "":
+		stop_busy()
+	world.floater(pe.x, pe.y, pe.z, fmt(dmg), Color(1, 0.3, 0.3))
+	if float(P["powerlevel"]) <= 0:
+		player_ko(by)
+
+
+func _proj_hits_player(pr: Mob, x: int, y: int) -> void:
+	_hit_player(pr.damage, pr.owner, "ki")
+	if int(pr.tech.get("splash", 0)) > 0:
+		for ddx in range(-1, 2):
+			for ddy in range(-1, 2):
+				_boom_fx(x + ddx, y + ddy, pr.z, "explosion.dmi", 400.0)
+		sfx("expload.wav", -4.0, 150.0)
+	if pr.tech.has("candy"):
+		# Majin Buu's Candy Ray: turned into chocolate for a few seconds
+		pe.stun_until = now + float(pr.tech["candy"]) * 1000.0
+		set_move_dir(0)
+		msg("You've been turned into chocolate!", Color(0.85, 0.55, 0.3), "combat")
+	if not pr.tech.get("pierce", 0):
+		_kill_proj(pr)
+
+
+func _saga_say(m: Mob, line: String) -> void:
+	if line != "":
+		msg("%s: %s" % [m.name.replace("{Saga}", ""), line], Color(1, 0.75, 0.5), "combat")
+		world.floater(m.x, m.y, m.z, line, Color(1, 0.9, 0.5))
+
+
+## One of the boss's moves (sagas.json). Returns false if none fits right now.
+func _saga_move(m: Mob, dx: int, dy: int, dist: int) -> bool:
+	var b: Dictionary = saga_data()["bosses"][m.saga_key]
+	var mv_all: Dictionary = saga_data()["moves"]
+	var aligned := dx == 0 or dy == 0 or absi(dx) == absi(dy)
+	var opts: Array = []
+	for k in b["moves"]:
+		var mv: Dictionary = mv_all[k]
+		if m.saga_form + 1 < int(mv.get("min_form", 1)):
+			continue
+		match str(mv["type"]):
+			"beam", "twin_beam", "blast":
+				if aligned and dist >= 2:
+					opts.append(mv)
+			"ball":
+				if (dx == 0 or dy == 0) and dist >= 2:
+					opts.append(mv)
+			"wave":
+				if dist <= int(mv.get("radius", 3)):
+					opts.append(mv)
+			"rush":
+				if dist >= 2 and dist <= 6:
+					opts.append(mv)
+			"drain":
+				if dist <= 2 and now >= m.drain_until:
+					opts.append(mv)
+			_:
+				opts.append(mv)
+	if opts.is_empty():
+		return false
+	var mv: Dictionary = opts[randi() % opts.size()]
+	var d := dir_to(signi(dx), signi(dy))
+	m.dir = d
+	m.ki = maxf(0.0, m.ki - m.ki_max * 0.08)
+	var pw := m.ki_max * float(mv.get("pow", 0.1))
+	match str(mv["type"]):
+		"blast":
+			_saga_say(m, mv["say"])
+			fire(m, {"icon": mv.get("icon", "techs.dmi"), "state": mv["state"], "range": 12, "speed": 14,
+				"splash": int(mv.get("splash", 0)), "pierce": int(mv.get("pierce", 0))}, pw, d)
+			sfx("burning_fire.wav", -8.0)
+		"beam", "twin_beam":
+			m.stun_until = now + 700.0
+			_saga_say(m, mv["say"])
+			var t := {"icon": "techs2.dmi", "state": mv["state"], "beam": 1, "range": 14, "speed": 18, "splash": 1, "splashk": 0.5}
+			if mv.has("candy"):
+				t["candy"] = mv["candy"]
+			after(600.0, func():
+				if m.dead:
+					return
+				if mv["type"] == "twin_beam":
+					# Double Sunday: one beam from each hand, side by side in the same lane
+					var off := Vector2(-Data.DIR_DY[d], Data.DIR_DX[d]).normalized() * 7.0
+					for sgn in [1.0, -1.0]:
+						var t2 := t.duplicate()
+						t2["px"] = off.x * sgn
+						t2["py"] = off.y * sgn
+						fire(m, t2, pw, d)
+				else:
+					fire(m, t, pw, d)
+				sfx("kamehameha_fire.wav" if str(mv["state"]).begins_with("kamehameha") else "basicbeam_fire.wav", -6.0))
+		"ball":
+			m.stun_until = now + 900.0
+			_saga_say(m, mv["say"])
+			var bd := (4 if dx > 0 else 8) if dy == 0 else (1 if dy > 0 else 2)
+			after(800.0, func():
+				if not m.dead:
+					_bigball_from(m, {"icon": "burning attack.dmi", "prefix": mv["prefix"]}, pw, bd))
+		"volley":
+			_saga_say(m, mv["say"])
+			for i in int(mv.get("count", 6)):
+				after(i * 150.0, func():
+					if m.dead:
+						return
+					var pr := Mob.new()
+					pr.kind = "proj"
+					pr.x = m.x
+					pr.y = m.y
+					pr.z = m.z
+					pr.from_x = pr.x
+					pr.from_y = pr.y
+					pr.dir = d
+					pr.icon = Data.icon_id("techs.dmi")
+					pr.state = "blast"
+					pr.layer = 5.0
+					pr.dense = false
+					pr.owner = m
+					pr.power = pw
+					pr.tech = {"kind": "missile"}
+					pr.steps = 30
+					pr.hover_until = now + 100.0
+					world.add(pr)
+					projectiles.append(pr))
+		"wave":
+			m.stun_until = now + 800.0
+			_saga_say(m, mv["say"])
+			var cx := m.x
+			var cy := m.y
+			var r := int(mv.get("radius", 3))
+			after(700.0, func():
+				if m.dead:
+					return
+				_basic_boom(cx, cy, m.z, r + 1)
+				if pe.z == m.z and maxi(absi(pe.x - cx), absi(pe.y - cy)) <= r:
+					_hit_player(pw, m, "ki"))
+		"freeze":
+			_saga_say(m, mv["say"])
+			pe.stun_until = now + float(mv.get("secs", 2.0)) * 1000.0
+			set_move_dir(0)
+			msg(str(mv.get("text", "You can't move!")), Color(0.8, 0.7, 1), "combat")
+		"rush":
+			_saga_say(m, mv["say"])
+			var behind := _turn(dir_to(signi(dx), signi(dy)), 4)
+			var bx: int = pe.x + Data.DIR_DX[behind]
+			var by: int = pe.y + Data.DIR_DY[behind]
+			if world.can_enter(m, bx, by, m.z):
+				m.do_flick("IT", now)
+				world.move(m, bx, by, m.z, 0, now)
+				sfx("teleport.wav", -6.0)
+			for i in int(mv.get("hits", 3)):
+				after(200.0 + i * 180.0, func():
+					if not m.dead and maxi(absi(pe.x - m.x), absi(pe.y - m.y)) <= 1:
+						_saga_punch(m))
+			m.next_attack = now + 200.0 + int(mv.get("hits", 3)) * 180.0 + 800.0
+		"drain":
+			_saga_say(m, mv["say"])
+			m.drain_until = now + 8000.0
+	return true
 
 
 ## ExplodingSaibaReward / ExplodingCellReward (Death.dm): a full level of exp each kill, a
@@ -1291,6 +1704,9 @@ func _volley_dirs(d: int, n: int) -> Array:
 func utility(t: Dictionary, key: String) -> void:
 	match t.get("what", ""):
 		"fly":
+			if not pe.flying and pe.z in NO_FLY_Z:
+				msg("You cannot fly while in this zone", Color(1, 0.5, 0.4))     # Bukujitsu.dm
+				return
 			pe.flying = not pe.flying
 			if busy != "":
 				stop_busy()
@@ -1387,6 +1803,8 @@ func fire(owner: Mob, t: Dictionary, dmg: float, d: int, sx := -99999, sy := -99
 	if t.get("beam", 0):
 		_setup_beam(pr)
 	pr.homing = int(t.get("homing", 0)) == 1
+	pr.pixel_x = float(t.get("px", 0))           # side-by-side beams (Double Sunday)
+	pr.pixel_y = float(t.get("py", 0))
 	# critblast: prob(ki_cast/4) for +35%, added in dmg() to the direct hit only (splash uses the base)
 	pr.crit = owner == pe and randf() * 100.0 < skill("ki_cast") / 4.0
 	world.add(pr)
@@ -1439,10 +1857,16 @@ func update_projectiles() -> void:
 		var nx: int = pr.x + Data.DIR_DX[pr.dir]
 		var ny: int = pr.y + Data.DIR_DY[pr.dir]
 		var hit: Mob = null
-		for o in world.at(nx, ny, pr.z):
-			if o != pr.owner and not o.dead and o.kind == "monster":
-				hit = o
-				break
+		if pr.owner != pe and pr.owner != null:
+			if pe.x == nx and pe.y == ny and pe.z == pr.z and not pr.invisible:
+				_proj_hits_player(pr, nx, ny)
+				if pr.dead:
+					continue
+		else:
+			for o in world.at(nx, ny, pr.z):
+				if o != pr.owner and not o.dead and o.kind == "monster":
+					hit = o
+					break
 		var tur := Data.turf(nx, ny, pr.z)
 		if hit:
 			_blast_hit(pr, hit, nx, ny)
@@ -1450,7 +1874,7 @@ func update_projectiles() -> void:
 				continue
 		if tur.is_empty() or int(tur.get("dense", 0)) == 1 or pr.steps <= 0:
 			# ProjectilesJustin.dm Move()/Bump(): a splash blast also goes off where it stops
-			if int(pr.tech.get("splash", 0)) > 0:
+			if int(pr.tech.get("splash", 0)) > 0 and pr.owner == pe:
 				_explosion(pr.x, pr.y, pr.z, int(pr.tech["splash"]), pr.damage * 0.5, null)
 			_kill_proj(pr)
 			continue
@@ -1471,6 +1895,8 @@ func update_projectiles() -> void:
 			tr.dir = pr.dir
 			tr.icon = pr.icon
 			tr.state = pr.trail_state
+			tr.pixel_x = pr.pixel_x
+			tr.pixel_y = pr.pixel_y
 			tr.face = pr.face
 			tr.rot = pr.rot
 			if pr.rot != 0.0:
@@ -1571,6 +1997,23 @@ func _spawn_missile(t: Dictionary, power: float, d: int, ox: int, oy: int, hover
 
 func _missile_step(pr: Mob) -> void:
 	pr.next_step = now + 70.0
+	if pr.owner != pe:
+		# a saga boss's ki missiles home in on you
+		if pe.z == pr.z:
+			pr.dir = dir_to(signi(pe.x - pr.x), signi(pe.y - pr.y))
+		var mx: int = pr.x + Data.DIR_DX[pr.dir]
+		var my: int = pr.y + Data.DIR_DY[pr.dir]
+		var mt := Data.turf(mx, my, pr.z)
+		if pr.steps <= 0 or mt.is_empty() or int(mt.get("dense", 0)) == 1:
+			_kill_proj(pr)
+			return
+		world.move(pr, mx, my, pr.z, 70.0, now)
+		pr.steps -= 1
+		if pe.x == mx and pe.y == my and pe.z == pr.z:
+			_hit_player(pr.power, pr.owner, "ki")
+			_boom_fx(mx, my, pr.z, "explosion.dmi", 400.0)
+			_kill_proj(pr)
+		return
 	var tg := _nearest_to(pr.x, pr.y, pr.z, 12)
 	if tg:
 		pr.dir = dir_to(signi(tg.x - pr.x), signi(tg.y - pr.y))
@@ -1605,7 +2048,11 @@ func _bigball(t: Dictionary) -> void:
 		var v: float = float(P["powerlevel"]) if stat == "powerlevel" else (float(P["ki"]) if stat == "ki" else cap(stat))
 		sp += maxf(v, 0.0) * float(setp[stat])
 	var power := roundf(sp * skill("ki_power") / 100.0)
-	var d := pe.dir
+	_bigball_from(pe, t, power, pe.dir)
+
+
+## A 3x3 ball from any shooter (you, or a saga boss aiming at you).
+func _bigball_from(owner: Mob, t: Dictionary, power: float, d: int) -> void:
 	if d in [5, 9]:
 		d = 1
 	elif d in [6, 10]:
@@ -1617,9 +2064,9 @@ func _bigball(t: Dictionary) -> void:
 	for part in [["c", 0, 0], ["tl", -32, 32], ["t", 0, 32], ["tr", 32, 32], ["l", -32, 0], ["r", 32, 0], ["bl", -32, -32], ["b", 0, -32], ["br", 32, -32]]:
 		var pc := Mob.new()
 		pc.kind = "proj"
-		pc.x = pe.x + Data.DIR_DX[d]
-		pc.y = pe.y + Data.DIR_DY[d]
-		pc.z = pe.z
+		pc.x = owner.x + Data.DIR_DX[d]
+		pc.y = owner.y + Data.DIR_DY[d]
+		pc.z = owner.z
 		pc.from_x = pc.x
 		pc.from_y = pc.y
 		pc.dir = d
@@ -1635,7 +2082,7 @@ func _bigball(t: Dictionary) -> void:
 		else:
 			head.pieces.append(pc)
 		head.pow_left.append(power)
-	head.owner = pe
+	head.owner = owner
 	head.tech = t
 	head.steps = 20
 	head.next_step = now + 80.0
@@ -1661,6 +2108,11 @@ func _bigball_step(pr: Mob) -> void:
 
 
 func _bigball_hits(pr: Mob) -> void:
+	if pr.owner != pe:
+		if pe.x == pr.x and pe.y == pr.y and pe.z == pr.z and not pr.pow_left.is_empty() and pr.pow_left[0] > 0:
+			_hit_player(pr.pow_left[0], pr.owner, "ki")
+			pr.pow_left = pr.pow_left.map(func(v): return 0.0)
+		return
 	for m in world.at(pr.x, pr.y, pr.z):
 		if m.kind != "monster" or m.dead:
 			continue
@@ -1843,7 +2295,7 @@ func think(m: Mob) -> void:
 	var dy := pe.y - m.y
 	var dist := maxi(absi(dx), absi(dy))
 	var can_hunt := not Data.is_safe(pe.x, pe.y, pe.z) and not traveling and int(P["level"]) >= PK_LEVEL
-	var wake := 16 if m.ai in ["beerus", "explode", "explode_boss", "explode_cell"] else 12
+	var wake := 16 if m.ai in ["beerus", "explode", "explode_boss", "explode_cell", "saga"] else 12
 	if not m.awake:
 		if m.target == pe or (m.ai != "peaceful" and dist <= wake and can_hunt):
 			m.awake = true
@@ -1859,6 +2311,8 @@ func think(m: Mob) -> void:
 		return
 	m.target = pe
 	match m.ai:
+		"saga":
+			_saga_think(m, dx, dy, dist)
 		"explode", "explode_cell":
 			m.state = "exploding" if dist <= 6 else ""
 			if dist <= (3 if m.ai == "explode_cell" else 2):

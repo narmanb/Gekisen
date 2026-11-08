@@ -1,6 +1,14 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Sagas[/b][/color]
+- Menu > Sagas: start the Villain Saga (Raditz, Vegeta and Nappa, the Ginyu Force, Frieza, Cyborg Frieza and King Cold, Cooler, the Androids, Cell, Brolly, Babidi and Dabura, Majin Buu, Baby, Super 17, Shenron) or the Hero Saga (Goku and Piccolo through Super Saiyan 4 Gogeta)
+- Pick a difficulty: the original Pathetic, Easy, Medium, Hard and Extreme (bosses as strong as the original's level-based stats), or Match my power
+- Saga bosses land on Earth together; beat every boss in a part for the next one. Frieza, Cooler, Cell, Brolly, Majin Buu, Baby, Shenron and SSJ Gohan come back in their next form
+- New saga AI (the original's was switched off because it was bugged): bosses chase and punch, power up when they're low, and use their own techniques: Raditz's Double Sunday, Nappa's Break Cannon and Giant Storm, Vegeta's Galick Gun, Guldo's Time Freeze, Burter's Space Mach Attack, Frieza's Death Beam and Death Ball, Android 19 and Dr. Gero's energy drain, Cell's Kamehameha and Solar Flare, Brolly's Eraser Cannon and Omega Blaster, Majin Buu's Candy Ray (turns you into chocolate), Baby's Revenge Death Ball, Omega Shenron's Minus Energy Power Ball, Krillin's Destructo Disc, Tien's Tri-Beam, Yamcha's Wolf Fang Fist, Gotenks' Super Ghost Kamikaze Attack, Gogeta's Big Bang Kamehameha and more
+- Sagas are saved with your game and pick up where you left off
+- You can no longer fly in Dr. Gero's Lab or on Beerus' planet, like the original
+
 [color=#ffd75e][b]11/8/2026 – Monster AI[/b][/color]
 - Monsters behave like the original: they stand still until you come within 12 tiles, then chase you quickly and attack about once a second; more than 13 tiles away they lose you and stay where they are (no more wandering home and healing)
 - Monster attacks use the original formula, including their own critical hits (double damage); your dodge, block and counter work as before, and countering hits back for 130%

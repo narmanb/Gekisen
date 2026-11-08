@@ -1063,6 +1063,7 @@ func _build_menu() -> void:
 	hw.add_child(_button("Clear", func(): logwin.set_look("clear"), 14))
 	hw.add_child(_button("Fading", func(): logwin.set_look("fade"), 14))
 	hw.add_child(_button("Reset", func(): logwin.reset_layout(), 14))
+	_menu_row(v, [["Sagas", func(): menu_panel.visible = false; saga_menu()]])
 	_menu_row(v, [["Update Notes", func(): show_notes(false)], ["Legacy Update Notes", func(): show_notes(true)]])
 	_menu_row(v, [["Sound On / Off", func(): _toggle_sound()], ["Trans. Aura On / Off", func(): _toggle_trans_aura()]])
 	var hm := HBoxContainer.new()
@@ -1074,6 +1075,36 @@ func _build_menu() -> void:
 	_menu_row(v, [["Save Game", func(): menu_panel.visible = false; Game.save(); Game.msg("Game saved.", Color(0.5, 1, 0.5))],
 		["Save & Quit", func(): Game.save(); get_tree().reload_current_scene()]])
 	v.add_child(_button("Close", func(): menu_panel.visible = false))
+
+
+## Menu -> Sagas: start the Villain or Hero saga at a difficulty, or see / end the current one.
+func saga_menu() -> void:
+	var sd: Dictionary = Game.saga_data()
+	if Game.saga_active():
+		var part := Game.saga_part()
+		var lines: Array = []
+		for b in Game.saga_bosses:
+			if not b.dead:
+				lines.append("%s – %s (%d, %d)" % [b.name.replace("{Saga}", ""), Game.zname(b.z), b.x, b.y])
+		var info := "%s · %s difficulty\n%s Saga – %s (part %d of %d)\n%s" % [sd["lines"][Game.P["saga"]["line"]]["name"], Game.P["saga"]["difficulty"],
+			part.get("saga", ""), part.get("part", ""), int(Game.P["saga"]["part"]) + 1, (sd["lines"][Game.P["saga"]["line"]]["parts"] as Array).size(), "\n".join(lines)]
+		Game.ask("Sagas", info, ["Go to the fight", "End the saga", "Close"], func(c: String, _i: int):
+			if c == "Go to the fight":
+				for b in Game.saga_bosses:
+					if not b.dead:
+						Game.teleport(b.x - 4, b.y, b.z)
+						break
+			elif c == "End the saga":
+				Game.end_saga())
+		return
+	Game.ask("Sagas", "Saga bosses land on Earth and fight with their own techniques. Beat every boss in a part for the next one; some come back in a stronger form.",
+		["Villain Saga (Raditz to Omega Shenron)", "Hero Saga (Goku to SSJ4 Gogeta)", "Cancel"], func(c: String, i: int):
+			if i < 2:
+				var line := "villain" if i == 0 else "hero"
+				Game.ask("Saga Difficulty", "The original difficulties scale the bosses' level-based strength (Raditz is level 500: 125 million powerlevel on Medium). Match my power makes each boss a bit stronger than you.",
+					["Match my power", "Pathetic", "Easy", "Medium", "Hard", "Extreme", "Cancel"], func(c2: String, _i2: int):
+						if c2 != "Cancel":
+							Game.start_saga(line, c2)))
 
 
 func _menu_row(v: Container, items: Array) -> void:

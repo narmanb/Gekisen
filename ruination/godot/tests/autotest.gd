@@ -323,6 +323,9 @@ func run() -> void:
 			print("DUMMY at ", dm.x - Game.pe.x, ",", dm.y - Game.pe.y, " took ", Game.fmt(dm.powerlevel_max - dm.powerlevel))
 			dm.dead = true
 			Game.world.remove(dm)
+		var keep_bonus: float = Game.P["pl_bonus"]
+		Game.P["pl_bonus"] = keep_bonus + 1.0e9        # stay standing through the AI / saga checks
+		Game.test_teleport(open_spot.x, open_spot.y, 1)
 		# --- monster AI: a Goon chases and punches, an Exploding Saibaman glows and blows up,
 		# killing an Exploding Cell gives a level
 		Game.P["powerlevel"] = Game.cap("powerlevel")
@@ -355,6 +358,34 @@ func run() -> void:
 		Game._hit_monster(cellm, 10.0, Color.WHITE, "ki")
 		print("AI cell kill level ", lv0, " -> ", Game.P["level"])
 		assert(int(Game.P["level"]) > lv0)
+		Game.P["powerlevel"] = Game.cap("powerlevel")
+		# --- sagas: Raditz's Double Sunday, then Vegeta and Nappa land
+		Game.start_saga("villain", "Match my power")
+		await wait(0.3)
+		var rad: Mob = Game.saga_bosses[0]
+		Game.test_teleport(rad.x - 10, rad.y, rad.z)
+		Game.P["powerlevel"] = Game.cap("powerlevel")
+		await wait(0.3)
+		Game.saga_data()["bosses"]["Raditz"]["moves"] = ["double_sunday"]
+		rad.awake = true
+		Game.test_teleport(open_spot.x, open_spot.y, 1)
+		Game.world.move(rad, open_spot.x + 9, open_spot.y, 1, 0, Game.now)
+		var plr: float = Game.P["powerlevel"]
+		var dxr: int = Game.pe.x - rad.x
+		var dyr: int = Game.pe.y - rad.y
+		print("SAGA raditz at ", rad.x, ",", rad.y, " player ", Game.pe.x, ",", Game.pe.y, " move ok ", Game._saga_move(rad, dxr, dyr, maxi(absi(dxr), absi(dyr))))
+		await wait(0.85)
+		await shot("05s_double_sunday")
+		await wait(1.0)
+		print("SAGA double sunday PL lost ", Game.fmt(plr - Game.P["powerlevel"]))
+		Game.saga_data()["bosses"]["Raditz"]["moves"] = ["double_sunday", "blast"]
+		Game._hit_monster(rad, rad.powerlevel_max * 2.0, Color.WHITE, "")
+		await wait(5.0)
+		print("SAGA part ", Game.P["saga"]["part"], " bosses ", Game.saga_bosses.map(func(b): return b.name))
+		assert(int(Game.P["saga"]["part"]) == 1 and Game.saga_bosses.size() == 2)
+		await shot("05s_vegeta_nappa")
+		Game.end_saga()
+		Game.P["pl_bonus"] = keep_bonus
 		Game.P["powerlevel"] = Game.cap("powerlevel")
 		# --- beams: head starts in front, real trail, diagonals (8-dir Kamehameha, rotated 4-dir ones)
 		for m in Game.monsters:          # clear the area so the shots fly their full length
