@@ -973,8 +973,9 @@ func monster_die(m: Mob) -> void:
 
 
 # =================================================================== sagas
-## Saga events (Mobs/Sagas/Sagas.dm): Menu -> Sagas starts the Villain Saga (Raditz to Omega
-## Shenron) or the Hero Saga (Goku to SSJ4 Gogeta). Each part's bosses land together in the
+## Saga events (Mobs/Sagas/Sagas.dm): Menu -> Sagas starts the Villain Saga (Raditz to Frieza)
+## or the Hero Saga (Goku and Piccolo to Super Saiyan Goku); the later sagas can be added to
+## sagas.json. Meant to be tied to quests later. Each part's bosses land together in the
 ## original saga area on Earth; beat them all for the next part. Bosses with several forms come
 ## back as the next one. Stats follow Sagas.dm New() (powerlevel = level^2 x 500, strength and
 ## defence = level^2 x 200) scaled by the original difficulties, or "Match my power". The
@@ -1007,7 +1008,7 @@ func saga_part() -> Dictionary:
 func start_saga(line: String, difficulty: String) -> void:
 	end_saga(true)
 	P["saga"] = {"line": line, "part": 0, "difficulty": difficulty, "forms": {}, "down": []}
-	msg("Saga Information: the %s has begun! (%s)" % [saga_data()["lines"][line]["name"], difficulty], Color(1, 0.4, 0.3), "combat")
+	msg("%s started (%s)." % [saga_data()["lines"][line]["name"], difficulty], Color(1, 0.6, 0.4), "combat")
 	_spawn_saga_part()
 
 
@@ -1019,7 +1020,7 @@ func end_saga(quiet := false) -> void:
 			monsters.erase(b)
 	saga_bosses.clear()
 	if saga_active() and not quiet:
-		msg("Saga Information: the saga has ended.", Color(1, 0.4, 0.3), "combat")
+		msg("Saga ended.", Color(1, 0.6, 0.4), "combat")
 	P.erase("saga")
 
 
@@ -1046,7 +1047,7 @@ func _spawn_saga_part() -> void:
 		var spot := _saga_spot()
 		var b := _spawn_saga_boss(key, int(P["saga"]["forms"].get(key, 0)), spot.x, spot.y, spot.z)
 		names.append("%s (%d, %d)" % [b.name, spot.x, spot.y])
-	msg("Saga Information: %s Saga – %s! %s landed on Earth: %s" % [part["saga"], part["part"], "They have" if names.size() > 1 else "It has", ", ".join(names)], Color(1, 0.4, 0.3), "combat")
+	msg("%s Saga – %s: %s on Earth." % [part["saga"], part["part"], ", ".join(names)], Color(1, 0.6, 0.4), "combat")
 
 
 func _spawn_saga_boss(key: String, fi: int, x: int, y: int, z: int) -> Mob:
@@ -1108,7 +1109,7 @@ func _saga_boss_down(m: Mob) -> void:
 	saga_bosses.erase(m)
 	if not saga_active():
 		return
-	msg("Saga Information: %s defeated %s!" % [P["name"], m.name.replace("{Saga}", "")], Color(1, 0.4, 0.3), "combat")
+	msg("You beat %s!" % m.name.replace("{Saga}", ""), Color(1, 0.6, 0.4), "combat")
 	var forms: Array = saga_data()["bosses"][m.saga_key]["forms"]
 	if m.saga_form + 1 < forms.size():
 		# the next form (Frieza: Form 2 ... Kid Buu, Metal Cooler, Omega Shenron)
@@ -1126,7 +1127,7 @@ func _saga_boss_down(m: Mob) -> void:
 			nb.target = pe
 			_lightning()
 			_basic_boom(x, y, z, 3)
-			msg("Saga Information: %s transforms!" % nb.name.replace("{Saga}", ""), Color(1, 0.4, 0.3), "combat"))
+			msg("%s transforms!" % nb.name.replace("{Saga}", ""), Color(1, 0.6, 0.4), "combat"))
 		return
 	(P["saga"]["down"] as Array).append(m.saga_key)
 	for b in saga_bosses:
@@ -1136,7 +1137,7 @@ func _saga_boss_down(m: Mob) -> void:
 	P["saga"]["part"] = int(P["saga"]["part"]) + 1
 	P["saga"]["down"] = []
 	if saga_part().is_empty():
-		msg("Saga Information: you completed the %s!" % saga_data()["lines"][P["saga"]["line"]]["name"], Color(1, 0.85, 0.3), "combat")
+		msg("You completed the %s!" % saga_data()["lines"][P["saga"]["line"]]["name"], Color(1, 0.85, 0.3), "combat")
 		P.erase("saga")
 		return
 	after(4000.0, func(): if saga_active(): _spawn_saga_part())
@@ -1288,7 +1289,7 @@ func _saga_move(m: Mob, dx: int, dy: int, dist: int) -> bool:
 		"beam", "twin_beam":
 			m.stun_until = now + 700.0
 			_saga_say(m, mv["say"])
-			var t := {"icon": "techs2.dmi", "state": mv["state"], "beam": 1, "range": 14, "speed": 18, "splash": 1, "splashk": 0.5}
+			var t := {"icon": mv.get("icon", "techs2.dmi"), "state": mv["state"], "beam": 1, "range": 14, "speed": 18, "splash": 1, "splashk": 0.5}
 			if mv.has("candy"):
 				t["candy"] = mv["candy"]
 			after(600.0, func():

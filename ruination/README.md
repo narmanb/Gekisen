@@ -86,13 +86,14 @@ redrawn by hand.
   glow and blow up (the corpse's blast hurts), give a level per kill; the Saibaman Boss spawns
   pawns; everything killed respawns together every 150 s. Flying is blocked in Gero's Lab and on
   Beerus' planet (Bukujitsu.dm).
-* **Sagas.** Menu -> Sagas runs the original two saga lines (`Mobs/Sagas/Sagas.dm`, data in
+* **Sagas.** Menu -> Sagas runs the original two saga lines up to the Frieza saga for now (`Mobs/Sagas/Sagas.dm`, data in
   `godot/data/sagas.json`): parts spawn together on Earth, multi-form bosses come back as their next
   form, stats from the original (level^2 x 500 powerlevel) at the original difficulties or "Match my
   power". The original saga AI was commented out, so the bosses get new AI: chase and AttackSAGA
   punches, power up when low, and per-boss moves (beams like Raditz's Double Sunday, 3x3 balls,
   ki volleys, freezes, rushes, drains, waves). The original landing area is mostly safe zone in this
-  map, so bosses land on its open, non-safe tiles.
+  map, so bosses land on its open, non-safe tiles. Double Sunday uses a sprite drawn for this port
+  (`tools/make_custom_sprites.py`, run after `export_icons.py`).
 * **Update notes.** Menu -> Update Notes lists everything added and fixed in this version
   (`godot/data/update_notes.txt`, newest first; add to it with every change). Legacy Update Notes
   shows the original game's own update log, extracted by `tools/build_notes.py`.

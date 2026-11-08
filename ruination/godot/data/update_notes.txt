@@ -1,6 +1,11 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Sagas trimmed, Double Sunday sprite[/b][/color]
+- Sagas now go up to Frieza: the Villain Saga is Raditz, Vegeta and Nappa, the Ginyu Force and Frieza; the Hero Saga runs from Goku and Piccolo to Super Saiyan Goku
+- Double Sunday has its own sprite: two thinner yellow beams with glowing orb heads, fired side by side
+- Saga messages are simpler (just where the bosses are), ready to be tied to quests later
+
 [color=#ffd75e][b]11/8/2026 – Sagas[/b][/color]
 - Menu > Sagas: start the Villain Saga (Raditz, Vegeta and Nappa, the Ginyu Force, Frieza, Cyborg Frieza and King Cold, Cooler, the Androids, Cell, Brolly, Babidi and Dabura, Majin Buu, Baby, Super 17, Shenron) or the Hero Saga (Goku and Piccolo through Super Saiyan 4 Gogeta)
 - Pick a difficulty: the original Pathetic, Easy, Medium, Hard and Extreme (bosses as strong as the original's level-based stats), or Match my power

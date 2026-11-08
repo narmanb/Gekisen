@@ -1098,7 +1098,7 @@ func saga_menu() -> void:
 				Game.end_saga())
 		return
 	Game.ask("Sagas", "Saga bosses land on Earth and fight with their own techniques. Beat every boss in a part for the next one; some come back in a stronger form.",
-		["Villain Saga (Raditz to Omega Shenron)", "Hero Saga (Goku to SSJ4 Gogeta)", "Cancel"], func(c: String, i: int):
+		["Villain Saga (Raditz to Frieza)", "Hero Saga (Goku and Piccolo to Super Saiyan Goku)", "Cancel"], func(c: String, i: int):
 			if i < 2:
 				var line := "villain" if i == 0 else "hero"
 				Game.ask("Saga Difficulty", "The original difficulties scale the bosses' level-based strength (Raditz is level 500: 125 million powerlevel on Medium). Match my power makes each boss a bit stronger than you.",
