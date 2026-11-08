@@ -176,6 +176,8 @@ func spawn_monster(p: String, x: int, y: int, z: int, t := {}) -> Mob:
 	m.strength = maxf(1.0, _num(d.get("strength", 1)))
 	m.defence = maxf(0.0, _num(d.get("defence", 1)))
 	m.durability = _num(d.get("durability", 100))
+	m.kidefense = _num(d.get("kidefense", 2))
+	m.ki_res = _num(d.get("ki_res", 10))
 	m.dodge = _num(d.get("dodge", 0))
 	m.block = _num(d.get("block", 0))
 	m.exp_reward = _num(d.get("exp", 0))
@@ -687,7 +689,8 @@ func tech_cost(t: Dictionary) -> float:
 	if c == null or P.is_empty():
 		return 0.0
 	var curki: float = float(P["ki_max"]) * kc()
-	return roundf(curki * float(c[0]) * 1.2 + float(c[1]))
+	var extra := float(c[2]) * 1.2 if c.size() > 2 else 0.0     # "+(N*usr.kiuse)" costs
+	return roundf(curki * float(c[0]) * 1.2 + float(c[1]) + extra)
 
 
 func cooldown_left(id: String) -> float:
@@ -894,7 +897,20 @@ func use_tech(key: String) -> void:
 	match kind:
 		"blast":
 			pe.do_flick("blast", now)
-			fire(pe, t, blast_damage(t), pe.dir)
+			if t.get("spawn", "") == "triple":
+				# Techniques3.dm: one blast in front and one on each side, all flying the same way
+				var dmg := blast_damage(t)
+				for side in [0, 2, -2]:
+					var sd: int = pe.dir if side == 0 else _turn(pe.dir, side)
+					fire(pe, t, dmg, pe.dir, pe.x + Data.DIR_DX[sd], pe.y + Data.DIR_DY[sd])
+			else:
+				fire(pe, t, blast_damage(t), pe.dir)
+		"missile":
+			_missiles(t)
+		"bigball":
+			_bigball(t)
+		"wave":
+			_wave(t)
 		"multi":
 			var n := int(t.get("shots", 3))
 			var base := _ki_damage(float(t.get("pow", 0.05)))
@@ -1061,7 +1077,7 @@ func blast_damage(t: Dictionary) -> float:
 	var co: Dictionary = t.get("coef", {"powerlevel": 0.05, "ki": 0.05})
 	var d := 0.0
 	d += float(co.get("powerlevel", 0)) * maxf(float(P["powerlevel"]), 0.0)
-	d += float(co.get("ki", 0)) * cap("ki")
+	d += float(co.get("ki", 0)) * maxf(float(P["ki"]), 0.0)
 	d += float(co.get("strength", 0)) * cap("strength")
 	d += float(co.get("defence", 0)) * cap("defence")
 	var scale: String = t.get("scale", "ki_power")
@@ -1072,11 +1088,11 @@ func blast_damage(t: Dictionary) -> float:
 	return roundf(d)
 
 
-func fire(owner: Mob, t: Dictionary, dmg: float, d: int) -> void:
+func fire(owner: Mob, t: Dictionary, dmg: float, d: int, sx := -99999, sy := -99999) -> void:
 	var pr := Mob.new()
 	pr.kind = "proj"
-	pr.x = owner.x
-	pr.y = owner.y
+	pr.x = owner.x if sx == -99999 else sx
+	pr.y = owner.y if sy == -99999 else sy
 	pr.z = owner.z
 	pr.from_x = pr.x
 	pr.from_y = pr.y
@@ -1092,8 +1108,17 @@ func fire(owner: Mob, t: Dictionary, dmg: float, d: int) -> void:
 	pr.next_step = now + 30
 	if t.get("beam", 0):
 		_setup_beam(pr)
+	pr.homing = int(t.get("homing", 0)) == 1
 	world.add(pr)
 	projectiles.append(pr)
+	if sx != -99999:
+		# created on its own tile (Triple Ki Blast sides): hit whatever already stands there
+		for o in world.at(pr.x, pr.y, pr.z):
+			if o.kind == "monster" and not o.dead:
+				_blast_hit(pr, o, pr.x, pr.y)
+				break
+		if not world.can_enter(pr, pr.x, pr.y, pr.z) and not pr.dead:
+			_kill_proj(pr)
 
 
 const DIR_ANGLE := {4: 0.0, 5: -PI / 4, 1: -PI / 2, 9: -PI * 3 / 4, 8: PI, 10: PI * 3 / 4, 2: PI / 2, 6: PI / 4}
@@ -1117,10 +1142,20 @@ func _setup_beam(pr: Mob) -> void:
 
 func update_projectiles() -> void:
 	for pr in projectiles:
-		if pr.dead or now < pr.next_step:
+		if pr.dead or now < pr.next_step or now < pr.hover_until:
+			continue
+		if pr.tech.get("kind", "") == "missile":
+			_missile_step(pr)
+			continue
+		if pr.tech.get("kind", "") == "bigball":
+			_bigball_step(pr)
 			continue
 		var spd := 900.0 / maxf(4.0, float(pr.tech.get("speed", 18)))
 		pr.next_step = now + clampf(spd, 25.0, 80.0)
+		if pr.homing:
+			var tg := _nearest_to(pr.x, pr.y, pr.z, 12)
+			if tg:
+				pr.dir = dir_to(signi(tg.x - pr.x), signi(tg.y - pr.y))
 		var nx: int = pr.x + Data.DIR_DX[pr.dir]
 		var ny: int = pr.y + Data.DIR_DY[pr.dir]
 		var hit: Mob = null
@@ -1130,15 +1165,13 @@ func update_projectiles() -> void:
 				break
 		var tur := Data.turf(nx, ny, pr.z)
 		if hit:
-			_hit_monster(hit, pr.damage, Color(0.5, 0.9, 1))
-			if randf() < 0.1:
-				_skill_exp("ki_power", 1 + int(P["level"]) / 1250)
-			if int(pr.tech.get("splash", 0)) > 0:
-				_explosion(nx, ny, pr.z, int(pr.tech["splash"]), pr.damage * float(pr.tech.get("splashk", 0.5)), hit)
-			if not pr.tech.get("pierce", 0):
-				_kill_proj(pr)
+			_blast_hit(pr, hit, nx, ny)
+			if pr.dead:
 				continue
 		if tur.is_empty() or int(tur.get("dense", 0)) == 1 or pr.steps <= 0:
+			# ProjectilesJustin.dm Move()/Bump(): a splash blast also goes off where it stops
+			if int(pr.tech.get("splash", 0)) > 0:
+				_explosion(pr.x, pr.y, pr.z, int(pr.tech["splash"]), pr.damage * 0.5, null)
 			_kill_proj(pr)
 			continue
 		if pr.tech.get("beam", 0) and pr.invisible:
@@ -1171,6 +1204,290 @@ func update_projectiles() -> void:
 	projectiles = projectiles.filter(func(p): return not p.dead)
 
 
+## A blast reaching a monster: ProjectilesJustin.dm dmg(): Damage - kidefense*ki_res/100
+## (at least 1), then Explosion(splashrange) around it with splashdmg for everyone else.
+func _blast_hit(pr: Mob, hit: Mob, x: int, y: int) -> void:
+	_hit_monster(hit, pr.damage, Color(0.5, 0.9, 1), "ki")
+	if randf() < 0.1:
+		_skill_exp("ki_power", 1 + int(P["level"]) / 1250)
+	if int(pr.tech.get("splash", 0)) > 0:
+		_explosion(x, y, pr.z, int(pr.tech["splash"]), pr.damage * float(pr.tech.get("splashk", 0.5)), hit)
+	if not pr.tech.get("pierce", 0):
+		_kill_proj(pr)
+
+
+func _turn(d: int, quarter_turns: int) -> int:
+	# BYOND turn(): positive = counter-clockwise. quarter_turns counts 45-degree steps.
+	var order := [1, 9, 8, 10, 2, 6, 4, 5]          # N, NW, W, SW, S, SE, E, NE
+	var i := order.find(d)
+	return order[(i + quarter_turns + 8) % 8]
+
+
+func _nearest_to(x: int, y: int, z: int, r: int) -> Mob:
+	var best: Mob = null
+	var bd := r + 1
+	for m in monsters:
+		if m.dead or m.z != z:
+			continue
+		var dd := maxi(absi(m.x - x), absi(m.y - y))
+		if dd < bd:
+			bd = dd
+			best = m
+	return best
+
+
+# =================================================================== missiles
+## Rapid Blast, Ki/Flame Shower, Shine Missile (/obj/Tech/KiMissile) and Hell Zone Grenade,
+## Acid Rain, Genocide (ScatterBlast...): Technique_Procs.dm Scatter(). Power is
+## (PL*a + Ki*b) * ki_power/100 / count; each ball homes on the nearest monster in 12 tiles.
+func _missiles(t: Dictionary) -> void:
+	var setp: Dictionary = t.get("setp", {})
+	var sp := 0.0
+	for stat in setp:
+		var v: float = float(P["powerlevel"]) if stat == "powerlevel" else (float(P["ki"]) if stat == "ki" else cap(stat))
+		sp += maxf(v, 0.0) * float(setp[stat])
+	sp *= skill("ki_power") / 100.0
+	var power := roundf(sp / float(t.get("div", 10)))
+	var n := int(t.get("count", 3))
+	for lv in t.get("extra", []):
+		if int(P["level"]) > int(lv):
+			n += 1
+	var offs: Array = t.get("offsets", [])
+	var gap := float(t.get("gap", 0.2)) * 1000.0
+	var hover := float(t.get("hover", 0.1)) * 1000.0
+	var d := pe.dir
+	for i in n:
+		var o: Array = offs[i] if i < offs.size() else [0, 0]
+		after(i * gap, func(): _spawn_missile(t, power, d, int(o[0]), int(o[1]), hover))
+
+
+func _spawn_missile(t: Dictionary, power: float, d: int, ox: int, oy: int, hover: float) -> void:
+	if pe == null:
+		return
+	var pr := Mob.new()
+	pr.kind = "proj"
+	pr.x = pe.x + ox
+	pr.y = pe.y + oy
+	pr.z = pe.z
+	pr.from_x = pr.x
+	pr.from_y = pr.y
+	pr.dir = d
+	pr.icon = Data.icon_id(t.get("icon", "techs.dmi"))
+	pr.state = t.get("state", "blast")
+	pr.layer = 5.0
+	pr.dense = false
+	pr.owner = pe
+	pr.power = power
+	pr.tech = t
+	pr.steps = 40
+	pr.homing = true
+	pr.hover_until = now + hover
+	world.add(pr)
+	projectiles.append(pr)
+
+
+func _missile_step(pr: Mob) -> void:
+	pr.next_step = now + 70.0
+	var tg := _nearest_to(pr.x, pr.y, pr.z, 12)
+	if tg:
+		pr.dir = dir_to(signi(tg.x - pr.x), signi(tg.y - pr.y))
+	var nx: int = pr.x + Data.DIR_DX[pr.dir]
+	var ny: int = pr.y + Data.DIR_DY[pr.dir]
+	var tur := Data.turf(nx, ny, pr.z)
+	if pr.steps <= 0 or tur.is_empty() or int(tur.get("dense", 0)) == 1:
+		_kill_proj(pr)
+		return
+	world.move(pr, nx, ny, pr.z, 70.0, now)
+	pr.steps -= 1
+	for m in world.at(nx, ny, pr.z):
+		if m.kind == "monster" and not m.dead:
+			# damage = (your PL + power*0.6-1.0) - (their PL + kidefense*ki_res/100), at least power
+			var dmg := maxf(pr.power, roundf((float(P["powerlevel"]) + pr.power * randf_range(0.6, 1.0)) - (m.powerlevel + m.kidefense * m.ki_res / 100.0)))
+			_hit_monster(m, dmg, Color(0.6, 0.85, 1), "")
+			if not m.dead:      # ExplodeDamage(): the blast goes off on the target as well
+				_hit_monster(m, maxf(1.0, pr.power - roundf(m.kidefense * m.ki_res)), Color(1, 0.7, 0.3), "")
+			_boom_fx(nx, ny, pr.z, "explosion.dmi", 400.0)
+			_kill_proj(pr)
+			return
+
+
+# =================================================================== big balls
+## Big Bang Attack, Burning Attack, Blaster Shell, Revenge Death Ball: nine 32x32 pieces of a
+## 96x96 ball ("bb c", "bb tl"...) that fly together (BangAttack2). Each piece hits for
+## power*0.8-1.2 - (their PL + kidefense*ki_res/100), at least power/4, then loses their PL.
+func _bigball(t: Dictionary) -> void:
+	var setp: Dictionary = t.get("setp", {})
+	var sp := 0.0
+	for stat in setp:
+		var v: float = float(P["powerlevel"]) if stat == "powerlevel" else (float(P["ki"]) if stat == "ki" else cap(stat))
+		sp += maxf(v, 0.0) * float(setp[stat])
+	var power := roundf(sp * skill("ki_power") / 100.0)
+	var d := pe.dir
+	if d in [5, 9]:
+		d = 1
+	elif d in [6, 10]:
+		d = 2
+	var pre: String = t.get("prefix", "bb")
+	var icon := Data.icon_id(t.get("icon", "burning attack.dmi"))
+	var head: Mob = null
+	for part in [["c", 0, 0], ["tl", -32, 32], ["t", 0, 32], ["tr", 32, 32], ["l", -32, 0], ["r", 32, 0], ["bl", -32, -32], ["b", 0, -32], ["br", 32, -32]]:
+		var pc := Mob.new()
+		pc.kind = "proj"
+		pc.x = pe.x + Data.DIR_DX[d]
+		pc.y = pe.y + Data.DIR_DY[d]
+		pc.z = pe.z
+		pc.from_x = pc.x
+		pc.from_y = pc.y
+		pc.dir = d
+		pc.icon = icon
+		pc.state = "%s %s" % [pre, part[0]]
+		pc.pixel_x = part[1]
+		pc.pixel_y = part[2]
+		pc.layer = 5.5
+		pc.dense = false
+		world.add(pc)
+		if head == null:
+			head = pc
+		else:
+			head.pieces.append(pc)
+		head.pow_left.append(power)
+	head.owner = pe
+	head.tech = t
+	head.steps = 20
+	head.next_step = now + 80.0
+	projectiles.append(head)
+	_bigball_hits(head)
+
+
+func _bigball_step(pr: Mob) -> void:
+	pr.next_step = now + 80.0
+	var nx: int = pr.x + Data.DIR_DX[pr.dir]
+	var ny: int = pr.y + Data.DIR_DY[pr.dir]
+	var tur := Data.turf(nx, ny, pr.z)
+	if pr.steps <= 0 or tur.is_empty() or int(tur.get("dense", 0)) == 1 or pr.pow_left.max() <= 0:
+		_remove_all(pr.pieces)
+		_kill_proj(pr)
+		return
+	_boom_fx(pr.x, pr.y, pr.z, "dirt.dmi", 10000.0, 3.5)      # T.overlays += 'Dirt.dmi' for 10 s
+	world.move(pr, nx, ny, pr.z, 80.0, now)
+	for pc in pr.pieces:
+		world.move(pc, nx, ny, pr.z, 80.0, now)
+	pr.steps -= 1
+	_bigball_hits(pr)
+
+
+func _bigball_hits(pr: Mob) -> void:
+	for m in world.at(pr.x, pr.y, pr.z):
+		if m.kind != "monster" or m.dead:
+			continue
+		var total := 0.0
+		for i in pr.pow_left.size():
+			var pw: float = pr.pow_left[i]
+			if pw <= 0:
+				continue
+			var dmg := maxf(roundf(pw / 4.0), roundf(pw * randf_range(0.8, 1.2) - (m.powerlevel + m.kidefense * m.ki_res / 100.0)))
+			pr.pow_left[i] = pw - maxf(m.powerlevel, 0.0)
+			total += dmg
+		if total > 0:
+			_hit_monster(m, total, Color(1, 0.75, 0.3), "")
+
+
+# =================================================================== explosion techniques
+## Explosive Wave / Super Explosion Wave / Final Explosion (Techniques*.dm), see build_rules.py.
+func _wave(t: Dictionary) -> void:
+	if pe.flying:
+		msg("You can't use this technique while flying", Color(1, 0.4, 0.4))
+		return
+	var w: String = t.get("wave", "explosive")
+	var cx := pe.x
+	var cy := pe.y
+	var cz := pe.z
+	pe.stun_until = now + 700.0
+	pe.state = "enrage" if Data.has_state(pe.icon, "enrage") else pe.state
+	match w:
+		"explosive":
+			var dmg := roundf(float(P["powerlevel"]) / 2.0)
+			after(500, func(): _basic_boom(cx, cy, cz, 3))
+			after(700, func():
+				_basic_boom(cx, cy, cz, 5)
+				for m in monsters.keys():
+					if m.dead or m.z != cz:
+						continue
+					var dist := maxi(absi(m.x - cx), absi(m.y - cy))
+					if dist <= int(t.get("radius", 3)) and dist > 0:
+						var kidefcalc := roundf(m.defence * 0.4 * m.ki_res / 100.0)
+						_hit_monster(m, maxf(0.0, dmg - roundf(kidefcalc / 125.0) / ((2.0 + dist) / 2.0)), Color(1, 0.6, 0.2), "")
+				_update_state())
+		"sew":
+			var dmg := roundf(cap("ki") * skill("ki_power") / 100.0 / 3.0)
+			var i := 0
+			for r in t.get("pulses", [2, 3, 4]):
+				var rr := int(r)
+				after(500 + i * 400, func(): _sew_pulse(cx, cy, cz, rr, dmg))
+				i += 1
+			after(500 + i * 400, func(): _update_state())
+		"final":
+			var base := roundf(maxf(float(P["ki"]), 0.0) * skill("ki_power") / 100.0)
+			after(700, func():
+				_basic_boom(cx, cy, cz, 4)
+				after(200, func(): _basic_boom(cx, cy, cz, 8))
+				for m in monsters.keys():
+					if m.dead or m.z != cz:
+						continue
+					var dist := maxi(absi(m.x - cx), absi(m.y - cy))
+					if dist <= 8 and dist > 0:
+						_hit_monster(m, maxf(0.0, base / ((2.0 + dist) / 2.0)), Color(1, 0.5, 0.2), "")
+				P["powerlevel"] = 0.0
+				player_ko(null, "You used up all your energy in a Final Explosion!"))
+
+
+func _sew_pulse(cx: int, cy: int, cz: int, r: int, dmg: float) -> void:
+	# ExplosionSEW(): explosion.dmi on every tile in range(r); dmg - kidefcalc/400
+	for dx in range(-r, r + 1):
+		for dy in range(-r, r + 1):
+			_boom_fx(cx + dx, cy + dy, cz, "explosion.dmi", 500.0)
+	for m in monsters.keys():
+		if m.dead or m.z != cz or maxi(absi(m.x - cx), absi(m.y - cy)) > r:
+			continue
+		var kidefcalc := roundf(m.defence * 0.4 * m.ki_res / 100.0)
+		_hit_monster(m, maxf(1.0, roundf(dmg - kidefcalc / 400.0)), Color(1, 0.6, 0.2), "")
+
+
+## Explosion.dm BasicBoom: fire spreading out ring by ring (one ring per tick), leaving dirt.
+func _basic_boom(cx: int, cy: int, cz: int, power: int) -> void:
+	for dx in range(-power + 1, power):
+		for dy in range(-power + 1, power):
+			var dist := maxi(absi(dx), absi(dy))
+			var tur := Data.turf(cx + dx, cy + dy, cz)
+			if tur.is_empty() or int(tur.get("dense", 0)) == 1:
+				continue
+			var x := cx + dx
+			var y := cy + dy
+			after(dist * 60.0, func():
+				_boom_fx(x, y, cz, "explosionaoe.dmi", 300.0)     # fire.dmi is empty in the source; this is its AoE fire
+				_boom_fx(x, y, cz, "dirt.dmi", 1000.0, 3.5))
+
+
+## A short-lived sprite on a tile (explosion, fire, scorched dirt).
+func _boom_fx(x: int, y: int, z: int, icon_name: String, ms: float, layer := 6.0) -> void:
+	var ic := Data.icon_id(icon_name)
+	if ic < 0 or pe == null or z != pe.z:
+		return
+	var fx := Mob.new()
+	fx.kind = "fx"
+	fx.x = x
+	fx.y = y
+	fx.z = z
+	fx.from_x = x
+	fx.from_y = y
+	fx.icon = ic
+	fx.layer = layer
+	fx.dense = false
+	fx.flick = {"state": "", "start": now, "end": now + ms}
+	world.add(fx)
+	after(ms, func(): world.remove(fx))
+
+
 func _kill_proj(pr: Mob) -> void:
 	pr.dead = true
 	world.remove(pr)
@@ -1183,10 +1500,18 @@ func _remove_all(lst: Array) -> void:
 		world.remove(t)
 
 
-func _hit_monster(m: Mob, raw: float, col: Color) -> void:
+func _hit_monster(m: Mob, raw: float, col: Color, mode := "melee") -> void:
 	if m.dead:
 		return
-	var dmg := maxf(1.0, roundf(raw - m.defence * 0.04))
+	var dmg := raw
+	match mode:
+		"ki":       # ki blast direct hit (dmg(): Damage - kidefense*ki_res/100)
+			dmg = raw - m.kidefense * (m.ki_res / 100.0)
+		"splash":   # Explosion(): dmg - defence*0.4*ki_res/100
+			dmg = raw - roundf(m.defence * 0.4 * (m.ki_res / 100.0))
+		"melee":
+			dmg = raw - m.defence * 0.04
+	dmg = maxf(1.0, roundf(dmg))
 	m.powerlevel -= dmg
 	m.target = pe
 	world.floater(m.x, m.y, m.z, fmt(dmg), col)
@@ -1194,26 +1519,20 @@ func _hit_monster(m: Mob, raw: float, col: Color) -> void:
 		monster_die(m)
 
 
+## explosionAoEJustin.dm Explosion(): explosion.dmi on every tile within range(r) for 0.4 s;
+## every monster in it except the one hit takes the splash damage (minus 40% of its defence,
+## scaled by ki resistance); the shooter takes a tenth if caught in it.
 func _explosion(x: int, y: int, z: int, r: int, dmg: float, skip: Mob) -> void:
-	var ex := Data.icon_id("explosion.dmi")
-	if ex >= 0:
-		var fx := Mob.new()
-		fx.kind = "proj"
-		fx.x = x
-		fx.y = y
-		fx.z = z
-		fx.from_x = x
-		fx.from_y = y
-		fx.icon = ex
-		fx.layer = 6.0
-		fx.dense = false
-		world.add(fx)
-		after(500, func(): world.remove(fx))
+	for dx in range(-r, r + 1):
+		for dy in range(-r, r + 1):
+			_boom_fx(x + dx, y + dy, z, "explosion.dmi", 400.0)
 	for m in monsters.keys():
 		if m == skip or m.dead or m.z != z:
 			continue
 		if maxi(absi(m.x - x), absi(m.y - y)) <= r:
-			_hit_monster(m, dmg, Color(1, 0.6, 0.2))
+			_hit_monster(m, dmg, Color(1, 0.6, 0.2), "splash")
+	if pe != null and pe.z == z and maxi(absi(pe.x - x), absi(pe.y - y)) <= r and dmg > 0:
+		P["powerlevel"] = maxf(1.0, float(P["powerlevel"]) - roundf(dmg / 10.0))
 
 
 # =================================================================== monster AI
@@ -1501,13 +1820,7 @@ func skill_gain(silent: bool, ignore_level := false) -> void:
 			continue
 		if Data.tech(tkey).is_empty():
 			continue
-		learned.append(tkey)
-		if tkey == "PowerUp" and not "PowerDown" in learned:
-			learned.append("PowerDown")
-		if not silent:
-			msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
-		if not _is_utility(tkey):
-			_auto_hotbar("t:" + tkey)
+		_learn(tkey, silent)
 
 
 # =================================================================== test menu
@@ -1532,6 +1845,10 @@ func test_restore() -> void:
 func test_learn_all() -> void:
 	var before: int = P["learned"].size()
 	skill_gain(false, true)
+	for path in TEACHERS:
+		for e in TEACHERS[path]:
+			if _teachable(e, true):
+				_learn(e[0])
 	msg("Test: learned %d techniques." % (P["learned"].size() - before), Color(0.6, 1, 0.6))
 
 
@@ -1640,8 +1957,10 @@ func _is_utility(key: String) -> bool:
 ## The round (dragon ball) buttons: only what you can actually do right now.
 ## Training actions live behind the Train button at the top.
 func panel_actions() -> Array:
-	var out: Array = ["talk"]
-	for k in ["Fly", "PowerUp", "PowerDown", "Sense"]:
+	# Fixed set and order: Rest, Talk, Fly, Power Up, Power Down, Transform, Revert.
+	# Rest and Talk are always there; the rest only once you can use them.
+	var out: Array = ["rest", "talk"]
+	for k in ["Fly", "PowerUp", "PowerDown"]:
 		if k in P.get("learned", []):
 			out.append("t:" + k)
 	var fl := forms_for()
@@ -1765,12 +2084,73 @@ func interact(o: Mob = null) -> void:
 	if o.gravity > 0:
 		grav_machine_menu(o)
 		return
+	if TEACHERS.has(o.path) and _teach(o):
+		return
 	var d: Dictionary = Data.mobs.get(o.path, {})
 	var talk: String = d.get("talk", "")
 	if talk == "":
 		talk = "Hello, %s. Keep training!" % P["name"]
 	var opts := ["Heal me", "OK"] if d.get("healer", false) else ["OK"]
 	ask(o.name, talk, opts, _on_talk)
+
+
+## NPC teachers (Mobs/*.dm Talk verbs): each teaches one technique per talk, in order, when
+## you meet its level (and race / gene) requirement. Skill_Gain only covers the race techniques;
+## the named beams (X10 Kamehameha, Galick Gun, Final Flash, Special Beam Cannon...) come from here.
+const TEACHERS := {
+	"/mob/NPC/Goku": [["AfterImage", 4000]],
+	"/mob/NPC/SSJ3Goku": [["DragonFist", 10000]],
+	"/mob/NPC/SSJ4Goku": [["X10_Kamehameha", 10000]],
+	"/mob/NPC/Vegeta": [["GalickGun", 20000], ["FinalFlash", 32000, "Saiyan"], ["BigBangAttack", 40000, "Saiyan"],
+		["FinalShine", 40000, "Saiyan", "Prideful"]],
+	"/mob/NPC/Piccolo": [["Zanzoken", 12500], ["LightGrenade", 20000], ["SpecialBeamCannon", 25000, "Namekian"]],
+	"/mob/NPC/Tien": [["SolarFlare", 7500], ["SplitForm", 15000], ["TriBeam", 25000]],
+	"/mob/NPC/Trunks": [["FinishBuster", 25000], ["BurningAttack", 40000, "Half Saiyan"]],
+	"/mob/NPC/Yardrat_Sensei": [["InstantTransmission", 750]],
+	"/mob/NPC/Frieza": [["DeathBeam", 0, "Changeling"]],
+	"/mob/NPC/Dr_Gero": [["SSDeadlyBomber", 40000, "Android"]],
+}
+
+
+func _teachable(e: Array, ignore_level := false) -> bool:
+	if Data.tech(e[0]).is_empty() or e[0] in P["learned"]:
+		return false
+	if e.size() > 2 and P["race"] != e[2]:
+		return false
+	if e.size() > 3 and P.get("gene", "") != e[3]:
+		return false
+	return ignore_level or int(P["level"]) >= int(e[1])
+
+
+## Returns true if the teacher said something (taught you, or told you what level to reach).
+func _teach(o: Mob) -> bool:
+	var lst: Array = TEACHERS[o.path]
+	for e in lst:
+		if _teachable(e):
+			_learn(e[0])
+			ask(o.name, "Here, let me teach you %s." % Data.tech(e[0]).get("name", e[0]), ["Thanks!"], func(_c, _i): pass)
+			return true
+	var next_lv := 0
+	for e in lst:
+		if _teachable(e, true) and (next_lv == 0 or int(e[1]) < next_lv):
+			next_lv = int(e[1])
+	if next_lv > 0:
+		ask(o.name, "Get to level %s and I'll teach you something." % fmt(next_lv), ["OK"], func(_c, _i): pass)
+		return true
+	return false
+
+
+func _learn(tkey: String, silent := false) -> void:
+	var learned: Array = P["learned"]
+	if tkey in learned:
+		return
+	learned.append(tkey)
+	if tkey == "PowerUp" and not "PowerDown" in learned:
+		learned.append("PowerDown")
+	if not silent:
+		msg(".:: You learn %s ::." % Data.tech(tkey).get("name", tkey), Color(1, 1, 0.5))
+	if not _is_utility(tkey):
+		_auto_hotbar("t:" + tkey)
 
 
 func _on_talk(c: String, _i: int) -> void:

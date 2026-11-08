@@ -25,9 +25,27 @@ redrawn by hand.
   battle techniques are added to empty slots automatically. Any action or technique can go
   on it: open **Skills**, tap something, then tap a slot. Tap **Cancel placing** (or close
   the book) to back out. Hold a slot to clear it.
-* **Action panel.** The dragon balls above the Attack button hold Talk, plus Transform,
-  Revert, Fly, Power Up, Power Down and Sense once you can use them. A button lights up while
-  it is active. Self Train, Meditate and Rest are under the **Train** button.
+* **Action panel.** The dragon balls above the Attack button are, in this order: Rest, Talk,
+  Fly, Power Up, Power Down, Transform, Revert. Rest and Talk are always there; the others show
+  up once you know them (Transform once your next form is unlocked, Revert while transformed).
+  A button lights up while it is active.
+* **Teachers.** Talk to them to learn their techniques, as in `Mobs/*.dm`: Goku (After Image,
+  4,000), SSJ3 Goku (Dragon Fist, 10,000), SSJ4 Goku (X10 Kamehameha, 10,000), Vegeta (Galick
+  Gun 20,000; Saiyans: Final Flash 32,000, Big Bang 40,000, Prideful: Final Shine 40,000),
+  Piccolo (Zanzoken 12,500, Light Grenade 20,000, Namekians: Special Beam Cannon 25,000), Tien
+  (Solar Flare 7,500, Split Form 15,000, Tri Beam 25,000), Trunks (Finish Buster 25,000, Half
+  Saiyans: Burning Attack 40,000), Yardrat Sensei (Instant Transmission, 750), Frieza
+  (Changelings: Death Beam), Dr. Gero (Androids: SS Deadly Bomber, 40,000).
+* **Techniques follow the original code.** Blasts deal (PL*a + Ki*b) * Ki Power% minus the
+  target's ki defence * ki resistance%, and splash blasts explode over a square of tiles
+  (`splashrange` 1 = 3x3) for their splash damage minus 40% of defence, also when they hit a
+  wall or run out of range. Triple Ki Blasts fire three at once (front and both sides). Rapid
+  Blast, Ki/Flame Shower, Shine Missile, Hell Zone Grenade, Acid Rain and Genocide fire homing
+  ki missiles; Trace Nuke homes in too. Big Bang, Burning Attack, Blaster Shell and Revenge Death
+  Ball are 3x3 balls. Explosive Wave hits everything within 3 tiles for half your powerlevel
+  with a spreading ring of fire; Super Explosion Wave pulses out three times. Monsters like
+  Frieza's Henchmen have very high ki defence in the original, so blasts barely scratch them
+  until your Ki and Ki Power are much higher; Saibamen, angels and demons take full damage.
 * **Message window.** Training stat ticks (Powerlevel +X, Ki +X, Strength +X, Training
   points, skill exp) are listed like the original's second output pane: red when boosted.
   Drag it by its title bar, resize it from the corner, minimise it, and switch between a dark

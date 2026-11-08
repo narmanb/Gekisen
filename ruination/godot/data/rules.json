@@ -1368,12 +1368,120 @@
    "name": "Acid Rain",
    "cd": 12.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    70000
    ],
-   "kind": "multi",
-   "shots": 6,
-   "pow": 0.06
+   "kind": "missile",
+   "obj": "AcidBlast",
+   "icon": "techs.dmi",
+   "state": "acid",
+   "hover": 6.3,
+   "setp": {
+    "powerlevel": 0.1,
+    "ki": 0.05
+   },
+   "div": 24.0,
+   "count": 24,
+   "gap": 0.2,
+   "offsets": [
+    [
+     -2,
+     7
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     -3,
+     8
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     -1,
+     6
+    ],
+    [
+     -1,
+     8
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     -3,
+     6
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     -2,
+     5
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     -2,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     -3,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     -4,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     -1,
+     4
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     -4,
+     7
+    ],
+    [
+     4,
+     7
+    ]
+   ]
   },
   "AdvancedTraining": {
    "name": "Advanced Training",
@@ -1503,12 +1611,18 @@
   "BigBangAttack": {
    "name": "Big Bang Attack",
    "cost": [
-    0.02,
-    50000000
+    0.0,
+    50000000,
+    15000000
    ],
-   "kind": "aoe",
-   "radius": 2,
-   "pow": 0.3
+   "kind": "bigball",
+   "icon": "burning attack.dmi",
+   "state": "bb c",
+   "prefix": "bb",
+   "setp": {
+    "powerlevel": 0.1,
+    "ki": 0.2
+   }
   },
   "BlackStorm": {
    "name": "Black Storm",
@@ -1534,12 +1648,18 @@
   "BlasterShell": {
    "name": "Blaster Shell",
    "cost": [
-    0.02,
-    50000000
+    0.0,
+    50000000,
+    15000000
    ],
-   "kind": "multi",
-   "shots": 4,
-   "pow": 0.12
+   "kind": "bigball",
+   "icon": "burning attack.dmi",
+   "state": "bs c",
+   "prefix": "bs",
+   "setp": {
+    "powerlevel": 0.15,
+    "strength": 0.2
+   }
   },
   "BlazingBlast": {
    "name": "Blazing Blasts",
@@ -1610,12 +1730,18 @@
   "BurningAttack": {
    "name": "Burning Attack",
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    200000
    ],
-   "kind": "multi",
-   "shots": 3,
-   "pow": 0.1
+   "kind": "bigball",
+   "icon": "burning attack.dmi",
+   "state": "ba c",
+   "prefix": "ba",
+   "setp": {
+    "powerlevel": 0.06,
+    "ki": 0.15
+   }
   },
   "BurningStar": {
    "name": "Burning Star",
@@ -2017,9 +2143,13 @@
     0.02,
     1000
    ],
-   "kind": "aoe",
-   "radius": 2,
-   "pow": 0.08
+   "kind": "wave",
+   "wave": "explosive",
+   "radius": 3,
+   "boom": [
+    3,
+    5
+   ]
   },
   "FakeMoon": {
    "name": "Fake Moon",
@@ -2039,13 +2169,12 @@
   },
   "FinalExplosion": {
    "name": "Final Explosion",
-   "kind": "aoe",
-   "radius": 4,
-   "pow": 0.6,
-   "selfcost": 0.9,
-   "cost": [
-    0.05,
-    1000
+   "kind": "wave",
+   "wave": "final",
+   "radius": 8,
+   "boom": [
+    4,
+    8
    ]
   },
   "FinalFlash": {
@@ -2116,12 +2245,22 @@
    "name": "Flame Shower",
    "cd": 10.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    45000
    ],
-   "kind": "multi",
-   "shots": 6,
-   "pow": 0.06
+   "kind": "missile",
+   "obj": "KiMissile",
+   "icon": "techs.dmi",
+   "state": "blastf",
+   "hover": 0.1,
+   "setp": {
+    "powerlevel": 0.03,
+    "ki": 0.02
+   },
+   "div": 12.0,
+   "count": 12,
+   "gap": 0.2
   },
   "Fly": {
    "name": "Fly",
@@ -2233,12 +2372,120 @@
    "name": "Genocide Attack",
    "cd": 12.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    200000
    ],
-   "kind": "multi",
-   "shots": 10,
-   "pow": 0.07
+   "kind": "missile",
+   "obj": "GenocideBlast",
+   "icon": "techs.dmi",
+   "state": "genocide",
+   "hover": 6.3,
+   "setp": {
+    "powerlevel": 0.05,
+    "ki": 0.05
+   },
+   "div": 24.0,
+   "count": 24,
+   "gap": 0.2,
+   "offsets": [
+    [
+     -2,
+     7
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     -3,
+     8
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     -1,
+     6
+    ],
+    [
+     -1,
+     8
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     -3,
+     6
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     -2,
+     5
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     -2,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     -3,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     -4,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     -1,
+     4
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     -4,
+     7
+    ],
+    [
+     4,
+     7
+    ]
+   ]
   },
   "GigaDrop": {
    "name": "Giga Drop",
@@ -2354,12 +2601,120 @@
    "name": "Hell Zone Grenade",
    "cd": 12.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    100000
    ],
-   "kind": "multi",
-   "shots": 8,
-   "pow": 0.08
+   "kind": "missile",
+   "obj": "ScatterBlast",
+   "icon": "techs.dmi",
+   "state": "scatter",
+   "hover": 6.3,
+   "setp": {
+    "powerlevel": 0.15,
+    "ki": 0.05
+   },
+   "div": 24.0,
+   "count": 24,
+   "gap": 0.2,
+   "offsets": [
+    [
+     -4,
+     3
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     -2,
+     5
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     -2,
+     -2
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     -4,
+     0
+    ],
+    [
+     -2,
+     -5
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     2,
+     -2
+    ],
+    [
+     -2,
+     2
+    ],
+    [
+     0,
+     -4
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     0,
+     -2
+    ],
+    [
+     -2,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     4,
+     -3
+    ],
+    [
+     -4,
+     -3
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     -6,
+     0
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     0,
+     -6
+    ]
+   ]
   },
   "ImmortalFlame": {
    "name": "Immortal Flame",
@@ -2538,8 +2893,9 @@
    "name": "Iron Fist",
    "cd": 0.3,
    "cost": [
-    0.02,
-    500
+    0.0,
+    500,
+    100
    ],
    "kind": "blast",
    "blast": "kipunch",
@@ -2567,12 +2923,22 @@
    "name": "Ki Shower",
    "cd": 10.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    60000
    ],
-   "kind": "multi",
-   "shots": 6,
-   "pow": 0.06
+   "kind": "missile",
+   "obj": "KiMissile",
+   "icon": "techs.dmi",
+   "state": "blast",
+   "hover": 0.1,
+   "setp": {
+    "powerlevel": 0.05,
+    "ki": 0.05
+   },
+   "div": 12.0,
+   "count": 12,
+   "gap": 0.2
   },
   "KiSiege": {
    "name": "Ki Siege",
@@ -3012,12 +3378,31 @@
    "name": "Rapid Blast",
    "cd": 10.0,
    "cost": [
-    0.02,
-    50000
+    0.0,
+    50000,
+    20000
    ],
-   "kind": "multi",
-   "shots": 5,
-   "pow": 0.05
+   "kind": "missile",
+   "obj": "KiMissile",
+   "icon": "techs.dmi",
+   "state": "blastr",
+   "hover": 0.1,
+   "setp": {
+    "powerlevel": 0.01,
+    "ki": 0.01
+   },
+   "div": 10.0,
+   "count": 3,
+   "extra": [
+    5000,
+    7500,
+    10000,
+    12500,
+    15000,
+    17500,
+    20000
+   ],
+   "gap": 0.5
   },
   "Regenerate": {
    "name": "Regenerate",
@@ -3027,12 +3412,18 @@
   "RevengeDeathBall": {
    "name": "Revenge Death Ball",
    "cost": [
-    0.02,
-    50000000
+    0.0,
+    50000000,
+    15000000
    ],
-   "kind": "aoe",
-   "radius": 3,
-   "pow": 0.35
+   "kind": "bigball",
+   "icon": "burning attack.dmi",
+   "state": "rb c",
+   "prefix": "rb",
+   "setp": {
+    "powerlevel": 0.25,
+    "ki": 0.12
+   }
   },
   "SSDeadlyBomber": {
    "name": "SS Deadly Bomber",
@@ -3152,12 +3543,22 @@
    "name": "Shine Missile",
    "cd": 10.0,
    "cost": [
-    0.02,
+    0.0,
+    50000,
     50000
    ],
-   "kind": "multi",
-   "shots": 6,
-   "pow": 0.07
+   "kind": "missile",
+   "obj": "KiMissile",
+   "icon": "techs.dmi",
+   "state": "blast",
+   "hover": 0.1,
+   "setp": {
+    "powerlevel": 0.1,
+    "ki": 0.01
+   },
+   "div": 12.0,
+   "count": 12,
+   "gap": 0.2
   },
   "SlowField": {
    "name": "Slow Field",
@@ -3320,9 +3721,13 @@
     0.1,
     25000
    ],
-   "kind": "aoe",
-   "radius": 3,
-   "pow": 0.15
+   "kind": "wave",
+   "wave": "sew",
+   "pulses": [
+    2,
+    3,
+    4
+   ]
   },
   "Sword_Slash": {
    "name": "Sword Slash",
@@ -3400,7 +3805,8 @@
    "range": 18,
    "splash": 2,
    "splashk": 0.5,
-   "beam": 0
+   "beam": 0,
+   "homing": 1
   },
   "TriBeam": {
    "name": "Tri Beam",
@@ -3428,9 +3834,21 @@
     0.155,
     10000
    ],
-   "kind": "multi",
-   "shots": 3,
-   "pow": 0.08
+   "kind": "blast",
+   "blast": "TripleKiBlast",
+   "icon": "techs.dmi",
+   "state": "blastr2",
+   "coef": {
+    "powerlevel": 0.1,
+    "ki": 0.1
+   },
+   "scale": "ki_power",
+   "range": 18,
+   "splash": 1,
+   "splashk": 0.3,
+   "beam": 0,
+   "speed": 12,
+   "spawn": "triple"
   },
   "TrooperBomb": {
    "name": "Trooper Bomb",

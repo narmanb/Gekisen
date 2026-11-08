@@ -38,6 +38,8 @@ var ki_max := 0.0
 var strength := 1.0
 var defence := 1.0
 var durability := 1.0
+var kidefense := 0.0
+var ki_res := 10.0
 var dodge := 0.0
 var block := 0.0
 var exp_reward := 0.0
@@ -66,6 +68,11 @@ var face := -1              # sprite direction override (diagonal beams drawn fr
 var rot := 0.0              # sprite rotation in radians around the tile centre
 var stretch := 1.0          # sprite x-scale (diagonal trail pieces are longer)
 var trail_state := ""
+var homing := false         # Trace Nuke / ki missiles steer toward the nearest monster
+var hover_until := 0.0      # missiles wait here before they start moving
+var power := 0.0            # missile / big ball power
+var pieces: Array = []      # big ball: the other 8 sprite pieces riding along
+var pow_left: Array = []    # big ball: power left in each of the 9 pieces
 
 
 func pos(now: float) -> Vector2:

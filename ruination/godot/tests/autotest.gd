@@ -21,6 +21,25 @@ func wait(sec: float) -> void:
 	await get_tree().create_timer(sec).timeout
 
 
+## An open patch of ground (no walls, water or safe zone) 4 tiles behind and 14 ahead, 7 up and down.
+func find_open(cx: int, cy: int, z: int) -> Vector2i:
+	for r in range(0, 60, 2):
+		for dx in range(-r, r + 1, 2):
+			for dy in [-r, r]:
+				if _open_at(cx + dx, cy + dy, z):
+					return Vector2i(cx + dx, cy + dy)
+	return Vector2i(cx, cy)
+
+
+func _open_at(x: int, y: int, z: int) -> bool:
+	for dx in range(-4, 15):
+		for dy in range(-7, 8):
+			var t := Data.turf(x + dx, y + dy, z)
+			if t.is_empty() or int(t.get("dense", 0)) == 1 or Data.is_safe(x + dx, y + dy, z):
+				return false
+	return true
+
+
 func touch_at(a: Vector2, b: Vector2) -> void:
 	var t := InputEventScreenTouch.new()
 	t.index = 0
@@ -162,6 +181,22 @@ func run() -> void:
 	await wait(0.5)
 	await shot("04w_learned_all")
 	print("LEARNED ", Game.P["learned"].size(), " panel ", Game.panel_actions())
+	var goku := Mob.new()
+	goku.path = "/mob/NPC/SSJ4Goku"
+	goku.name = "SSJ4 Goku"
+	Game.P["learned"].erase("X10_Kamehameha")
+	Game.P["level"] = 9000
+	Game._teach(goku)
+	var not_yet: bool = not "X10_Kamehameha" in Game.P["learned"]
+	ui.close_dialogs() if ui.has_method("close_dialogs") else null
+	while not ui.dialog_queue.is_empty():
+		ui._dialog_pick("OK", 0)
+	Game.P["level"] = 10000
+	Game._teach(goku)
+	while not ui.dialog_queue.is_empty():
+		ui._dialog_pick("OK", 0)
+	print("TEACHER X10 at 9000: ", not not_yet, " at 10000: ", "X10_Kamehameha" in Game.P["learned"])
+	assert(not_yet and "X10_Kamehameha" in Game.P["learned"])
 	# --- instant transmission: NPC list, ki cost, lock-on, arrival
 	Game.it_lock_until = 0.0
 	Game.P["ki"] = 1000.0
@@ -242,6 +277,52 @@ func run() -> void:
 				await shot("08_" + k.substr(2))
 				await wait(0.8)
 		print("AFTER TECHS ", state())
+		# --- technique audit: Triple Ki Blast, splash, Explosive Wave, missiles, big ball
+		for m in Game.monsters:
+			if m.z == Game.pe.z and maxi(absi(m.x - Game.pe.x), absi(m.y - Game.pe.y)) <= 20:
+				m.dead = true
+				Game.world.remove(m)
+		var open_spot := find_open(Game.pe.x, Game.pe.y, Game.pe.z)
+		print("OPEN SPOT ", open_spot)
+		Game.test_teleport(open_spot.x, open_spot.y, Game.pe.z)
+		for m in Game.monsters:
+			if m.z == Game.pe.z and maxi(absi(m.x - Game.pe.x), absi(m.y - Game.pe.y)) <= 20:
+				m.dead = true
+				Game.world.remove(m)
+		var dummies: Array = []
+		for off in [[5, 0], [5, 1], [6, 1], [2, 2], [-2, 2], [3, -2], [-3, -1], [0, 6], [7, 4]]:
+			var dm: Mob = Game.spawn_monster("/mob/Monster/MainMobs/Goon_1", Game.pe.x + off[0], Game.pe.y + off[1], Game.pe.z)
+			dm.powerlevel_max = 1.0e12
+			dm.powerlevel = 1.0e12
+			dm.aggro = false
+			dm.next_think = Game.now + 600000.0
+			dummies.append(dm)
+		Game.P["level"] = 5300
+		Game.P["ki_max"] = 169961.0 / Game.kc()      # roughly your character in the last screenshot
+		for spec in [["TripleKiBlast", 4, 0.25], ["Kamehameha", 4, 0.5], ["ExplosiveWave", 4, 0.75], ["RapidBlast", 4, 1.6], ["KiShower", 4, 1.6], ["BigBangAttack", 4, 0.35], ["SuperExplosionWave", 4, 1.0]]:
+			Game.cooldowns.clear()
+			Game.P["ki"] = Game.cap("ki")
+			Game.P["powerlevel"] = Game.cap("powerlevel")
+			Game.P["stam"] = 0.0
+			Game.pe.stun_until = 0.0
+			var before: Array = dummies.map(func(dm): return dm.powerlevel)
+			Game.pe.dir = spec[1]
+			if not spec[0] in Game.P["learned"]:
+				Game.P["learned"].append(spec[0])
+			Game.use_tech(spec[0])
+			await wait(spec[2])
+			await shot("05t_%s" % spec[0])
+			await wait(1.5)
+			var hits: Array = []
+			for di in dummies.size():
+				var lost: float = before[di] - dummies[di].powerlevel
+				if lost > 0:
+					hits.append("(%d,%d)=%s" % [dummies[di].x - Game.pe.x, dummies[di].y - Game.pe.y, Game.fmt(lost)])
+			print("TECH ", spec[0], " PL ", Game.fmt(Game.cap("powerlevel")), " Ki ", Game.fmt(Game.cap("ki")), " ki_power ", Game.skill("ki_power"), " hits ", hits)
+		for dm in dummies:
+			print("DUMMY at ", dm.x - Game.pe.x, ",", dm.y - Game.pe.y, " took ", Game.fmt(dm.powerlevel_max - dm.powerlevel))
+			dm.dead = true
+			Game.world.remove(dm)
 		# --- beams: head starts in front, real trail, diagonals (8-dir Kamehameha, rotated 4-dir ones)
 		for m in Game.monsters:          # clear the area so the shots fly their full length
 			if m.z == Game.pe.z and maxi(absi(m.x - Game.pe.x), absi(m.y - Game.pe.y)) <= 20:

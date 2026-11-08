@@ -98,11 +98,24 @@ def techniques(tree):
         else:
             m = re.search(r'var/cost\s*=\s*(\d+)\+\((\d+)\*usr\.kiuse\)', b)
             if m:
-                t['cost'] = [0.02, int(m.group(1))]
-        blasts = re.findall(r'new\s*/obj/blasts/(\w+)', b)
+                t['cost'] = [0.0, int(m.group(1)), int(m.group(2))]     # flat + per point of Ki Use
+        bc = re.sub(r'/\*.*?\*/', '', b, flags=re.S)
+        bc = '\n'.join(l for l in bc.split('\n') if not l.strip().startswith('//'))
+        blasts = re.findall(r'new\s*/obj/blasts/(\w+)', bc) + re.findall(r'var/obj/blasts/(\w+)/\w+\s*=\s*new', bc)
+        tech_objs = re.findall(r'var/obj/Tech/([\w/]+)/\w+\s*=\s*new', bc)
         if blasts:
             t['kind'] = 'blast'
             t.update(blast(tree, blasts[0]))
+            if len(re.findall(r'var/obj/blasts/\w+/\w+\s*=\s*new\(techloc', bc)) == 3:
+                t['spawn'] = 'triple'      # front + both sides, all flying the same way
+            if re.search(r'src\.Trace\(\)', tree.find_proc('/obj/blasts/' + blasts[0], 'New')[1]['body'] if tree.find_proc('/obj/blasts/' + blasts[0], 'New')[1] else ''):
+                t['homing'] = 1
+        elif key in WAVES:
+            t.update(WAVES[key])
+        elif tech_objs and tech_objs[0] in MISSILE_OBJS:
+            t.update(missile(bc, tech_objs))
+        elif tech_objs and tech_objs[0].startswith('BeamH/Bang'):
+            t.update(bigball(bc))
         elif key in OTHER:
             kind, params = OTHER[key]
             t['kind'] = kind
@@ -114,6 +127,58 @@ def techniques(tree):
             t['cost'] = [0.05, 1000]
         out[key] = t
     return out
+
+
+# Explosion techniques (verbs in Techniques*.dm), damage worked out in game.gd from these:
+#  ExplosiveWave: oview(3), damage = PL/2 - kidef/125/((2+dist)/2), BasicBoom fire rings 3 and 5
+#  SuperExplosionWave: ExplosionSEW pulses of radius 2, 3, 4, each ki_max*ki_power/100/3
+#  FinalExplosion: oview(8), damage = ki*ki_power/100/((2+dist)/2); you are left at 0 powerlevel
+WAVES = {
+    'ExplosiveWave': {'kind': 'wave', 'wave': 'explosive', 'radius': 3, 'boom': [3, 5]},
+    'SuperExplosionWave': {'kind': 'wave', 'wave': 'sew', 'pulses': [2, 3, 4]},
+    'FinalExplosion': {'kind': 'wave', 'wave': 'final', 'radius': 8, 'boom': [4, 8]},
+}
+# /obj/Tech missiles (Technique_Procs.dm Scatter): homing ki balls. icon_state and the delay
+# before they start moving (New(): spawn(1) or spawn(63)).
+MISSILE_OBJS = {'KiMissile': ('blast', 0.1), 'ScatterBlast': ('scatter', 6.3),
+                'GenocideBlast': ('genocide', 6.3), 'AcidBlast': ('acid', 6.3)}
+
+
+def _setp(body):
+    out = {}
+    for stat, k in re.findall(r'var/rand\w+\s*=\s*(?:round\()?usr\.(\w+)\s*\*\s*([\d.]+)', body):
+        out[stat] = float(k)
+    return out
+
+
+def missile(body, objs):
+    obj = objs[0].split('/')[0]
+    state, hover = MISSILE_OBJS[obj]
+    st = re.findall(r'\.icon_state\s*=\s*"(blast\w*)"', body)
+    if st:
+        state = st[0]
+    m = re.search(r'\.power\s*=\s*round\(src\.setpower/([\d.]+)\)', body)
+    res = {'kind': 'missile', 'obj': obj, 'icon': 'techs.dmi', 'state': state, 'hover': hover,
+           'setp': _setp(body), 'div': float(m.group(1)) if m else float(len(objs))}
+    # missiles created unconditionally vs. extra ones behind "if(usr.level>N)"
+    extra = [int(x) for x in re.findall(r'if\(usr\.level\s*>=?\s*(\d+)\)', body)]
+    res['count'] = len(objs) - len(extra)
+    if extra:
+        res['extra'] = extra
+    first = body.find('var/obj/Tech/')
+    gaps = re.findall(r'sleep\((\d+)\)', body[first:])
+    res['gap'] = max(set(gaps), key=gaps.count) and int(max(set(gaps), key=gaps.count)) / 10.0 if gaps else 0.2
+    offs = re.findall(r'\.loc\s*=\s*locate\(usr\.x([+-]\d+)?\s*,\s*usr\.y([+-]\d+)?', body)
+    if offs:
+        res['offsets'] = [[int(a or 0), int(b or 0)] for a, b in offs]
+    return res
+
+
+def bigball(body):
+    pre = re.findall(r'C\.icon_state\s*=\s*"(\w+) c"', body)
+    pre = pre[0] if pre else 'ba'
+    return {'kind': 'bigball', 'icon': 'burning attack.dmi', 'state': pre + ' c', 'prefix': pre,
+            'setp': _setp(body)}
 
 
 def blast(tree, bname):
