@@ -68,6 +68,7 @@ var face := -1              # sprite direction override (diagonal beams drawn fr
 var rot := 0.0              # sprite rotation in radians around the tile centre
 var stretch := 1.0          # sprite x-scale (diagonal trail pieces are longer)
 var trail_state := ""
+var crit := false
 var homing := false         # Trace Nuke / ki missiles steer toward the nearest monster
 var hover_until := 0.0      # missiles wait here before they start moving
 var power := 0.0            # missile / big ball power

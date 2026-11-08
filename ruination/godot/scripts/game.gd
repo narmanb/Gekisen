@@ -1083,8 +1083,6 @@ func blast_damage(t: Dictionary) -> float:
 	var scale: String = t.get("scale", "ki_power")
 	var sv := skill(scale) if P["skills"].has(scale) else 100.0
 	d *= sv / 100.0
-	if randf() * 100.0 < skill("ki_cast") / 4.0:
-		d *= 1.35   # critblast
 	return roundf(d)
 
 
@@ -1109,6 +1107,8 @@ func fire(owner: Mob, t: Dictionary, dmg: float, d: int, sx := -99999, sy := -99
 	if t.get("beam", 0):
 		_setup_beam(pr)
 	pr.homing = int(t.get("homing", 0)) == 1
+	# critblast: prob(ki_cast/4) for +35%, added in dmg() to the direct hit only (splash uses the base)
+	pr.crit = owner == pe and randf() * 100.0 < skill("ki_cast") / 4.0
 	world.add(pr)
 	projectiles.append(pr)
 	if sx != -99999:
@@ -1207,7 +1207,7 @@ func update_projectiles() -> void:
 ## A blast reaching a monster: ProjectilesJustin.dm dmg(): Damage - kidefense*ki_res/100
 ## (at least 1), then Explosion(splashrange) around it with splashdmg for everyone else.
 func _blast_hit(pr: Mob, hit: Mob, x: int, y: int) -> void:
-	_hit_monster(hit, pr.damage, Color(0.5, 0.9, 1), "ki")
+	_hit_monster(hit, pr.damage + (roundf(pr.damage * 0.35) if pr.crit else 0.0), Color(1, 0.4, 0.3) if pr.crit else Color(0.5, 0.9, 1), "ki")
 	if randf() < 0.1:
 		_skill_exp("ki_power", 1 + int(P["level"]) / 1250)
 	if int(pr.tech.get("splash", 0)) > 0:
@@ -1442,10 +1442,12 @@ func _wave(t: Dictionary) -> void:
 
 
 func _sew_pulse(cx: int, cy: int, cz: int, r: int, dmg: float) -> void:
-	# ExplosionSEW(): explosion.dmi on every tile in range(r); dmg - kidefcalc/400
+	# ExplosionSEW(): every tile in range(r); dmg - kidefcalc/400
+	# Same ground fire + scorch look as Explosive Wave (explosion.dmi is the projectile splash).
 	for dx in range(-r, r + 1):
 		for dy in range(-r, r + 1):
-			_boom_fx(cx + dx, cy + dy, cz, "explosion.dmi", 500.0)
+			_boom_fx(cx + dx, cy + dy, cz, "explosionaoe.dmi", 500.0)
+			_boom_fx(cx + dx, cy + dy, cz, "dirt.dmi", 1000.0, 3.5)
 	for m in monsters.keys():
 		if m.dead or m.z != cz or maxi(absi(m.x - cx), absi(m.y - cy)) > r:
 			continue
