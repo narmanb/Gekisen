@@ -1,6 +1,10 @@
 [b]Dragonball Ruination – Android version[/b]
 Everything added and fixed in this version of the game, newest first. The original game's own notes are under Legacy Update Notes.
 
+[color=#ffd75e][b]11/8/2026 – Dodgeable homing[/b][/color]
+- Saga bosses' ki volleys fly at the spot you were standing on; stronger bosses' shots re-aim at you once or twice on the way, so moving still gets you out of the way
+- Your Dodge skill now also lets you dodge homing shots (as well as melee); straight blasts and beams can't be dodged
+
 [color=#ffd75e][b]11/8/2026 – Sagas trimmed, Double Sunday sprite[/b][/color]
 - Sagas now go up to Frieza: the Villain Saga is Raditz, Vegeta and Nappa, the Ginyu Force and Frieza; the Hero Saga runs from Goku and Piccolo to Super Saiyan Goku
 - Double Sunday has its own sprite: two thinner yellow beams with glowing orb heads, fired side by side

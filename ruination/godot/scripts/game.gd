@@ -1188,9 +1188,7 @@ func _saga_punch(m: Mob) -> void:
 	m.do_flick("attack", now)
 	var defense := cap("defence") + maxf(float(P["powerlevel"]), 0.0) * 0.1 + 1.0
 	var dmg := maxf(1.0, m.strength + m.powerlevel * 0.1 - defense)
-	if randf() * 100.0 < skill("dodge") / 5.0:
-		pe.do_flick("IT", now)
-		world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
+	if _dodge_roll():
 		return
 	if randf() * 100.0 < skill("block") / 5.0:
 		dmg /= 4.0
@@ -1201,6 +1199,16 @@ func _saga_punch(m: Mob) -> void:
 		m.ki = minf(m.ki_max, m.ki + dmg * 0.3)
 	_hit_player(dmg, m, "")
 	sfx("punchhit.wav" if randf() < 0.5 else "kickhit.wav", -4.0)
+
+
+## Dodge skill: Dodge/5 % to dodge melee and homing shots (never straight blasts or beams).
+func _dodge_roll() -> bool:
+	if randf() * 100.0 < skill("dodge") / 5.0:
+		_skill_exp("dodge", 5 + int(P["level"]) / 250)
+		pe.do_flick("IT", now)
+		world.floater(pe.x, pe.y, pe.z, "Dodge", Color(0.7, 0.9, 1))
+		return true
+	return false
 
 
 func _hit_player(raw: float, by: Mob, mode: String) -> void:
@@ -1335,6 +1343,11 @@ func _saga_move(m: Mob, dx: int, dy: int, dist: int) -> bool:
 					pr.power = pw
 					pr.tech = {"kind": "missile"}
 					pr.steps = 30
+					pr.aim = Vector2i(pe.x, pe.y)
+					# easier bosses just fire at the spot; stronger ones re-aim once or twice
+					var bl := float(saga_data()["bosses"][m.saga_key]["level"])
+					pr.adjust_left = 0 if bl < 1000 else (1 if bl < 2000 else 2)
+					pr.adjust_at = pr.steps - 4
 					pr.hover_until = now + 100.0
 					world.add(pr)
 					projectiles.append(pr))
@@ -1999,9 +2012,14 @@ func _spawn_missile(t: Dictionary, power: float, d: int, ox: int, oy: int, hover
 func _missile_step(pr: Mob) -> void:
 	pr.next_step = now + 70.0
 	if pr.owner != pe:
-		# a saga boss's ki missiles home in on you
-		if pe.z == pr.z:
-			pr.dir = dir_to(signi(pe.x - pr.x), signi(pe.y - pr.y))
+		# a saga boss's ki volley flies at the spot you were standing on; stronger bosses' re-aim
+		# at you once or twice on the way (adjust_left)
+		if pr.adjust_left > 0 and pr.steps <= pr.adjust_at and pe.z == pr.z:
+			pr.aim = Vector2i(pe.x, pe.y)
+			pr.adjust_left -= 1
+			pr.adjust_at = pr.steps - 4
+		if pr.x != pr.aim.x or pr.y != pr.aim.y:
+			pr.dir = dir_to(signi(pr.aim.x - pr.x), signi(pr.aim.y - pr.y))
 		var mx: int = pr.x + Data.DIR_DX[pr.dir]
 		var my: int = pr.y + Data.DIR_DY[pr.dir]
 		var mt := Data.turf(mx, my, pr.z)
@@ -2011,6 +2029,8 @@ func _missile_step(pr: Mob) -> void:
 		world.move(pr, mx, my, pr.z, 70.0, now)
 		pr.steps -= 1
 		if pe.x == mx and pe.y == my and pe.z == pr.z:
+			if _dodge_roll():
+				return          # it flies on past you
 			_hit_player(pr.power, pr.owner, "ki")
 			_boom_fx(mx, my, pr.z, "explosion.dmi", 400.0)
 			_kill_proj(pr)

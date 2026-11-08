@@ -384,6 +384,19 @@ func run() -> void:
 		print("SAGA part ", Game.P["saga"]["part"], " bosses ", Game.saga_bosses.map(func(b): return b.name))
 		assert(int(Game.P["saga"]["part"]) == 1 and Game.saga_bosses.size() == 2)
 		await shot("05s_vegeta_nappa")
+		# Frieza's ki volley: aimed at you, re-aims twice
+		var fz: Mob = Game._spawn_saga_boss("Frieza", 0, open_spot.x + 8, open_spot.y + 3, 1)
+		Game.test_teleport(open_spot.x, open_spot.y, 1)
+		Game.saga_data()["bosses"]["Frieza"]["moves"] = ["volley"]
+		var vdx: int = Game.pe.x - fz.x
+		var vdy: int = Game.pe.y - fz.y
+		Game._saga_move(fz, vdx, vdy, maxi(absi(vdx), absi(vdy)))
+		await wait(0.4)
+		var vol: Array = Game.projectiles.filter(func(p): return p.owner == fz)
+		print("SAGA volley shots ", vol.size(), " aim ", vol[0].aim if not vol.is_empty() else "-", " adjust ", vol[0].adjust_left if not vol.is_empty() else -1, " player ", Game.pe.x, ",", Game.pe.y)
+		await shot("05s_frieza_volley")
+		await wait(1.5)
+		Game.saga_data()["bosses"]["Frieza"]["moves"] = ["death_beam", "death_ball", "volley"]
 		Game.end_saga()
 		Game.P["pl_bonus"] = keep_bonus
 		Game.P["powerlevel"] = Game.cap("powerlevel")
