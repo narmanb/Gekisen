@@ -868,7 +868,7 @@ func use_tech(key: String) -> void:
 	if cooldown_left(id) > 0:
 		return
 	var kind: String = t.get("kind", "utility")
-	var offensive := kind in ["blast", "multi", "aoe", "bind", "strike"]
+	var offensive := kind in ["blast", "multi", "aoe", "bind", "strike", "missile", "bigball", "wave", "push", "powerdash", "burstrush"]
 	if offensive:
 		if int(P["level"]) < PK_LEVEL:
 			msg("Reach level %s to be able to use battle techniques." % fmt(PK_LEVEL), Color(1, 0.5, 0.4))
@@ -924,6 +924,12 @@ func use_tech(key: String) -> void:
 				P["powerlevel"] = maxf(1.0, float(P["powerlevel"]) * (1.0 - float(t["selfcost"])))
 		"bind":
 			_bind(t)
+		"push":
+			_push()
+		"powerdash":
+			_power_dash(t)
+		"burstrush":
+			_burst_rush()
 		"strike":
 			_strike(t)
 		"buff":
@@ -994,6 +1000,122 @@ func _strike(t: Dictionary) -> void:
 			if world.can_enter(m, kx, ky, m.z):
 				world.move(m, kx, ky, m.z, 70, now)
 	pe.do_flick("attack", now)
+
+
+# =================================================================== melee techniques
+## Push.dm Push(): the enemy in front takes round(str*melee% - def*dur/150)*0.4 (at least 1)
+## + level*15 and is thrown 1-3 tiles.
+func _push() -> void:
+	var m := facing_target(false)
+	if m == null:
+		return
+	pe.do_flick("attack", now)
+	var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 150.0) * 0.4)
+	_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.6, 0.3), "")
+	if not m.dead:
+		_throw(m, pe.dir, randi_range(1, 3))
+
+
+## ThrowMob(): slide the enemy a few tiles, stopping at anything solid.
+func _throw(m: Mob, d: int, tiles: int) -> void:
+	for i in tiles:
+		var nx: int = m.x + Data.DIR_DX[d]
+		var ny: int = m.y + Data.DIR_DY[d]
+		if not world.can_enter(m, nx, ny, m.z):
+			break
+		after(i * 100.0, func(): if not m.dead and world.can_enter(m, nx, ny, m.z): world.move(m, nx, ny, m.z, 100.0, now))
+	m.stun_until = maxf(m.stun_until, now + tiles * 100.0 + 200.0)
+
+
+## PowerDash.dm PowDash(): dash up to 20 tiles leaving after-images and slam into the first
+## enemy in the way: round(str*melee% - def*dur%)*0.6 (at least 1) + level*15.
+func _power_dash(t: Dictionary) -> void:
+	if pe.flying:
+		msg("You can't use this technique while flying", Color(1, 0.4, 0.4))
+		return
+	pe.do_flick("IT", now)
+	var path: Array = []
+	var x := pe.x
+	var y := pe.y
+	var target: Mob = null
+	for i in int(t.get("range", 20)):
+		var nx: int = x + Data.DIR_DX[pe.dir]
+		var ny: int = y + Data.DIR_DY[pe.dir]
+		for o in world.at(nx, ny, pe.z):
+			if o.kind == "monster" and not o.dead:
+				target = o
+		if target != null or not world.can_enter(pe, nx, ny, pe.z):
+			break
+		x = nx
+		y = ny
+		path.append(Vector2i(x, y))
+	var step_ms := 30.0
+	for i in path.size():
+		var p: Vector2i = path[i]
+		after(300.0 + i * step_ms, func():
+			_after_image(pe.x, pe.y)
+			world.move(pe, p.x, p.y, pe.z, step_ms, now)
+			P["x"] = pe.x
+			P["y"] = pe.y)
+	pe.stun_until = now + 300.0 + path.size() * step_ms
+	if target != null:
+		var m := target
+		after(300.0 + path.size() * step_ms, func():
+			if m.dead:
+				return
+			var dmg := maxf(1.0, roundf(cap("strength") * skill("melee") / 100.0 - m.defence * m.durability / 100.0) * 0.6)
+			msg("%s slammed into %s!" % [P["name"], m.name], Color(1, 0.8, 0.4), "combat")
+			_hit_monster(m, dmg + int(P["level"]) * 15.0, Color(1, 0.5, 0.2), ""))
+
+
+func _after_image(x: int, y: int) -> void:
+	var a := Mob.new()
+	a.kind = "fx"
+	a.x = x
+	a.y = y
+	a.z = pe.z
+	a.from_x = x
+	a.from_y = y
+	a.icon = pe.icon
+	a.state = "IT" if Data.has_state(pe.icon, "IT") else pe.state
+	a.dir = pe.dir
+	a.overlays = pe.overlays.duplicate()
+	a.underlays = pe.underlays.duplicate()
+	a.layer = 4.5
+	a.dense = false
+	world.add(a)
+	after(200.0, func(): world.remove(a))      # disappearimage(): gone after two ticks
+
+
+## Techniques.dm Burst_Rush: 100,000 Ki. Appear below, left and right of the enemy with an
+## attack each time, then throw it; it is slowed and can't act for a while. (No damage in the
+## original: it sets up your next attacks.)
+func _burst_rush() -> void:
+	var m := facing_target()
+	if m == null:
+		m = _nearest_to(pe.x, pe.y, pe.z, 8)
+	if m == null:
+		msg("No target in range.", Color(0.8, 0.8, 0.8))
+		P["ki"] = float(P["ki"]) + 100000.0
+		return
+	var spots := [[0, -1, 1], [-1, 0, 4], [1, 0, 8]]     # dx, dy, facing (N, E, W)
+	for i in spots.size():
+		var sp: Array = spots[i]
+		after(i * 400.0, func():
+			if m.dead:
+				return
+			pe.do_flick("IT", now)
+			world.move(pe, m.x + int(sp[0]), m.y + int(sp[1]), m.z, 0, now)
+			P["x"] = pe.x
+			P["y"] = pe.y
+			pe.dir = int(sp[2])
+			after(60.0, func(): pe.do_flick("attack", now)))
+	after(850.0, func():
+		if not m.dead:
+			_throw(m, pe.dir, randi_range(1, 3))
+			m.stun_until = now + 5000.0
+			m.next_attack = now + 5000.0)
+	pe.stun_until = now + 900.0
 
 
 func _volley_dirs(d: int, n: int) -> Array:

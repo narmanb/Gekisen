@@ -1766,12 +1766,12 @@
   },
   "BurstRush": {
    "name": "Burst Rush",
-   "kind": "strike",
-   "pow": 1.6,
+   "kind": "burstrush",
    "cost": [
-    0.05,
-    1000
-   ]
+    0.0,
+    100000
+   ],
+   "cd": 12.0
   },
   "CandyBomb": {
    "name": "Candy Bomb",
@@ -3304,13 +3304,13 @@
   },
   "PowerDash": {
    "name": "Power Dash",
-   "kind": "strike",
-   "pow": 1.4,
-   "dash": 3,
+   "kind": "powerdash",
    "cost": [
-    0.05,
-    1000
-   ]
+    0.0,
+    0
+   ],
+   "cd": 7.0,
+   "range": 20
   },
   "PowerDown": {
    "name": "Power Down",
@@ -3345,13 +3345,12 @@
   },
   "Push": {
    "name": "Push",
-   "kind": "strike",
-   "pow": 0.8,
-   "knock": 3,
+   "kind": "push",
    "cost": [
-    0.05,
-    1000
-   ]
+    0.0,
+    0
+   ],
+   "cd": 6.5
   },
   "RageBall": {
    "name": "Rage Ball",

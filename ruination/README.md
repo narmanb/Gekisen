@@ -43,7 +43,11 @@ redrawn by hand.
   Blast, Ki/Flame Shower, Shine Missile, Hell Zone Grenade, Acid Rain and Genocide fire homing
   ki missiles; Trace Nuke homes in too. Big Bang, Burning Attack, Blaster Shell and Revenge Death
   Ball are 3x3 balls. Explosive Wave hits everything within 3 tiles for half your powerlevel
-  with a spreading ring of fire; Super Explosion Wave pulses out three times. Monsters like
+  with a spreading ring of fire; Super Explosion Wave pulses out three times. Push hits the enemy
+  in front for round(str*melee% - def*dur/150)*0.4 + level*15 and throws it 1-3 tiles; Power
+  Dash charges up to 20 tiles leaving after-images and slams into the first enemy for
+  round(str*melee% - def*dur%)*0.6 + level*15; Burst Rush (100,000 Ki) blinks to three sides of
+  the enemy and throws it, leaving it stunned (it does no damage in the original). Monsters like
   Frieza's Henchmen have very high ki defence in the original, so blasts barely scratch them
   until your Ki and Ki Power are much higher; Saibamen, angels and demons take full damage.
 * **Message window.** Training stat ticks (Powerlevel +X, Ki +X, Strength +X, Training

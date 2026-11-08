@@ -299,7 +299,7 @@ func run() -> void:
 			dummies.append(dm)
 		Game.P["level"] = 5300
 		Game.P["ki_max"] = 169961.0 / Game.kc()      # roughly your character in the last screenshot
-		for spec in [["TripleKiBlast", 4, 0.25], ["Kamehameha", 4, 0.5], ["ExplosiveWave", 4, 0.75], ["RapidBlast", 4, 1.6], ["KiShower", 4, 1.6], ["BigBangAttack", 4, 0.35], ["SuperExplosionWave", 4, 1.0]]:
+		for spec in [["TripleKiBlast", 4, 0.25], ["Kamehameha", 4, 0.5], ["ExplosiveWave", 4, 0.75], ["RapidBlast", 4, 1.6], ["KiShower", 4, 1.6], ["BigBangAttack", 4, 0.35], ["SuperExplosionWave", 4, 1.0], ["PowerDash", 4, 0.35], ["Push", 4, 0.3], ["BurstRush", 4, 0.9]]:
 			Game.cooldowns.clear()
 			Game.P["ki"] = Game.cap("ki")
 			Game.P["powerlevel"] = Game.cap("powerlevel")

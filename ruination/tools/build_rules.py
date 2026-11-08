@@ -41,8 +41,10 @@ OTHER = {
     'Glare': ('bind', {'pow': 0.02, 'stun': 3}), 'SolarFlare': ('bind', {'pow': 0.0, 'stun': 4, 'radius': 3}),
     'DemonShackle': ('bind', {'pow': 0.05, 'stun': 4}), 'FatWrap': ('bind', {'pow': 0.05, 'stun': 4}),
     'ImprisonmentBall': ('bind', {'pow': 0.08, 'stun': 4}), 'GalacticDonut': ('bind', {'pow': 0.05, 'stun': 4}),
-    'BurstRush': ('strike', {'pow': 1.6}), 'PowerDash': ('strike', {'pow': 1.4, 'dash': 3}),
-    'Push': ('strike', {'pow': 0.8, 'knock': 3}), 'ExecutionersStrike': ('strike', {'pow': 2.2}),
+    # Push.dm / PowerDash.dm / Techniques.dm Burst_Rush, see game.gd for the formulas
+    'BurstRush': ('burstrush', {'cost': [0.0, 100000], 'cd': 12.0}),
+    'PowerDash': ('powerdash', {'cost': [0.0, 0], 'cd': 7.0, 'range': 20}),
+    'Push': ('push', {'cost': [0.0, 0], 'cd': 6.5}), 'ExecutionersStrike': ('strike', {'pow': 2.2}),
     'DimensionSwordAttack': ('strike', {'pow': 2.5}), 'ThousandSwordSlash': ('strike', {'pow': 2.0, 'hits': 3}),
     'DemonSword': ('strike', {'pow': 1.8}), 'SauzerBlade': ('strike', {'pow': 1.8}),
     'Assasinate': ('strike', {'pow': 3.0}), 'Infect': ('strike', {'pow': 0.6, 'dot': 5}),
